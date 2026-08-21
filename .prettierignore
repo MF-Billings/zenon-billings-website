@@ -1,0 +1,10 @@
+.next
+out
+node_modules
+coverage
+package-lock.json
+lib/sanity/sanity.types.ts
+
+# Prose documents — Prettier's table padding hurts readability here
+AGENTS.md
+docs/
