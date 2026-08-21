@@ -100,8 +100,12 @@ zenon-billings/
 
 ## Task 1: Project scaffold, tooling, and base layout
 
+> **STATUS: COMPLETE** (commit `504d14d`). This section was revised during execution to
+> record what the toolchain actually required — see "Deviations from the original plan"
+> at the end of the task. Later tasks depend on these decisions.
+
 **Files:**
-- Create: `package.json`, `next.config.ts`, `tsconfig.json`, `vitest.config.ts`, `vitest.setup.ts`, `playwright.config.ts`, `.eslintrc.json`, `.prettierrc`, `.gitignore`, `.env.example`, `README.md`
+- Create: `package.json`, `next.config.ts`, `tsconfig.json`, `vitest.config.ts`, `vitest.setup.ts`, `playwright.config.ts`, `eslint.config.mjs`, `.prettierrc`, `.prettierignore`, `.gitignore`, `.env.example`, `README.md`
 - Create: `app/layout.tsx`, `app/page.tsx`, `components/SiteHeader.tsx`, `components/SiteFooter.tsx`, `styles/style.scss`
 - Test: `tests/components/SiteHeader.test.tsx`
 
@@ -109,29 +113,51 @@ zenon-billings/
 - Consumes: nothing (first task).
 - Produces: a buildable static-export Next.js app; `npm test`, `npm run lint`, `npm run build` all green. Exports `SiteHeader()` and `SiteFooter()` as default-exported React components taking no props.
 
-- [ ] **Step 1: Scaffold the Next.js app in the existing directory**
+- [x] **Step 1: Scaffold the Next.js app**
 
-The repo already contains `AGENTS.md` and `docs/`, so scaffold in place and accept the existing files.
+`create-next-app` refuses to run in a directory containing `AGENTS.md`, so scaffold into a
+temp directory and copy the pieces across. **Do not copy the scaffold's own `AGENTS.md`,
+`CLAUDE.md`, or `README.md`** — they would overwrite the project's real ones.
 
 ```bash
-npx create-next-app@latest . \
+cd /tmp && npx --yes create-next-app@latest scaffold \
   --typescript --eslint --app --src-dir=false \
-  --import-alias "@/*" --no-tailwind --no-turbopack
+  --import-alias "@/*" --no-tailwind --yes
 ```
 
-Answer "yes" to continuing in a non-empty directory. If it refuses, scaffold into a temp dir and copy `app/`, `next.config.ts`, `tsconfig.json`, `package.json`, `eslint.config.mjs` across.
-
-- [ ] **Step 2: Install the remaining tooling**
+Then, from the project root, copy only:
 
 ```bash
-npm install next-sanity @sanity/image-url
-npm install -D vitest @vitejs/plugin-react jsdom \
+for item in .gitignore app eslint.config.mjs next-env.d.ts next.config.ts \
+            package.json package-lock.json public tsconfig.json; do
+  cp -r "/tmp/scaffold/$item" ./
+done
+```
+
+- [x] **Step 2: Install the remaining tooling**
+
+```bash
+npm install
+npm install next-sanity @sanity/image-url @picocss/pico
+npm install -D vitest jsdom \
   @testing-library/react @testing-library/user-event @testing-library/jest-dom \
   @vitest/coverage-v8 @playwright/test prettier sass tsx serve
-npx playwright install --with-deps chromium
+npx playwright install chromium
 ```
 
-- [ ] **Step 3: Configure static export**
+**`@vitejs/plugin-react` is deliberately excluded.** Installing it fails with an
+unresolvable peer conflict: `@vitejs/plugin-react@6` pulls `@rolldown/plugin-babel` →
+`@babel/plugin-transform-runtime@8`, requiring `@babel/core@^8`, while `@sanity/codegen`
+(via `next-sanity`) requires `@babel/preset-env@^7`, which needs `@babel/core@^7`. Do
+**not** reach for `--legacy-peer-deps` or `--force`; the plugin only provides Fast Refresh
+for a Vite dev server that this project never runs, and Vitest 4 transforms JSX through
+oxc with no plugin at all.
+
+`npx playwright install --with-deps` requires sudo and will fail in a non-interactive
+shell. Plain `npx playwright install chromium` works when the system libraries are already
+present.
+
+- [x] **Step 3: Configure static export**
 
 Replace `next.config.ts`:
 
@@ -144,24 +170,36 @@ const nextConfig: NextConfig = {
   images: { unoptimized: true },
   // Emits directory/index.html pairs, which Cloudflare Pages serves without redirect hops.
   trailingSlash: true,
+  sassOptions: {
+    loadPaths: ['./node_modules/@picocss/pico/scss'],
+    // Raised by Pico's own source, which AGENTS.md forbids editing.
+    silenceDeprecations: ['if-function'],
+  },
 }
 
 export default nextConfig
 ```
 
-- [ ] **Step 4: Configure Vitest with the 80% coverage floor**
+Next 16 uses the modern Sass API: the option is `loadPaths`, **not** the legacy
+`includePaths`. `includePaths` is silently ignored and the build fails with
+"Can't find stylesheet to import."
+
+- [x] **Step 4: Configure Vitest with the 80% coverage floor**
 
 `vitest.config.ts`:
 
 ```ts
 import { defineConfig } from 'vitest/config'
-import react from '@vitejs/plugin-react'
 import path from 'node:path'
 
+// Vitest 4 transforms JSX through oxc with no plugin needed. @vitejs/plugin-react
+// is deliberately absent: it exists for Vite dev-server Fast Refresh, which this
+// project never runs, and its Babel 8 chain conflicts with the Babel 7 that
+// @sanity/codegen requires.
 export default defineConfig({
-  plugins: [react()],
   resolve: { alias: { '@': path.resolve(__dirname, '.') } },
   test: {
+    globals: true,
     environment: 'jsdom',
     setupFiles: ['./vitest.setup.ts'],
     include: ['tests/**/*.test.{ts,tsx}'],
@@ -182,7 +220,7 @@ export default defineConfig({
 import '@testing-library/jest-dom/vitest'
 ```
 
-- [ ] **Step 5: Configure Playwright against the exported output**
+- [x] **Step 5: Configure Playwright against the exported output**
 
 `playwright.config.ts`:
 
@@ -202,7 +240,19 @@ export default defineConfig({
 })
 ```
 
-- [ ] **Step 6: Add Prettier config and npm scripts**
+- [x] **Step 6: Set the package metadata TypeScript and Vitest both need**
+
+Three edits to files the scaffold generated, all of which break the build if skipped:
+
+1. `package.json` — rename from `scaffold` to `zenon-billings`, and add `"type": "module"`
+   so `vitest.config.ts` is not loaded as CommonJS.
+2. `tsconfig.json` — add `"types": ["vitest/globals", "node"]` to `compilerOptions`.
+   `next build` type-checks the `tests/` directory, and without this it fails with
+   `TS2582: Cannot find name 'describe'`.
+3. Delete the scaffold's unused assets: `app/globals.css`, `app/favicon.ico`,
+   `app/page.module.css`, and the SVGs in `public/`.
+
+- [x] **Step 7: Add Prettier config and npm scripts**
 
 `.prettierrc`:
 
@@ -215,7 +265,24 @@ export default defineConfig({
 }
 ```
 
-Set `scripts` in `package.json`:
+`.prettierignore` — note the last block: Prettier pads markdown tables into unreadable
+walls, so the prose documents are excluded.
+
+```text
+.next
+out
+node_modules
+coverage
+package-lock.json
+lib/sanity/sanity.types.ts
+
+# Prose documents — Prettier's table padding hurts readability here
+AGENTS.md
+docs/
+```
+
+Set `scripts` in `package.json`. Use `eslint`, not `next lint` — the latter is removed in
+Next 16:
 
 ```json
 {
@@ -225,13 +292,13 @@ Set `scripts` in `package.json`:
   "test:watch": "vitest",
   "test:coverage": "vitest run --coverage",
   "test:e2e": "playwright test",
-  "lint": "next lint",
+  "lint": "eslint",
   "format": "prettier --write .",
   "format:check": "prettier --check ."
 }
 ```
 
-- [ ] **Step 7: Write the failing test for SiteHeader**
+- [x] **Step 8: Write the failing test for SiteHeader**
 
 `tests/components/SiteHeader.test.tsx`:
 
@@ -255,12 +322,12 @@ describe('SiteHeader', () => {
 })
 ```
 
-- [ ] **Step 8: Run it to make sure it fails**
+- [x] **Step 9: Run it to make sure it fails**
 
-Run: `npm test -- tests/components/SiteHeader.test.tsx`
-Expected: FAIL — `Failed to resolve import "@/components/SiteHeader"`.
+Run: `npm test`
+Expected: FAIL with `Failed to resolve import "@/components/SiteHeader"`.
 
-- [ ] **Step 9: Write the minimal SiteHeader and SiteFooter**
+- [x] **Step 10: Write the minimal SiteHeader and SiteFooter**
 
 `components/SiteHeader.tsx`:
 
@@ -307,12 +374,12 @@ export default function SiteFooter() {
 }
 ```
 
-- [ ] **Step 10: Run the tests and make sure they pass**
+- [x] **Step 11: Run the tests and make sure they pass**
 
-Run: `npm test -- tests/components/SiteHeader.test.tsx`
+Run: `npm test`
 Expected: PASS (2 tests).
 
-- [ ] **Step 11: Wire up Pico.css and the root layout**
+- [x] **Step 12: Wire up Pico.css and the root layout**
 
 `styles/style.scss`:
 
@@ -320,14 +387,6 @@ Expected: PASS (2 tests).
 @use 'pico';
 
 // Project customizations live below this line. Never edit Pico's source.
-```
-
-Install Pico: `npm install @picocss/pico`
-
-Point the `@use` at the package by adding to `next.config.ts` inside `nextConfig`:
-
-```ts
-  sassOptions: { includePaths: ['./node_modules/@picocss/pico/scss'] },
 ```
 
 `app/layout.tsx`:
@@ -364,12 +423,17 @@ export default function HomePage() {
 }
 ```
 
-- [ ] **Step 12: Verify the static export builds**
+- [x] **Step 13: Verify the static export builds**
 
 Run: `npm run build`
-Expected: PASS, and `out/index.html` exists. Confirm with `ls out/index.html`.
+Expected: PASS with no warnings, and `out/index.html` exists. Confirm Pico compiled in:
 
-- [ ] **Step 13: Write `.env.example` and README setup docs**
+```bash
+ls out/index.html
+grep -ro 'pico' out/_next/static/chunks/*.css | head -1
+```
+
+- [x] **Step 14: Write `.env.example` and README setup docs**
 
 `.env.example`:
 
@@ -388,19 +452,41 @@ NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY=
 SANITY_WRITE_TOKEN=
 ```
 
-`README.md` must document every script added in Step 6, plus `cp .env.example .env.local` as the first setup step.
+Then `cp .env.example .env.local`.
 
-- [ ] **Step 14: Confirm `.gitignore` covers secrets and build output**
+`README.md` must document every script from Step 7, the two-dataset convention, and the
+`@vitejs/plugin-react` omission so nobody "helpfully" reinstates it.
 
-It must include `.env.local`, `.env*.local`, `out/`, `.next/`, `node_modules/`, `coverage/`, `playwright-report/`, `test-results/`.
+- [x] **Step 15: Confirm `.gitignore` covers secrets and build output**
 
-- [ ] **Step 15: Commit**
+It must include `.env*`, `/out/`, `.next/`, `node_modules/`, `/coverage/`,
+`/playwright-report/`, `/test-results/`, and `/schema.json`. Because `.env*` is ignored,
+add an explicit `!.env.example` exception or the template will never be committed.
+
+Verify: `git check-ignore -v .env.local` matches, and `.env.example` does not.
+
+- [x] **Step 16: Commit**
 
 ```bash
-npm run format && npm run lint && npm test
+npm run format && npm run lint && npm test && npm run build
 git add -A
 git commit -m "chore: scaffold Next.js static export with Vitest, Playwright, and Pico.css"
 ```
+
+### Deviations from the original plan
+
+Recorded during execution so later tasks inherit the corrections:
+
+| Planned | Actual | Why |
+|---|---|---|
+| Scaffold in place | Scaffold to temp dir, copy across | `create-next-app` refuses a directory containing `AGENTS.md` |
+| Install `@vitejs/plugin-react` | Omitted entirely | Unresolvable Babel 7/8 peer conflict with `@sanity/codegen`; Vitest 4 uses oxc and needs no plugin |
+| `sassOptions.includePaths` | `sassOptions.loadPaths` | Next 16 uses the modern Sass API |
+| `"lint": "next lint"` | `"lint": "eslint"` | `next lint` is removed in Next 16 |
+| — | `"type": "module"` in `package.json` | Otherwise `vitest.config.ts` loads as CommonJS |
+| — | `"types": ["vitest/globals", "node"]` in `tsconfig.json` | `next build` type-checks `tests/` |
+| — | `.prettierignore` excluding `AGENTS.md` and `docs/` | Prettier's table padding wrecks the prose documents |
+| — | `silenceDeprecations: ['if-function']` | Pico's own source emits it and AGENTS.md forbids editing Pico |
 
 ---
 
