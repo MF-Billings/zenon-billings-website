@@ -15,7 +15,11 @@
 Every task's requirements implicitly include this section.
 
 - **TDD is mandatory.** RED (failing test) → GREEN (minimal code) → REFACTOR. Never write implementation before a failing test.
-- **Test coverage floor: 80%.** Enforced by `vitest --coverage` thresholds.
+- **Test coverage floor: 80%.** Enforced by `vitest --coverage` thresholds. The measured
+  surface excludes generated types, the server-component pages (`app/**/page.tsx`,
+  `app/layout.tsx`, verified by Playwright), and `scripts/seed-gallery.ts` (dev-only CLI
+  whose pure logic is covered in `scripts/metMuseum.ts`). Do not widen that list to make
+  a failing run pass.
 - **Test files mirror source structure:** `components/ArtworkCard.tsx` → `tests/components/ArtworkCard.test.tsx`.
 - **Sanity project ID:** `nlwxmhc1`
 - **Sanity datasets:** `production` (real content) and `development` (seeded sample data, used for all local work).

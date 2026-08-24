@@ -33,6 +33,25 @@ The Sanity project has two datasets, and which one you read is set by
 
 The seed script refuses to run against `production` — see below.
 
+## Seeding sample data
+
+The gallery's filter and search can't be judged against three hand-entered rows, so
+`scripts/seed-gallery.ts` pulls public-domain artwork from the Met Museum Open Access API
+into the `development` dataset.
+
+First create a write token at [sanity.io/manage](https://www.sanity.io/manage) → project
+`nlwxmhc1` → API → Tokens → **Editor**, and put it in `.env.local` as `SANITY_WRITE_TOKEN`.
+That is the only secret in the project; never commit it.
+
+| Command                      | What it does                                              |
+| ---------------------------- | --------------------------------------------------------- |
+| `npm run seed -- --limit 25` | Fetch 25 artworks, upload images, create/update documents |
+| `npm run seed -- --clear`    | Delete all `artwork` and `tag` documents first, then seed |
+
+The script **hard-refuses** to run when `NEXT_PUBLIC_SANITY_DATASET` is `production`, so a
+stray `--clear` cannot destroy real content. Re-running is safe: artwork is matched by
+slug and patched rather than duplicated.
+
 ## Commands
 
 | Command                 | What it does                                                    |
@@ -64,6 +83,21 @@ written as a bare template string. Generated result types are named
 
 `lib/sanity/sanity.types.ts` is generated — never hand-edit it. `studio/` is a separate
 npm package and is excluded from the root ESLint and Prettier runs.
+
+### What the coverage floor measures
+
+`npm run test:coverage` enforces 80% across statements, branches, functions, and lines.
+Three things are excluded from the measurement, because Vitest cannot see them and
+counting them would make the gate unreachable rather than strict:
+
+- `lib/sanity/sanity.types.ts` — generated
+- `app/**/page.tsx` and `app/layout.tsx` — server components that compose already-tested
+  pieces around a build-time fetch; verified by the Playwright suite
+- `scripts/seed-gallery.ts` — dev-only CLI; its pure logic lives in `scripts/metMuseum.ts`
+  and is fully covered there, leaving only network and upload plumbing that a mock could
+  not meaningfully test
+
+Everything else counts. Do not widen this list to make a failing run pass.
 
 ## Notes on tooling choices
 

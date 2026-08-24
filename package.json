@@ -12,7 +12,8 @@
     "test:e2e": "playwright test",
     "lint": "eslint",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "seed": "tsx --env-file=.env.local scripts/seed-gallery.ts"
   },
   "dependencies": {
     "@picocss/pico": "^2.1.1",
