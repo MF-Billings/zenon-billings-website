@@ -8,3 +8,6 @@ lib/sanity/sanity.types.ts
 # Prose documents — Prettier's table padding hurts readability here
 AGENTS.md
 docs/
+
+# Separate package with its own formatting conventions and build output
+studio/

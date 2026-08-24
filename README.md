@@ -47,6 +47,24 @@ The seed script refuses to run against `production` — see below.
 | `npm run format`        | Prettier, writing changes                                       |
 | `npm run format:check`  | Prettier, check only                                            |
 
+### Studio commands (run from `studio/`)
+
+| Command                   | What it does                                                             |
+| ------------------------- | ------------------------------------------------------------------------ |
+| `npm test`                | Vitest schema tests                                                      |
+| `npm run dev`             | Sanity Studio at http://localhost:3333                                   |
+| `npm run typegen`         | Regenerate `lib/sanity/sanity.types.ts` from the schema and GROQ queries |
+| `npx sanity deploy`       | Deploy the Studio to its hosted `*.sanity.studio` URL                    |
+| `npx sanity dataset list` | List datasets                                                            |
+
+Run `npm run typegen` after **any** schema or GROQ query change. TypeGen only discovers
+queries declared with `defineQuery`, so a missing result type usually means a query was
+written as a bare template string. Generated result types are named
+`<QUERY_CONST>_RESULT`, e.g. `ALL_ARTWORKS_QUERY_RESULT`.
+
+`lib/sanity/sanity.types.ts` is generated — never hand-edit it. `studio/` is a separate
+npm package and is excluded from the root ESLint and Prettier runs.
+
 ## Notes on tooling choices
 
 `@vitejs/plugin-react` is deliberately **not** installed. It exists to provide Fast Refresh

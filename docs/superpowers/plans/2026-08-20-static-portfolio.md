@@ -847,7 +847,9 @@ git commit -m "feat: add Sanity Studio with artwork, tag, and siteSettings schem
   - `urlFor(source: SanityImageSource): ImageUrlBuilder`
   - `buildSrcSet(source: SanityImageSource, widths: number[]): string`
   - `ALL_ARTWORKS_QUERY`, `ARTWORK_SLUGS_QUERY`, `ARTWORK_BY_SLUG_QUERY`, `FEATURED_ARTWORKS_QUERY`, `SITE_SETTINGS_QUERY`
-  - Generated types `ALL_ARTWORKS_QUERYResult`, `ARTWORK_BY_SLUG_QUERYResult`, `SITE_SETTINGS_QUERYResult`, etc., from `lib/sanity/sanity.types.ts`
+  - Generated types from `lib/sanity/sanity.types.ts`. **TypeGen names each result
+    `<QUERY_CONST>_RESULT`** — `ALL_ARTWORKS_QUERY_RESULT`, `ARTWORK_BY_SLUG_QUERY_RESULT`,
+    `SITE_SETTINGS_QUERY_RESULT` — not the PascalCase `…QueryResult` form.
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -957,11 +959,10 @@ export const client = createClient({
 `lib/sanity/imageUrl.ts`:
 
 ```ts
-import imageUrlBuilder from '@sanity/image-url'
-import type { SanityImageSource } from '@sanity/image-url/lib/types/types'
+import { createImageUrlBuilder, type SanityImageSource } from '@sanity/image-url'
 import { dataset, projectId } from './client'
 
-const builder = imageUrlBuilder({ projectId, dataset })
+const builder = createImageUrlBuilder({ projectId, dataset })
 
 export function urlFor(source: SanityImageSource) {
   return builder.image(source).auto('format').fit('max')
@@ -1071,7 +1072,7 @@ cd studio && npm run typegen && cd ..
 npx tsc --noEmit
 ```
 
-Expected: `lib/sanity/sanity.types.ts` exists and contains `ALL_ARTWORKS_QUERYResult`;
+Expected: `lib/sanity/sanity.types.ts` exists and contains `ALL_ARTWORKS_QUERY_RESULT`;
 `tsc` reports no errors. TypeGen only discovers queries declared with `defineQuery`, so a
 missing result type usually means a query was written as a bare template string.
 
@@ -1551,11 +1552,11 @@ Expected: FAIL — cannot resolve `@/components/SanityImage`.
 `lib/sanity/types.ts`:
 
 ```ts
-import type { ALL_ARTWORKS_QUERYResult, SITE_SETTINGS_QUERYResult } from './sanity.types'
+import type { ALL_ARTWORKS_QUERY_RESULT, SITE_SETTINGS_QUERY_RESULT } from './sanity.types'
 
-export type Artwork = ALL_ARTWORKS_QUERYResult[number]
+export type Artwork = ALL_ARTWORKS_QUERY_RESULT[number]
 export type ArtworkTag = NonNullable<Artwork['tags']>[number]
-export type SiteSettings = NonNullable<SITE_SETTINGS_QUERYResult>
+export type SiteSettings = NonNullable<SITE_SETTINGS_QUERY_RESULT>
 ```
 
 - [ ] **Step 4: Write the component**
@@ -1563,7 +1564,7 @@ export type SiteSettings = NonNullable<SITE_SETTINGS_QUERYResult>
 `components/SanityImage.tsx`:
 
 ```tsx
-import type { SanityImageSource } from '@sanity/image-url/lib/types/types'
+import type { SanityImageSource } from '@sanity/image-url'
 import { buildSrcSet, urlFor } from '@/lib/sanity/imageUrl'
 
 const DEFAULT_WIDTHS = [400, 800, 1200, 1600]
