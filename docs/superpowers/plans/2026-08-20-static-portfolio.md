@@ -19,7 +19,8 @@ Every task's requirements implicitly include this section.
 - **Test files mirror source structure:** `components/ArtworkCard.tsx` → `tests/components/ArtworkCard.test.tsx`.
 - **Sanity project ID:** `nlwxmhc1`
 - **Sanity datasets:** `production` (real content) and `development` (seeded sample data, used for all local work).
-- **Sanity API version:** `2024-10-01` — pinned deliberately; do not float it.
+- **Sanity API version:** `2026-08-24` — hard-coded to the date the integration was
+  written, per Sanity's guidance. Pin it; never float it.
 - **Next.js must stay in static export mode.** `output: 'export'`. No route handlers, no server actions, no middleware, no `next/image` optimization, no `dynamic = 'force-dynamic'`. If a task seems to need a server, it is the wrong approach.
 - **Styling:** Pico.css compiled through Next's built-in Sass support. All customization goes in `styles/style.scss`. No inline styles unless genuinely unavoidable.
 - **No inline styles, no CSS-in-JS, no Tailwind.**
@@ -834,7 +835,8 @@ git commit -m "feat: add Sanity Studio with artwork, tag, and siteSettings schem
 ## Task 3: Sanity client, GROQ queries, and generated types
 
 **Files:**
-- Create: `lib/sanity/client.ts`, `lib/sanity/imageUrl.ts`, `lib/sanity/queries.ts`, `sanity-typegen.json`
+- Create: `lib/sanity/client.ts`, `lib/sanity/imageUrl.ts`, `lib/sanity/queries.ts`
+- Modify: `studio/sanity.cli.ts` (typegen block), `studio/package.json` (typegen script)
 - Generate: `lib/sanity/sanity.types.ts`
 - Test: `tests/lib/sanity/imageUrl.test.ts`, `tests/lib/sanity/queries.test.ts`
 
@@ -939,7 +941,7 @@ import { createClient } from 'next-sanity'
 
 export const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID ?? 'nlwxmhc1'
 export const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET ?? 'development'
-export const apiVersion = '2024-10-01'
+export const apiVersion = '2026-08-24'
 
 export const client = createClient({
   projectId,
@@ -1024,32 +1026,57 @@ Expected: PASS (8 tests).
 
 - [ ] **Step 7: Wire up typegen**
 
-`sanity-typegen.json`:
+TypeGen is configured in the **Studio**, not the site. The Sanity CLI is a dependency of
+`studio/`, and this is the layout Sanity documents. Paths are relative to `studio/`, so
+they reach up into the site with `../`.
+
+Merge a `typegen` block into `studio/sanity.cli.ts`:
+
+```ts
+import {defineCliConfig} from 'sanity/cli'
+
+export default defineCliConfig({
+  api: {
+    projectId: 'nlwxmhc1',
+    dataset: 'production',
+  },
+  deployment: {
+    autoUpdates: true,
+  },
+  typegen: {
+    enabled: true,
+    path: '../{app,components,lib}/**/*.{ts,tsx}',
+    schema: 'schema.json',
+    generates: '../lib/sanity/sanity.types.ts',
+    overloadClientMethods: true,
+  },
+})
+```
+
+Add the script to `studio/package.json`:
 
 ```json
 {
-  "path": "./{app,components,lib}/**/*.{ts,tsx}",
-  "schema": "./schema.json",
-  "generates": "./lib/sanity/sanity.types.ts"
+  "typegen": "sanity schemas extract --force && sanity typegen generate"
 }
 ```
 
-Add to root `package.json` scripts:
-
-```json
-{
-  "typegen": "cd studio && npx sanity schema extract --path ../schema.json && cd .. && npx sanity typegen generate"
-}
-```
-
-Add `schema.json` to `.gitignore` — it is a build intermediate, regenerated from `studio/`.
+Add `studio/schema.json` to `.gitignore` — it is a build intermediate regenerated from
+the schema files.
 
 - [ ] **Step 8: Generate the types and verify they compile**
 
-Run: `npm run typegen && npx tsc --noEmit`
-Expected: `lib/sanity/sanity.types.ts` exists and contains `ALL_ARTWORKS_QUERYResult`; `tsc` reports no errors.
+```bash
+cd studio && npm run typegen && cd ..
+npx tsc --noEmit
+```
 
-Document `npm run typegen` in `README.md`, noting it must be re-run after any schema change.
+Expected: `lib/sanity/sanity.types.ts` exists and contains `ALL_ARTWORKS_QUERYResult`;
+`tsc` reports no errors. TypeGen only discovers queries declared with `defineQuery`, so a
+missing result type usually means a query was written as a bare template string.
+
+Document the command in `README.md`, noting it must be re-run after any schema **or**
+query change.
 
 - [ ] **Step 9: Commit**
 
@@ -1289,7 +1316,7 @@ The network and upload plumbing is not unit-tested — it is a thin shell over t
 `scripts/seed-gallery.ts`:
 
 ```ts
-import { createClient } from '@sanity/client'
+import { createClient } from 'next-sanity'
 import { assertSeedableDataset, toSeedArtwork, type MetObject, type SeedArtwork } from './metMuseum'
 
 const MET_API = 'https://collectionapi.metmuseum.org/public/collection/v1'
@@ -1297,6 +1324,7 @@ const SEARCH_TERM = 'landscape'
 
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID ?? 'nlwxmhc1'
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET ?? 'development'
+const apiVersion = '2026-08-24'
 const token = process.env.SANITY_WRITE_TOKEN
 
 function parseArgs(argv: string[]) {
@@ -1320,18 +1348,29 @@ async function fetchCandidates(limit: number): Promise<MetObject[]> {
   return objects
 }
 
-async function uploadTags(client: ReturnType<typeof createClient>, names: string[]) {
-  const references = new Map<string, string>()
-  for (const name of new Set(names)) {
-    const document = await client.createIfNotExists({
-      _id: `tag-${name}`,
+// Sanity's guidance is to let the Content Lake assign every _id. Re-runnability
+// therefore comes from looking a document up before writing it, not from deriving
+// a deterministic id from the slug or tag name.
+async function resolveTagIds(client: ReturnType<typeof createClient>, names: string[]) {
+  const wanted = [...new Set(names)]
+  const existing: { _id: string; name: string }[] = await client.fetch(
+    '*[_type == "tag" && name in $wanted]{ _id, name }',
+    { wanted },
+  )
+
+  const idsByName = new Map(existing.map((tag) => [tag.name, tag._id]))
+
+  for (const name of wanted) {
+    if (idsByName.has(name)) continue
+    const created = await client.create({
       _type: 'tag',
       name,
       slug: { _type: 'slug', current: name },
     })
-    references.set(name, document._id)
+    idsByName.set(name, created._id)
   }
-  return references
+
+  return idsByName
 }
 
 async function uploadArtwork(
@@ -1344,9 +1383,7 @@ async function uploadArtwork(
     filename: `${artwork.slug}.jpg`,
   })
 
-  await client.createOrReplace({
-    _id: `artwork-${artwork.slug}`,
-    _type: 'artwork',
+  const fields = {
     title: artwork.title,
     slug: { _type: 'slug', current: artwork.slug },
     description: artwork.description,
@@ -1361,7 +1398,19 @@ async function uploadArtwork(
       _key: name,
       _ref: tagIds.get(name),
     })),
-  })
+  }
+
+  const existingId: string | null = await client.fetch(
+    '*[_type == "artwork" && slug.current == $slug][0]._id',
+    { slug: artwork.slug },
+  )
+
+  if (existingId) {
+    await client.patch(existingId).set(fields).commit()
+    return
+  }
+
+  await client.create({ _type: 'artwork', ...fields })
 }
 
 async function main() {
@@ -1369,7 +1418,7 @@ async function main() {
   if (!token) throw new Error('SANITY_WRITE_TOKEN is required. Add it to .env.local.')
 
   const { limit, clear } = parseArgs(process.argv)
-  const client = createClient({ projectId, dataset, apiVersion: '2024-10-01', token, useCdn: false })
+  const client = createClient({ projectId, dataset, apiVersion, token, useCdn: false })
 
   if (clear) {
     console.log(`Deleting all artwork and tags in "${dataset}"...`)
@@ -1378,7 +1427,7 @@ async function main() {
 
   const candidates = await fetchCandidates(limit * 2)
   const artworks = candidates.map(toSeedArtwork).filter((a): a is SeedArtwork => a !== null).slice(0, limit)
-  const tagIds = await uploadTags(client, artworks.flatMap((a) => a.tagNames))
+  const tagIds = await resolveTagIds(client, artworks.flatMap((a) => a.tagNames))
 
   for (const artwork of artworks) {
     await uploadArtwork(client, artwork, tagIds)
@@ -2521,26 +2570,24 @@ git commit -m "feat: add home page with featured artwork"
 
 **Files:**
 - Create: `app/about/page.tsx`
-- Modify: `package.json` (add `@portabletext/react`)
+- Modify: none — `PortableText` comes from `next-sanity`, already installed
 - Test: covered by the E2E suite in Task 15 — pure composition, no branching logic beyond null guards.
 
 **Interfaces:**
 - Consumes: `SITE_SETTINGS_QUERY` (Task 3); `SanityImage` (Task 5).
 - Produces: the `/about` route. Bio content is editable in Sanity without a code change — preserving the original plan's "update text without touching code" property. Note that a static site still needs a rebuild to publish an edit; Task 15 documents the redeploy.
 
-- [ ] **Step 1: Install the Portable Text renderer**
+- [ ] **Step 1: Write the About page**
 
-```bash
-npm install @portabletext/react
-```
-
-- [ ] **Step 2: Write the About page**
+Do **not** install `@portabletext/react`. `next-sanity` re-exports `PortableText` (along
+with `createClient` and `defineQuery`) and ships that package transitively; installing it
+directly duplicates a dependency Sanity explicitly says to import from `next-sanity`.
 
 `app/about/page.tsx`:
 
 ```tsx
-import { PortableText } from '@portabletext/react'
 import type { Metadata } from 'next'
+import { PortableText } from 'next-sanity'
 import SanityImage from '@/components/SanityImage'
 import { client } from '@/lib/sanity/client'
 import { SITE_SETTINGS_QUERY } from '@/lib/sanity/queries'
@@ -2572,11 +2619,11 @@ export default async function AboutPage() {
 }
 ```
 
-- [ ] **Step 3: Fill in Site Settings**
+- [ ] **Step 2: Fill in Site Settings**
 
 In the Studio (`development` dataset), populate `artistName`, `tagline`, `bio`, and `contactEmail` so the page has real content.
 
-- [ ] **Step 4: Verify it builds and renders**
+- [ ] **Step 3: Verify it builds and renders**
 
 ```bash
 npm run build && npx serve out -l 4173
@@ -2584,7 +2631,7 @@ npm run build && npx serve out -l 4173
 
 Open http://localhost:4173/about/. Expected: the bio renders as paragraphs.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 4: Commit**
 
 ```bash
 npm run format && npm run lint && npm test
