@@ -43,3 +43,9 @@
 .artwork-tags mark {
   margin-right: 0.25rem;
 }
+
+.profile-image {
+  max-width: 18rem;
+  height: auto;
+  border-radius: var(--pico-border-radius);
+}
