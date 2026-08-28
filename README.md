@@ -210,8 +210,8 @@ rm -rf studio/node_modules/.sanity
 Verify both trees agree:
 
 ```bash
-find . -path '*/node_modules/sanity/package.json' \
-  -exec sh -c 'echo "$(node -p "require(\"./$1\").version")  $1"' _ {} \;
+npm ls sanity            # root tree
+cd studio && npm ls sanity
 ```
 
 The underlying cause is structural: Sanity's recommended monorepo puts the Studio and the
