@@ -2266,7 +2266,7 @@ git commit -m "feat: add gallery page with client-side filter and search"
 - Consumes: `ARTWORK_BY_SLUG_QUERY`, `ARTWORK_SLUGS_QUERY`, `SITE_SETTINGS_QUERY` (Task 3); `SanityImage` (Task 5); `Artwork`, `SiteSettings` (Task 5).
 - Produces: `buildArtworkJsonLd(artwork: Artwork, settings: SiteSettings | null, siteUrl: string): Record<string, unknown>` and the statically-generated `/artwork/[slug]/` route.
 
-**Note on `dimensions`:** Schema.org's `VisualArtwork` has no free-text size property, so `dimensions` is rendered on the page but deliberately omitted from the JSON-LD rather than forced into a mismatched field.
+**Note on `dimensions`:** modelled as a structured object (`width`, `height`, `unit`) and emitted as Schema.org `QuantitativeValue` with a UN/CEFACT `unitCode` (`CMT` for cm, `INH` for inches). The schema restricts units to those two so a `unitCode` can always be stated rather than free text. The Studio schema field is an object, not a string.
 
 - [ ] **Step 1: Write the failing test**
 
