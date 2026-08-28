@@ -23,6 +23,9 @@ export default function SanityImage({
   const fallbackWidth = widths[widths.length - 1]
 
   return (
+    // next/image needs a server to optimize; this site is a static export and
+    // Sanity's CDN does the resizing via the srcset above.
+    // eslint-disable-next-line @next/next/no-img-element
     <img
       src={urlFor(source).width(fallbackWidth).url()}
       srcSet={buildSrcSet(source, widths)}

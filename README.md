@@ -176,6 +176,50 @@ ls studio/node_modules/.sanity/vite/deps/ | wc -l     # expect several hundred
 find studio/node_modules/.sanity/vite/deps -size 0    # expect no output
 ```
 
+### Studio: "Duplicate instances of context ... incompatible versions"
+
+```text
+Duplicate instances of context "sanity/_singletons/context/active-workspace-matcher"
+with incompatible versions detected: Expected 6.10.1 but got 6.11.0
+```
+
+Two different versions of the `sanity` package exist in the repo and the Studio loaded
+both, so React sees two copies of the same context singleton.
+
+**Why it happens here.** `sanity` is a _peer dependency_ of `next-sanity`
+(`^5.29.0 || ^6.0.0`), which npm installs automatically — so a copy lands in the **root**
+`node_modules` for the site, while `studio/` installs its own. Because `studio/` sits
+inside the app's directory tree, Node resolution walks up and can reach the root copy.
+When the two versions differ, this error appears.
+
+**The fix in place:** the root `package.json` has an `overrides` entry pinning `sanity` to
+the version the Studio uses, so both trees resolve identically.
+
+```json
+"overrides": { "sanity": "6.11.0" }
+```
+
+**This must stay in lockstep.** When you upgrade `sanity` in `studio/package.json`, update
+the root override to match, then:
+
+```bash
+npm install
+rm -rf studio/node_modules/.sanity
+```
+
+Verify both trees agree:
+
+```bash
+find . -path '*/node_modules/sanity/package.json' \
+  -exec sh -c 'echo "$(node -p "require(\"./$1\").version")  $1"' _ {} \;
+```
+
+The underlying cause is structural: Sanity's recommended monorepo puts the Studio and the
+web app as _siblings_ under a root with no `node_modules`, which removes the walk-up
+entirely. This project has the app at the repository root instead, because the Next.js app
+existed first. The override handles it; the sibling layout would prevent it. See
+`docs/sanity_setup_deviations.md`.
+
 ## Notes on tooling choices
 
 `@vitejs/plugin-react` is deliberately **not** installed. It exists to provide Fast Refresh
