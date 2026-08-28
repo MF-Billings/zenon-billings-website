@@ -11,17 +11,31 @@
 ## 2. Directory Structure
 ```text
 zenon-billings/
-├── app/              # Next.js App Router: routes, layouts, pages
-├── components/       # Reusable UI components
-├── lib/              # Sanity client, query helpers, utilities
-├── public/           # Static assets
-├── styles/           # Global CSS/SCSS (Pico.css customizations)
-├── tests/            # Mirrors app/components structure
+├── web/              # Next.js app (its own package)
+│   ├── app/          # App Router: routes, layouts, pages
+│   ├── components/   # Reusable UI components
+│   ├── lib/          # Sanity client, query helpers, utilities
+│   ├── public/       # Static assets
+│   ├── scripts/      # Dev tooling (seed script)
+│   ├── styles/       # Global CSS/SCSS (Pico.css customizations)
+│   ├── tests/        # Mirrors app/components structure
+│   └── package.json
+├── studio/           # Sanity Studio (its own package)
+│   ├── schemaTypes/
+│   ├── sanity.config.ts
+│   ├── sanity.cli.ts
+│   └── package.json
+├── docs/
 ├── AGENTS.md
-├── execution_plan.md
-├── package.json
-└── package-lock.json
+├── README.md
+└── package.json      # scripts only — NO dependencies (see below)
 ```
+
+**The root must never gain dependencies.** `web/` and `studio/` are siblings so that
+neither can resolve into the other's `node_modules`. `sanity` is a peer dependency of
+`next-sanity`, so the site installs its own copy; if a shared `node_modules` existed at
+the root, the Studio could resolve that copy instead of its own and fail at runtime with
+"Duplicate instances of context". The root `package.json` holds delegating scripts only.
 
 ## 3. Tech Stack Specifics
 - **Content**: Sanity (headless CMS) — no app database; Sanity's Content Lake is the datastore.

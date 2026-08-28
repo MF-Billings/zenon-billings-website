@@ -1,50 +1,37 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
-/node_modules
-/.pnp
+# Dependencies
+node_modules/
+.pnp
 .pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
 
-# testing
-/coverage
+# Build output
+.next/
+out/
+build/
+dist/
+next-env.d.ts
+*.tsbuildinfo
 
-# next.js
-/.next/
-/out/
+# Test output
+coverage/
+playwright-report/
+test-results/
 
-# production
-/build
+# Sanity
+studio/schema.json
+studio/.sanity/
 
-# misc
+# Environment — the only secrets in this repo live here
+.env
+.env*.local
+!.env.example
+
+# Editor / OS
 .DS_Store
 *.pem
+.vercel
 
-# debug
+# Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
-
-# env files (can opt-in for committing if needed)
-.env*
-
-# vercel
-.vercel
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
-
-# project additions
-/out/
-/coverage/
-/playwright-report/
-/test-results/
-/schema.json
-!.env.example
-/studio/schema.json

@@ -243,7 +243,7 @@ export type AllSanitySchemaTypes =
   | SanityImageAsset
   | Geopoint
 
-// Source: ../lib/sanity/queries.ts
+// Source: ../web/lib/sanity/queries.ts
 // Variable: ALL_ARTWORKS_QUERY
 // Query: *[_type == "artwork" && defined(slug.current)]    | order(coalesce(yearCreated, 0) desc, _createdAt desc) {  _id,  title,  "slug": slug.current,  description,  medium,  image,  altText,  dimensions,  yearCreated,  isFeatured,  price,  "tags": tags[]->{ _id, name, "slug": slug.current, category }}
 export type ALL_ARTWORKS_QUERY_RESULT = Array<{
@@ -272,7 +272,7 @@ export type ALL_ARTWORKS_QUERY_RESULT = Array<{
   }> | null
 }>
 
-// Source: ../lib/sanity/queries.ts
+// Source: ../web/lib/sanity/queries.ts
 // Variable: FEATURED_ARTWORKS_QUERY
 // Query: *[_type == "artwork" && isFeatured == true && defined(slug.current)]    | order(coalesce(yearCreated, 0) desc, _createdAt desc)[0...6] {  _id,  title,  "slug": slug.current,  description,  medium,  image,  altText,  dimensions,  yearCreated,  isFeatured,  price,  "tags": tags[]->{ _id, name, "slug": slug.current, category }}
 export type FEATURED_ARTWORKS_QUERY_RESULT = Array<{
@@ -301,7 +301,7 @@ export type FEATURED_ARTWORKS_QUERY_RESULT = Array<{
   }> | null
 }>
 
-// Source: ../lib/sanity/queries.ts
+// Source: ../web/lib/sanity/queries.ts
 // Variable: ARTWORK_BY_SLUG_QUERY
 // Query: *[_type == "artwork" && slug.current == $slug][0] {  _id,  title,  "slug": slug.current,  description,  medium,  image,  altText,  dimensions,  yearCreated,  isFeatured,  price,  "tags": tags[]->{ _id, name, "slug": slug.current, category }}
 export type ARTWORK_BY_SLUG_QUERY_RESULT = {
@@ -330,14 +330,14 @@ export type ARTWORK_BY_SLUG_QUERY_RESULT = {
   }> | null
 } | null
 
-// Source: ../lib/sanity/queries.ts
+// Source: ../web/lib/sanity/queries.ts
 // Variable: ARTWORK_SLUGS_QUERY
 // Query: *[_type == "artwork" && defined(slug.current)]{ "slug": slug.current }
 export type ARTWORK_SLUGS_QUERY_RESULT = Array<{
   slug: string | null
 }>
 
-// Source: ../lib/sanity/queries.ts
+// Source: ../web/lib/sanity/queries.ts
 // Variable: SITE_SETTINGS_QUERY
 // Query: *[_id == "siteSettings"][0] {    artistName, tagline, bio, profileImage, contactEmail, priceCurrency  }
 export type SITE_SETTINGS_QUERY_RESULT =

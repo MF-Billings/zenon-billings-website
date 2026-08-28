@@ -11,14 +11,28 @@ only runtime network call is the contact form posting to a third-party endpoint.
 
 See `AGENTS.md` for project rules and `docs/execution_plan.md` for the architecture rationale.
 
+## Layout
+
+Two independent packages side by side. The repository root has **no dependencies** — that
+is deliberate, and `AGENTS.md` explains why.
+
+```text
+zenon-billings/
+├── web/       # the Next.js site
+├── studio/    # Sanity Studio
+└── docs/
+```
+
 ## Setup
 
 ```bash
-npm install
-cp .env.example .env.local   # then fill in the blanks
+npm --prefix web install
+npm --prefix studio install
+cp web/.env.example web/.env.local   # then fill in the blanks
 ```
 
-`.env.local` is gitignored and holds the only secret in the project, `SANITY_WRITE_TOKEN`.
+`web/.env.local` is gitignored and holds the only secret in the project,
+`SANITY_WRITE_TOKEN`.
 Everything else prefixed `NEXT_PUBLIC_` is public by design and ships in the client bundle.
 
 ## Datasets
@@ -36,11 +50,12 @@ The seed script refuses to run against `production` — see below.
 ## Seeding sample data
 
 The gallery's filter and search can't be judged against three hand-entered rows, so
-`scripts/seed-gallery.ts` pulls public-domain artwork from the Met Museum Open Access API
+`web/scripts/seed-gallery.ts` pulls public-domain artwork from the Met Museum Open Access API
 into the `development` dataset.
 
 First create a write token at [sanity.io/manage](https://www.sanity.io/manage) → project
-`nlwxmhc1` → API → Tokens → **Editor**, and put it in `.env.local` as `SANITY_WRITE_TOKEN`.
+`nlwxmhc1` → API → Tokens → **Editor**, and put it in `web/.env.local` as
+`SANITY_WRITE_TOKEN`.
 That is the only secret in the project; never commit it.
 
 | Command                      | What it does                                              |
@@ -53,6 +68,10 @@ stray `--clear` cannot destroy real content. Re-running is safe: artwork is matc
 slug and patched rather than duplicated.
 
 ## Commands
+
+Run these from `web/`, or from the repository root via the delegating scripts in the root
+`package.json` (`npm run dev`, `npm run build`, `npm test`, `npm run seed`,
+`npm run studio`, `npm run typegen`).
 
 | Command                 | What it does                                                    |
 | ----------------------- | --------------------------------------------------------------- |
@@ -68,14 +87,14 @@ slug and patched rather than duplicated.
 
 ### Studio commands (run from `studio/`)
 
-| Command                                                     | What it does                                                             |
-| ----------------------------------------------------------- | ------------------------------------------------------------------------ |
-| `npm test`                                                  | Vitest schema tests                                                      |
-| `npm run dev`                                               | Sanity Studio at http://localhost:3333                                   |
-| `npx sanity documents query '<groq>' --dataset development` | Query content from the terminal                                          |
-| `npm run typegen`                                           | Regenerate `lib/sanity/sanity.types.ts` from the schema and GROQ queries |
-| `npx sanity deploy`                                         | Deploy the Studio to its hosted `*.sanity.studio` URL                    |
-| `npx sanity dataset list`                                   | List datasets                                                            |
+| Command                                                     | What it does                                                                 |
+| ----------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `npm test`                                                  | Vitest schema tests                                                          |
+| `npm run dev`                                               | Sanity Studio at http://localhost:3333                                       |
+| `npx sanity documents query '<groq>' --dataset development` | Query content from the terminal                                              |
+| `npm run typegen`                                           | Regenerate `web/lib/sanity/sanity.types.ts` from the schema and GROQ queries |
+| `npx sanity deploy`                                         | Deploy the Studio to its hosted `*.sanity.studio` URL                        |
+| `npx sanity dataset list`                                   | List datasets                                                                |
 
 ### Viewing your content
 
@@ -106,16 +125,17 @@ queries declared with `defineQuery`, so a missing result type usually means a qu
 written as a bare template string. Generated result types are named
 `<QUERY_CONST>_RESULT`, e.g. `ALL_ARTWORKS_QUERY_RESULT`.
 
-`lib/sanity/sanity.types.ts` is generated — never hand-edit it. `studio/` is a separate
+`web/lib/sanity/sanity.types.ts` is generated — never hand-edit it. `studio/` is a separate
 npm package and is excluded from the root ESLint and Prettier runs.
 
 ### What the coverage floor measures
 
 `npm run test:coverage` enforces 80% across statements, branches, functions, and lines.
-Three things are excluded from the measurement, because Vitest cannot see them and
-counting them would make the gate unreachable rather than strict:
+Three things are excluded from the measurement (paths below are relative to `web/`),
+because Vitest cannot see them and counting them would make the gate unreachable rather
+than strict:
 
-- `lib/sanity/sanity.types.ts` — generated
+- `web/lib/sanity/sanity.types.ts` — generated
 - `app/**/page.tsx` and `app/layout.tsx` — server components that compose already-tested
   pieces around a build-time fetch; verified by the Playwright suite
 - `scripts/seed-gallery.ts` — dev-only CLI; its pure logic lives in `scripts/metMuseum.ts`
@@ -125,6 +145,87 @@ counting them would make the gate unreachable rather than strict:
 Everything else counts. Do not widen this list to make a failing run pass.
 
 ## Troubleshooting
+
+### Studio: "Failed to fetch dynamically imported module"
+
+```text
+Failed to fetch dynamically imported module:
+http://localhost:3333/node_modules/.sanity/vite/deps/refractor-<hash>.js?v=<id>
+```
+
+The Studio runs on Vite, which pre-bundles dependencies into
+`studio/node_modules/.sanity/vite/deps/` under content-hashed filenames. This error means
+something is serving HTML that references a chunk hash no longer on disk. It is **not** a
+missing dependency.
+
+Two causes, in order of likelihood:
+
+**1. More than one dev server is running.** All dev servers share that one cache
+directory. Starting a second one re-optimizes the cache and rewrites the hashes out from
+under the first, which then serves dead references. Reloading the browser cannot fix
+this — the stale mapping is server-side. Check first:
+
+```bash
+ss -ltnp | grep -E ':333[0-9]'          # what is listening
+ps -eo pid,etime,cmd | grep '[s]anity dev'
+```
+
+Kill every stray server, then verify the port is actually free — killing an `npx` wrapper
+does **not** stop the underlying node process:
+
+```bash
+kill -TERM <pid> && sleep 2 && ss -ltn | grep -E ':333[0-9]' || echo "port free"
+```
+
+**2. A browser tab predates a config change.** Editing `sanity.config.ts` makes Vite
+re-optimize and issue new hashes; a tab loaded before that still requests the old ones.
+Lazily-imported chunks such as `refractor` (used by Vision for syntax highlighting) fail
+only when something finally requests them, so the error can appear well after the change.
+Hard-reload the tab (`Ctrl+Shift+R`).
+
+If neither clears it, stop every server, rebuild the cache, and start exactly one:
+
+```bash
+cd studio && rm -rf node_modules/.sanity && npm run dev
+```
+
+To confirm the cache is healthy rather than guessing:
+
+```bash
+ls studio/node_modules/.sanity/vite/deps/ | wc -l     # expect several hundred
+find studio/node_modules/.sanity/vite/deps -size 0    # expect no output
+```
+
+### Studio: "Duplicate instances of context ... incompatible versions"
+
+```text
+Duplicate instances of context "sanity/_singletons/context/active-workspace-matcher"
+with incompatible versions detected
+```
+
+**This is prevented by the repository layout and should not occur.** If it does, something
+has reintroduced a shared `node_modules` above `web/` and `studio/`.
+
+`sanity` is a peer dependency of `next-sanity`, so the site installs its own copy. The
+Studio installs another. They only collide if one can _resolve_ the other's — which Node
+only does by walking **up** the directory tree. Keeping `web/` and `studio/` as siblings,
+with **no dependencies at the repository root**, makes that walk-up impossible.
+
+Diagnose by checking what the Studio actually resolves:
+
+```bash
+cd studio && node -e "console.log(require.resolve('sanity/package.json'))"
+```
+
+It must print a path inside `studio/node_modules`. If it prints anything else, find and
+remove the offending `node_modules`:
+
+```bash
+ls -d node_modules        # at the repository root: must NOT exist
+```
+
+Never fix this by adding a version `overrides` entry at the root — that reintroduces the
+shared tree this layout exists to avoid.
 
 ### Studio: "Failed to fetch dynamically imported module"
 

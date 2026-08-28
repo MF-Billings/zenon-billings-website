@@ -12,11 +12,15 @@ export default defineCliConfig({
      */
     autoUpdates: true,
   },
+  schemaExtraction: {
+    // Both workspaces register identical schema types; production is the canonical one.
+    workspace: 'production',
+  },
   typegen: {
-    // Paths are relative to studio/, so they reach up into the site with ../
-    path: '../{app,components,lib}/**/*.{ts,tsx}',
+    // Paths are relative to studio/; the site is the sibling web/ directory.
+    path: '../web/{app,components,lib}/**/*.{ts,tsx}',
     schema: 'schema.json',
-    generates: '../lib/sanity/sanity.types.ts',
+    generates: '../web/lib/sanity/sanity.types.ts',
     overloadClientMethods: true,
   },
 })

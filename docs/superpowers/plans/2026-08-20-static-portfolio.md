@@ -14,6 +14,11 @@
 
 Every task's requirements implicitly include this section.
 
+- **Repository layout is two sibling packages:** `web/` (the Next.js site) and `studio/`
+  (Sanity Studio), with **no dependencies at the repository root**. Every site path in
+  this plan — `app/`, `components/`, `lib/`, `styles/`, `tests/`, `scripts/` — is relative
+  to `web/`. Never add a root `package.json` dependency: a shared `node_modules` above the
+  two packages lets the Studio resolve the site's copy of `sanity` and breaks it at runtime.
 - **TDD is mandatory.** RED (failing test) → GREEN (minimal code) → REFACTOR. Never write implementation before a failing test.
 - **Test coverage floor: 80%.** Enforced by `vitest --coverage` thresholds. The measured
   surface excludes generated types, the server-component pages (`app/**/page.tsx`,
@@ -41,6 +46,9 @@ Every task's requirements implicitly include this section.
 
 ```text
 zenon-billings/
+├── package.json                        # scripts only, NO dependencies
+├── studio/                             # Sanity Studio (own package)
+└── web/                                # Next.js site (own package)
 ├── app/
 │   ├── layout.tsx                      # root layout, imports styles/style.scss
 │   ├── page.tsx                        # Home — featured artwork
