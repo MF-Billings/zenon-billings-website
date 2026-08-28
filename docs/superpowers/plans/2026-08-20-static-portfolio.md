@@ -769,46 +769,63 @@ export const schemaTypes = [artwork, tag, siteSettings]
 Run: `cd studio && npm test`
 Expected: PASS (8 tests).
 
-- [ ] **Step 8: Register the schemas and make siteSettings a singleton**
+- [ ] **Step 8: Register the schemas, add both datasets, and make siteSettings a singleton**
+
+The Studio needs **one workspace per dataset**. With a single hardcoded `dataset`, the
+Studio can only ever show `production`, while all local development happens against
+`development` — the Studio then looks permanently empty and the seeded data is
+unreachable without editing config.
 
 Replace `studio/sanity.config.ts`:
 
 ```ts
-import { defineConfig } from 'sanity'
-import { structureTool } from 'sanity/structure'
-import { visionTool } from '@sanity/vision'
-import { schemaTypes } from './schemaTypes'
+import {defineConfig, type WorkspaceOptions} from 'sanity'
+import {structureTool} from 'sanity/structure'
+import {visionTool} from '@sanity/vision'
+import {schemaTypes} from './schemaTypes'
 
 const SINGLETON_ID = 'siteSettings'
 
-export default defineConfig({
-  name: 'default',
-  title: 'Zenon Billings',
-  projectId: 'nlwxmhc1',
-  dataset: 'production',
-  plugins: [
-    structureTool({
-      structure: (S) =>
-        S.list()
-          .title('Content')
-          .items([
-            S.listItem()
-              .title('Site Settings')
-              .id(SINGLETON_ID)
-              .child(S.document().schemaType('siteSettings').documentId(SINGLETON_ID)),
-            S.divider(),
-            S.documentTypeListItem('artwork').title('Artwork'),
-            S.documentTypeListItem('tag').title('Tags'),
-          ]),
-    }),
-    visionTool(),
-  ],
-  schema: {
-    types: schemaTypes,
-    // Site Settings is reachable only through its fixed-ID list item above.
-    templates: (templates) => templates.filter(({ schemaType }) => schemaType !== 'siteSettings'),
-  },
-})
+/**
+ * One workspace per dataset so the Studio can switch between the artist's real
+ * content and the seeded sample data without editing config or rebuilding.
+ */
+function workspaceForDataset(dataset: string, title: string): WorkspaceOptions {
+  return {
+    name: dataset,
+    title,
+    basePath: `/${dataset}`,
+    projectId: 'nlwxmhc1',
+    dataset,
+    plugins: [
+      structureTool({
+        structure: (S) =>
+          S.list()
+            .title('Content')
+            .items([
+              S.listItem()
+                .title('Site Settings')
+                .id(SINGLETON_ID)
+                .child(S.document().schemaType('siteSettings').documentId(SINGLETON_ID)),
+              S.divider(),
+              S.documentTypeListItem('artwork').title('Artwork'),
+              S.documentTypeListItem('tag').title('Tags'),
+            ]),
+      }),
+      visionTool({defaultDataset: dataset}),
+    ],
+    schema: {
+      types: schemaTypes,
+      // Site Settings is reachable only through its fixed-ID list item above.
+      templates: (templates) => templates.filter(({schemaType}) => schemaType !== 'siteSettings'),
+    },
+  }
+}
+
+export default defineConfig([
+  workspaceForDataset('production', 'Production'),
+  workspaceForDataset('development', 'Development (sample data)'),
+])
 ```
 
 - [ ] **Step 9: Verify the Studio runs and the schema is valid**

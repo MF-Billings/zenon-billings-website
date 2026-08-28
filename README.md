@@ -68,13 +68,38 @@ slug and patched rather than duplicated.
 
 ### Studio commands (run from `studio/`)
 
-| Command                   | What it does                                                             |
-| ------------------------- | ------------------------------------------------------------------------ |
-| `npm test`                | Vitest schema tests                                                      |
-| `npm run dev`             | Sanity Studio at http://localhost:3333                                   |
-| `npm run typegen`         | Regenerate `lib/sanity/sanity.types.ts` from the schema and GROQ queries |
-| `npx sanity deploy`       | Deploy the Studio to its hosted `*.sanity.studio` URL                    |
-| `npx sanity dataset list` | List datasets                                                            |
+| Command                                                     | What it does                                                             |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------ |
+| `npm test`                                                  | Vitest schema tests                                                      |
+| `npm run dev`                                               | Sanity Studio at http://localhost:3333                                   |
+| `npx sanity documents query '<groq>' --dataset development` | Query content from the terminal                                          |
+| `npm run typegen`                                           | Regenerate `lib/sanity/sanity.types.ts` from the schema and GROQ queries |
+| `npx sanity deploy`                                         | Deploy the Studio to its hosted `*.sanity.studio` URL                    |
+| `npx sanity dataset list`                                   | List datasets                                                            |
+
+### Viewing your content
+
+The Studio exposes **one workspace per dataset**, so you can switch between them in the UI
+rather than editing config:
+
+| Workspace                 | URL            | Contents                  |
+| ------------------------- | -------------- | ------------------------- |
+| Production                | `/production`  | the artist's real artwork |
+| Development (sample data) | `/development` | seeded Met Museum content |
+
+```bash
+cd studio && npm run dev     # then pick a workspace at http://localhost:3333
+```
+
+The workspace switcher is in the top-left. **If the Studio looks empty, you are almost
+certainly in the wrong workspace** — seeded data lives only in `development`.
+
+To read content without opening the Studio at all:
+
+```bash
+cd studio
+npx sanity documents query '*[_type == "artwork"][0...5]{title, medium}' --dataset development
+```
 
 Run `npm run typegen` after **any** schema or GROQ query change. TypeGen only discovers
 queries declared with `defineQuery`, so a missing result type usually means a query was
