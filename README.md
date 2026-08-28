@@ -133,21 +133,41 @@ Failed to fetch dynamically imported module:
 http://localhost:3333/node_modules/.sanity/vite/deps/refractor-<hash>.js?v=<id>
 ```
 
-An open browser tab is holding a stale module graph. The Studio runs on Vite, which
-pre-bundles dependencies into `studio/node_modules/.sanity/vite/deps/` under
-content-hashed filenames. Editing `sanity.config.ts` — adding a workspace or plugin —
-makes Vite re-optimize and issue **new** hashes, but a tab loaded before that still
-requests the old ones. Lazily-imported chunks such as `refractor` (used by Vision for
-syntax highlighting) fail only when something finally requests them, so the error can
-appear well after the change.
+The Studio runs on Vite, which pre-bundles dependencies into
+`studio/node_modules/.sanity/vite/deps/` under content-hashed filenames. This error means
+something is serving HTML that references a chunk hash no longer on disk. It is **not** a
+missing dependency.
 
-It is not a missing dependency. Fix in order:
+Two causes, in order of likelihood:
 
-1. Hard-reload the tab (`Ctrl+Shift+R`).
-2. If it persists, stop the dev server and rebuild the cache:
-   ```bash
-   cd studio && rm -rf node_modules/.sanity && npm run dev
-   ```
+**1. More than one dev server is running.** All dev servers share that one cache
+directory. Starting a second one re-optimizes the cache and rewrites the hashes out from
+under the first, which then serves dead references. Reloading the browser cannot fix
+this — the stale mapping is server-side. Check first:
+
+```bash
+ss -ltnp | grep -E ':333[0-9]'          # what is listening
+ps -eo pid,etime,cmd | grep '[s]anity dev'
+```
+
+Kill every stray server, then verify the port is actually free — killing an `npx` wrapper
+does **not** stop the underlying node process:
+
+```bash
+kill -TERM <pid> && sleep 2 && ss -ltn | grep -E ':333[0-9]' || echo "port free"
+```
+
+**2. A browser tab predates a config change.** Editing `sanity.config.ts` makes Vite
+re-optimize and issue new hashes; a tab loaded before that still requests the old ones.
+Lazily-imported chunks such as `refractor` (used by Vision for syntax highlighting) fail
+only when something finally requests them, so the error can appear well after the change.
+Hard-reload the tab (`Ctrl+Shift+R`).
+
+If neither clears it, stop every server, rebuild the cache, and start exactly one:
+
+```bash
+cd studio && rm -rf node_modules/.sanity && npm run dev
+```
 
 To confirm the cache is healthy rather than guessing:
 
