@@ -196,6 +196,35 @@ ls studio/node_modules/.sanity/vite/deps/ | wc -l     # expect several hundred
 find studio/node_modules/.sanity/vite/deps -size 0    # expect no output
 ```
 
+### Studio: "Invalid property value ... must be of type object"
+
+Shown on a field after its schema type changed, with the old value quoted underneath.
+Sanity stores **drafts as separate documents**, so anything you had open in the Studio
+keeps the old shape even after a script migrates the published documents.
+
+Finding them is the trap: a client with no token reads the `published` perspective and
+**silently omits drafts**, so a query will report zero affected documents while the Studio
+is visibly showing the error. Always investigate with a token and `perspective: 'raw'`:
+
+```ts
+createClient({
+  projectId,
+  dataset,
+  apiVersion,
+  useCdn: false,
+  token: process.env.SANITY_WRITE_TOKEN,
+  perspective: "raw", // without this, drafts are invisible
+});
+```
+
+Then patch the stale documents in place rather than deleting them — a draft can hold
+unpublished edits (a flag you toggled, a field you filled in) that deleting would discard.
+Migrate the changed field only, leave the rest untouched, and publish from the Studio
+afterwards.
+
+**Do not use the "Reset value" button the Studio offers** unless you want that field
+cleared: it discards the old value instead of converting it.
+
 ### Studio: "Duplicate instances of context ... incompatible versions"
 
 ```text
