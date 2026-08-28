@@ -124,6 +124,38 @@ counting them would make the gate unreachable rather than strict:
 
 Everything else counts. Do not widen this list to make a failing run pass.
 
+## Troubleshooting
+
+### Studio: "Failed to fetch dynamically imported module"
+
+```text
+Failed to fetch dynamically imported module:
+http://localhost:3333/node_modules/.sanity/vite/deps/refractor-<hash>.js?v=<id>
+```
+
+An open browser tab is holding a stale module graph. The Studio runs on Vite, which
+pre-bundles dependencies into `studio/node_modules/.sanity/vite/deps/` under
+content-hashed filenames. Editing `sanity.config.ts` — adding a workspace or plugin —
+makes Vite re-optimize and issue **new** hashes, but a tab loaded before that still
+requests the old ones. Lazily-imported chunks such as `refractor` (used by Vision for
+syntax highlighting) fail only when something finally requests them, so the error can
+appear well after the change.
+
+It is not a missing dependency. Fix in order:
+
+1. Hard-reload the tab (`Ctrl+Shift+R`).
+2. If it persists, stop the dev server and rebuild the cache:
+   ```bash
+   cd studio && rm -rf node_modules/.sanity && npm run dev
+   ```
+
+To confirm the cache is healthy rather than guessing:
+
+```bash
+ls studio/node_modules/.sanity/vite/deps/ | wc -l     # expect several hundred
+find studio/node_modules/.sanity/vite/deps -size 0    # expect no output
+```
+
 ## Notes on tooling choices
 
 `@vitejs/plugin-react` is deliberately **not** installed. It exists to provide Fast Refresh
