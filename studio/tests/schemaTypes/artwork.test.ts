@@ -3,7 +3,13 @@ import artwork from '../../schemaTypes/artwork'
 
 // defineType returns a per-field discriminated union. These tests inspect the
 // definitions structurally, so they read them through a plain shape instead.
-type InspectableField = {name: string; options?: Record<string, unknown>; of?: unknown}
+type InspectableField = {
+  name: string
+  type?: string
+  options?: Record<string, unknown>
+  of?: unknown
+  fields?: InspectableField[]
+}
 const fields = artwork.fields as unknown as InspectableField[]
 
 const fieldNames = () => fields.map((field) => field.name)
@@ -39,6 +45,20 @@ describe('artwork schema', () => {
 
   it('derives the slug from the title', () => {
     expect(fieldNamed('slug')?.options).toMatchObject({source: 'title'})
+  })
+
+  it('models dimensions as structured width, height, and unit', () => {
+    const dimensions = fieldNamed('dimensions')
+    expect(dimensions?.type).toBe('object')
+
+    expect(dimensions?.fields?.map((field) => field.name)).toEqual(
+      expect.arrayContaining(['width', 'height', 'unit']),
+    )
+  })
+
+  it('offers only units that map to a Schema.org unitCode', () => {
+    const unit = fieldNamed('dimensions')?.fields?.find((field) => field.name === 'unit')
+    expect(unit?.options?.list).toEqual(['cm', 'in'])
   })
 
   it('references tag documents', () => {

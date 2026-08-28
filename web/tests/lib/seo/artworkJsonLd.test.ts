@@ -9,7 +9,7 @@ const artwork = {
   medium: 'watercolour',
   image: { _type: 'image', asset: { _ref: 'image-abc-1200x900-jpg', _type: 'reference' } },
   altText: 'Trees in autumn',
-  dimensions: '30 x 40 cm',
+  dimensions: { width: 30, height: 40, unit: 'cm' },
   yearCreated: 2024,
   isFeatured: false,
   price: null,
@@ -68,6 +68,52 @@ describe('buildArtworkJsonLd', () => {
   it('falls back to the site name when settings have no artist name', () => {
     const jsonLd = buildArtworkJsonLd(artwork, null, 'https://example.com')
     expect(jsonLd.creator).toEqual({ '@type': 'Person', name: 'Zenon Billings' })
+  })
+
+  it('states width and height as QuantitativeValue with a UN/CEFACT unitCode', () => {
+    const jsonLd = buildArtworkJsonLd(artwork, settings, 'https://example.com')
+
+    expect(jsonLd.width).toEqual({
+      '@type': 'QuantitativeValue',
+      value: 30,
+      unitCode: 'CMT',
+      unitText: 'cm',
+    })
+    expect(jsonLd.height).toEqual({
+      '@type': 'QuantitativeValue',
+      value: 40,
+      unitCode: 'CMT',
+      unitText: 'cm',
+    })
+  })
+
+  it('maps inches to the INH unit code', () => {
+    const inInches = {
+      ...artwork,
+      dimensions: { width: 12, height: 16, unit: 'in' },
+    } as unknown as Artwork
+    const jsonLd = buildArtworkJsonLd(inInches, settings, 'https://example.com')
+
+    expect(jsonLd.width).toMatchObject({ unitCode: 'INH', unitText: 'in' })
+  })
+
+  it('omits both when the artwork has no dimensions', () => {
+    const noDimensions = { ...artwork, dimensions: null } as unknown as Artwork
+    const jsonLd = buildArtworkJsonLd(noDimensions, settings, 'https://example.com')
+
+    expect(jsonLd.width).toBeUndefined()
+    expect(jsonLd.height).toBeUndefined()
+  })
+
+  it('omits a missing side rather than emitting a null measurement', () => {
+    const heightOnly = {
+      ...artwork,
+      dimensions: { width: null, height: 40, unit: 'cm' },
+    } as unknown as Artwork
+    const jsonLd = buildArtworkJsonLd(heightOnly, settings, 'https://example.com')
+
+    expect(jsonLd.width).toBeUndefined()
+    expect(jsonLd.height).toMatchObject({ value: 40 })
   })
 
   it('emits valid JSON that a crawler can parse', () => {

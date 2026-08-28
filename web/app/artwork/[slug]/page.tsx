@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import SanityImage from '@/components/SanityImage'
+import { formatDimensions } from '@/lib/artwork/formatDimensions'
 import { client } from '@/lib/sanity/client'
 import { urlFor } from '@/lib/sanity/imageUrl'
 import {
@@ -53,6 +54,8 @@ export default async function ArtworkPage({ params }: ArtworkPageProps) {
 
   if (!artwork) notFound()
 
+  const dimensions = formatDimensions(artwork.dimensions ?? null)
+
   return (
     <article>
       <script
@@ -80,10 +83,10 @@ export default async function ArtworkPage({ params }: ArtworkPageProps) {
             <dd>{artwork.medium}</dd>
           </>
         )}
-        {artwork.dimensions && (
+        {dimensions && (
           <>
             <dt>Dimensions</dt>
-            <dd>{artwork.dimensions}</dd>
+            <dd>{dimensions}</dd>
           </>
         )}
         {artwork.yearCreated && (

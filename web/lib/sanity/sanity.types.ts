@@ -117,7 +117,11 @@ export type Artwork = {
     _type: 'image'
   }
   altText?: string
-  dimensions?: string
+  dimensions?: {
+    width?: number
+    height?: number
+    unit?: 'cm' | 'in'
+  }
   yearCreated?: number
   isFeatured?: boolean
   price?: number
@@ -245,7 +249,7 @@ export type AllSanitySchemaTypes =
 
 // Source: ../web/lib/sanity/queries.ts
 // Variable: ALL_ARTWORKS_QUERY
-// Query: *[_type == "artwork" && defined(slug.current)]    | order(coalesce(yearCreated, 0) desc, _createdAt desc) {  _id,  title,  "slug": slug.current,  description,  medium,  image,  altText,  dimensions,  yearCreated,  isFeatured,  price,  "tags": tags[]->{ _id, name, "slug": slug.current, category }}
+// Query: *[_type == "artwork" && defined(slug.current)]    | order(coalesce(yearCreated, 0) desc, _createdAt desc) {  _id,  title,  "slug": slug.current,  description,  medium,  image,  altText,  dimensions { width, height, unit },  yearCreated,  isFeatured,  price,  "tags": tags[]->{ _id, name, "slug": slug.current, category }}
 export type ALL_ARTWORKS_QUERY_RESULT = Array<{
   _id: string
   title: string | null
@@ -260,7 +264,11 @@ export type ALL_ARTWORKS_QUERY_RESULT = Array<{
     _type: 'image'
   } | null
   altText: string | null
-  dimensions: string | null
+  dimensions: {
+    width: number | null
+    height: number | null
+    unit: 'cm' | 'in' | null
+  } | null
   yearCreated: number | null
   isFeatured: boolean | null
   price: number | null
@@ -274,7 +282,7 @@ export type ALL_ARTWORKS_QUERY_RESULT = Array<{
 
 // Source: ../web/lib/sanity/queries.ts
 // Variable: FEATURED_ARTWORKS_QUERY
-// Query: *[_type == "artwork" && isFeatured == true && defined(slug.current)]    | order(coalesce(yearCreated, 0) desc, _createdAt desc)[0...6] {  _id,  title,  "slug": slug.current,  description,  medium,  image,  altText,  dimensions,  yearCreated,  isFeatured,  price,  "tags": tags[]->{ _id, name, "slug": slug.current, category }}
+// Query: *[_type == "artwork" && isFeatured == true && defined(slug.current)]    | order(coalesce(yearCreated, 0) desc, _createdAt desc)[0...6] {  _id,  title,  "slug": slug.current,  description,  medium,  image,  altText,  dimensions { width, height, unit },  yearCreated,  isFeatured,  price,  "tags": tags[]->{ _id, name, "slug": slug.current, category }}
 export type FEATURED_ARTWORKS_QUERY_RESULT = Array<{
   _id: string
   title: string | null
@@ -289,7 +297,11 @@ export type FEATURED_ARTWORKS_QUERY_RESULT = Array<{
     _type: 'image'
   } | null
   altText: string | null
-  dimensions: string | null
+  dimensions: {
+    width: number | null
+    height: number | null
+    unit: 'cm' | 'in' | null
+  } | null
   yearCreated: number | null
   isFeatured: boolean | null
   price: number | null
@@ -303,7 +315,7 @@ export type FEATURED_ARTWORKS_QUERY_RESULT = Array<{
 
 // Source: ../web/lib/sanity/queries.ts
 // Variable: ARTWORK_BY_SLUG_QUERY
-// Query: *[_type == "artwork" && slug.current == $slug][0] {  _id,  title,  "slug": slug.current,  description,  medium,  image,  altText,  dimensions,  yearCreated,  isFeatured,  price,  "tags": tags[]->{ _id, name, "slug": slug.current, category }}
+// Query: *[_type == "artwork" && slug.current == $slug][0] {  _id,  title,  "slug": slug.current,  description,  medium,  image,  altText,  dimensions { width, height, unit },  yearCreated,  isFeatured,  price,  "tags": tags[]->{ _id, name, "slug": slug.current, category }}
 export type ARTWORK_BY_SLUG_QUERY_RESULT = {
   _id: string
   title: string | null
@@ -318,7 +330,11 @@ export type ARTWORK_BY_SLUG_QUERY_RESULT = {
     _type: 'image'
   } | null
   altText: string | null
-  dimensions: string | null
+  dimensions: {
+    width: number | null
+    height: number | null
+    unit: 'cm' | 'in' | null
+  } | null
   yearCreated: number | null
   isFeatured: boolean | null
   price: number | null
@@ -386,9 +402,9 @@ export type SITE_SETTINGS_QUERY_RESULT =
 import '@sanity/client'
 declare module '@sanity/client' {
   interface SanityQueries {
-    '\n  *[_type == "artwork" && defined(slug.current)]\n    | order(coalesce(yearCreated, 0) desc, _createdAt desc) {\n  _id,\n  title,\n  "slug": slug.current,\n  description,\n  medium,\n  image,\n  altText,\n  dimensions,\n  yearCreated,\n  isFeatured,\n  price,\n  "tags": tags[]->{ _id, name, "slug": slug.current, category }\n}\n': ALL_ARTWORKS_QUERY_RESULT
-    '\n  *[_type == "artwork" && isFeatured == true && defined(slug.current)]\n    | order(coalesce(yearCreated, 0) desc, _createdAt desc)[0...6] {\n  _id,\n  title,\n  "slug": slug.current,\n  description,\n  medium,\n  image,\n  altText,\n  dimensions,\n  yearCreated,\n  isFeatured,\n  price,\n  "tags": tags[]->{ _id, name, "slug": slug.current, category }\n}\n': FEATURED_ARTWORKS_QUERY_RESULT
-    '\n  *[_type == "artwork" && slug.current == $slug][0] {\n  _id,\n  title,\n  "slug": slug.current,\n  description,\n  medium,\n  image,\n  altText,\n  dimensions,\n  yearCreated,\n  isFeatured,\n  price,\n  "tags": tags[]->{ _id, name, "slug": slug.current, category }\n}\n': ARTWORK_BY_SLUG_QUERY_RESULT
+    '\n  *[_type == "artwork" && defined(slug.current)]\n    | order(coalesce(yearCreated, 0) desc, _createdAt desc) {\n  _id,\n  title,\n  "slug": slug.current,\n  description,\n  medium,\n  image,\n  altText,\n  dimensions { width, height, unit },\n  yearCreated,\n  isFeatured,\n  price,\n  "tags": tags[]->{ _id, name, "slug": slug.current, category }\n}\n': ALL_ARTWORKS_QUERY_RESULT
+    '\n  *[_type == "artwork" && isFeatured == true && defined(slug.current)]\n    | order(coalesce(yearCreated, 0) desc, _createdAt desc)[0...6] {\n  _id,\n  title,\n  "slug": slug.current,\n  description,\n  medium,\n  image,\n  altText,\n  dimensions { width, height, unit },\n  yearCreated,\n  isFeatured,\n  price,\n  "tags": tags[]->{ _id, name, "slug": slug.current, category }\n}\n': FEATURED_ARTWORKS_QUERY_RESULT
+    '\n  *[_type == "artwork" && slug.current == $slug][0] {\n  _id,\n  title,\n  "slug": slug.current,\n  description,\n  medium,\n  image,\n  altText,\n  dimensions { width, height, unit },\n  yearCreated,\n  isFeatured,\n  price,\n  "tags": tags[]->{ _id, name, "slug": slug.current, category }\n}\n': ARTWORK_BY_SLUG_QUERY_RESULT
     '\n  *[_type == "artwork" && defined(slug.current)]{ "slug": slug.current }\n': ARTWORK_SLUGS_QUERY_RESULT
     '\n  *[_id == "siteSettings"][0] {\n    artistName, tagline, bio, profileImage, contactEmail, priceCurrency\n  }\n': SITE_SETTINGS_QUERY_RESULT
   }

@@ -8,7 +8,7 @@ const ARTWORK_FIELDS = `
   medium,
   image,
   altText,
-  dimensions,
+  dimensions { width, height, unit },
   yearCreated,
   isFeatured,
   price,

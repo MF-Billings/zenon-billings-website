@@ -41,8 +41,20 @@ export default defineType({
     }),
     defineField({
       name: 'dimensions',
-      type: 'string',
-      description: 'Physical size as displayed, e.g. 30 x 40 cm.',
+      type: 'object',
+      description: 'Physical size of the work.',
+      fields: [
+        defineField({name: 'width', type: 'number', validation: (rule) => rule.positive()}),
+        defineField({name: 'height', type: 'number', validation: (rule) => rule.positive()}),
+        defineField({
+          name: 'unit',
+          type: 'string',
+          // Kept to units with a UN/CEFACT code, so the JSON-LD QuantitativeValue
+          // can always state a unitCode rather than free text.
+          options: {list: ['cm', 'in']},
+          initialValue: 'cm',
+        }),
+      ],
     }),
     defineField({name: 'yearCreated', type: 'number'}),
     defineField({name: 'isFeatured', type: 'boolean', initialValue: false}),

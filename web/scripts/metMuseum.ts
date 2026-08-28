@@ -12,11 +12,17 @@ export type MetObject = {
   tags: { term: string }[] | null
 }
 
+export type SeedDimensions = {
+  width: number
+  height: number
+  unit: 'cm' | 'in'
+}
+
 export type SeedArtwork = {
   title: string
   slug: string
   medium: ArtworkMedium
-  dimensions: string
+  dimensions: SeedDimensions | null
   yearCreated: number | undefined
   altText: string
   description: string
@@ -40,6 +46,31 @@ export function toYearCreated(objectDate: string): number | undefined {
   return year ? Number(year[0]) : undefined
 }
 
+// The Met writes dimensions as free text, e.g.
+//   "Sheet: 12 1/2 x 19 in. (31.8 x 48.3 cm)"
+// Metric values in parentheses are preferred: they are plain decimals, whereas the
+// imperial figures carry vulgar fractions. The Met lists height before width.
+const METRIC_PAIR = /\(\s*([\d.]+)\s*[x\u00d7]\s*([\d.]+)\s*cm\s*\)/i
+const ANY_PAIR = /([\d.]+)\s*[x\u00d7]\s*([\d.]+)\s*(cm|in)\b/i
+
+export function toDimensions(metDimensions: string): SeedDimensions | null {
+  const metric = metDimensions.match(METRIC_PAIR)
+  if (metric) {
+    return { height: Number(metric[1]), width: Number(metric[2]), unit: 'cm' }
+  }
+
+  const any = metDimensions.match(ANY_PAIR)
+  if (any) {
+    return {
+      height: Number(any[1]),
+      width: Number(any[2]),
+      unit: any[3].toLowerCase() as 'cm' | 'in',
+    }
+  }
+
+  return null
+}
+
 export function toSlug(title: string, objectId: number): string {
   const base = title
     .toLowerCase()
@@ -59,7 +90,7 @@ export function toSeedArtwork(object: MetObject): SeedArtwork | null {
     title: object.title,
     slug: toSlug(object.title, object.objectID),
     medium: toMedium(object.medium),
-    dimensions: object.dimensions,
+    dimensions: toDimensions(object.dimensions),
     yearCreated: toYearCreated(object.objectDate),
     altText: `${object.title} by ${object.artistDisplayName || 'an unknown artist'}`,
     description: `${object.medium}. Sample data from the Met Museum Open Access collection.`,

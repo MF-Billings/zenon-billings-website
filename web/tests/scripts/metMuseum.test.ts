@@ -1,5 +1,6 @@
 import {
   assertSeedableDataset,
+  toDimensions,
   toMedium,
   toSeedArtwork,
   toSlug,
@@ -55,7 +56,7 @@ describe('toSeedArtwork', () => {
     title: 'Autumn Landscape',
     objectDate: 'ca. 1885',
     medium: 'Watercolor on paper',
-    dimensions: '30 x 40 cm',
+    dimensions: '30 × 40 cm',
     primaryImage: 'https://images.metmuseum.org/full/42.jpg',
     artistDisplayName: 'Anonymous',
     isPublicDomain: true,
@@ -67,7 +68,7 @@ describe('toSeedArtwork', () => {
       title: 'Autumn Landscape',
       slug: 'autumn-landscape-42',
       medium: 'watercolour',
-      dimensions: '30 x 40 cm',
+      dimensions: { width: 40, height: 30, unit: 'cm' },
       yearCreated: 1885,
       altText: 'Autumn Landscape by Anonymous',
       description: 'Watercolor on paper. Sample data from the Met Museum Open Access collection.',
@@ -100,6 +101,39 @@ describe('toSeedArtwork', () => {
 
   it('tolerates a null tags array', () => {
     expect(toSeedArtwork({ ...metObject, tags: null })?.tagNames).toEqual([])
+  })
+})
+
+describe('toDimensions', () => {
+  it('reads a plain centimetre pair', () => {
+    // The Met lists height first, so the leading number is the height.
+    expect(toDimensions('30 × 40 cm')).toEqual({ height: 30, width: 40, unit: 'cm' })
+  })
+
+  it('prefers the parenthesised metric values over imperial with fractions', () => {
+    expect(toDimensions('Sheet: 12 1/2 × 19 in. (31.8 × 48.3 cm)')).toEqual({
+      height: 31.8,
+      width: 48.3,
+      unit: 'cm',
+    })
+  })
+
+  it('accepts a plain letter x as the separator', () => {
+    expect(toDimensions('20 x 25 cm')).toEqual({ height: 20, width: 25, unit: 'cm' })
+  })
+
+  it('falls back to inches when no metric value is given', () => {
+    expect(toDimensions('9 × 13 in.')).toEqual({ height: 9, width: 13, unit: 'in' })
+  })
+
+  it('ignores a label before the measurement', () => {
+    expect(toDimensions('Image: 15.2 × 20.3 cm')).toEqual({ height: 15.2, width: 20.3, unit: 'cm' })
+  })
+
+  it('returns null when nothing parseable is present', () => {
+    expect(toDimensions('')).toBeNull()
+    expect(toDimensions('irregular')).toBeNull()
+    expect(toDimensions('overall dimensions unknown')).toBeNull()
   })
 })
 

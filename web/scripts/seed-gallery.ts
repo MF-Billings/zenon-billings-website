@@ -67,15 +67,16 @@ async function uploadArtwork(
     filename: `${artwork.slug}.jpg`,
   })
 
-  const fields = {
+  // Fields the Met is the source of truth for. Deliberately excludes isFeatured:
+  // that is an editorial decision made in the Studio, and re-running the seed
+  // must never reset the artist's curation.
+  const sourceFields = {
     title: artwork.title,
     slug: { _type: 'slug', current: artwork.slug },
     description: artwork.description,
     medium: artwork.medium,
     altText: artwork.altText,
-    dimensions: artwork.dimensions,
     yearCreated: artwork.yearCreated,
-    isFeatured: false,
     image: { _type: 'image', asset: { _type: 'reference', _ref: asset._id } },
     tags: artwork.tagNames.map((name) => ({
       _type: 'reference',
@@ -90,11 +91,21 @@ async function uploadArtwork(
   )
 
   if (existingId) {
-    await client.patch(existingId).set(fields).commit()
+    const patch = client.patch(existingId).set(sourceFields)
+    await (
+      artwork.dimensions
+        ? patch.set({ dimensions: artwork.dimensions })
+        : patch.unset(['dimensions'])
+    ).commit()
     return
   }
 
-  await client.create({ _type: 'artwork', ...fields })
+  await client.create({
+    _type: 'artwork',
+    ...sourceFields,
+    ...(artwork.dimensions ? { dimensions: artwork.dimensions } : {}),
+    isFeatured: false,
+  })
 }
 
 async function main() {

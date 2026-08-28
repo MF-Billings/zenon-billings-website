@@ -4,11 +4,28 @@ import type { Artwork, SiteSettings } from '@/lib/sanity/types'
 const DEFAULT_ARTIST_NAME = 'Zenon Billings'
 const DEFAULT_CURRENCY = 'USD'
 
-/**
- * Schema.org VisualArtwork. `dimensions` is deliberately absent: the vocabulary
- * has no free-text size property, and forcing it into width/height would misstate
- * a value like "30 x 40 cm". It is rendered on the page instead.
- */
+type DimensionUnit = NonNullable<NonNullable<Artwork['dimensions']>['unit']>
+
+// UN/CEFACT Common Codes, which is what Schema.org's unitCode expects.
+const UNIT_CODES: Record<DimensionUnit, string> = {
+  cm: 'CMT',
+  in: 'INH',
+}
+
+function toQuantitativeValue(
+  value: number | undefined | null,
+  unit: DimensionUnit | undefined | null,
+) {
+  if (typeof value !== 'number' || !unit) return undefined
+
+  return {
+    '@type': 'QuantitativeValue',
+    value,
+    unitCode: UNIT_CODES[unit],
+    unitText: unit,
+  }
+}
+
 export function buildArtworkJsonLd(
   artwork: Artwork,
   settings: SiteSettings | null,
@@ -23,6 +40,8 @@ export function buildArtworkJsonLd(
       }
     : undefined
 
+  const unit = artwork.dimensions?.unit
+
   return {
     '@context': 'https://schema.org',
     '@type': 'VisualArtwork',
@@ -33,6 +52,8 @@ export function buildArtworkJsonLd(
     url: `${siteUrl}/artwork/${artwork.slug}`,
     image: artwork.image ? urlFor(artwork.image).width(1200).url() : undefined,
     creator: { '@type': 'Person', name: settings?.artistName ?? DEFAULT_ARTIST_NAME },
+    width: toQuantitativeValue(artwork.dimensions?.width, unit),
+    height: toQuantitativeValue(artwork.dimensions?.height, unit),
     offers,
   }
 }
