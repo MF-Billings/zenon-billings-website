@@ -21,3 +21,21 @@
     margin-bottom: 0;
   }
 }
+
+.tag-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--pico-spacing);
+
+  label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    white-space: nowrap;
+  }
+}
+
+.result-count {
+  color: var(--pico-muted-color);
+  font-size: 0.875em;
+}
