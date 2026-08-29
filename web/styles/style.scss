@@ -49,3 +49,12 @@
   height: auto;
   border-radius: var(--pico-border-radius);
 }
+
+// Off-screen rather than display:none — some bots skip hidden inputs.
+.visually-hidden {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
