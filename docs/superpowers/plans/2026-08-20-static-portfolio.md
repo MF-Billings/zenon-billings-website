@@ -3222,10 +3222,16 @@ Expected: FAIL — cannot resolve `@/app/sitemap`.
 
 `app/sitemap.ts`:
 
+**`export const dynamic = 'force-static'` is required.** Without it, `output: 'export'`
+fails the build with *"export const dynamic … not configured on route"* — Next cannot
+prove the route is static and refuses to collect its page data.
+
 ```ts
 import type { MetadataRoute } from 'next'
 import { client } from '@/lib/sanity/client'
 import { ARTWORK_SLUGS_QUERY } from '@/lib/sanity/queries'
+
+export const dynamic = 'force-static'
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
 
@@ -3257,8 +3263,14 @@ Expected: PASS (3 tests).
 
 `app/robots.ts`:
 
+**`export const dynamic = 'force-static'` is required.** Without it, `output: 'export'`
+fails the build with *"export const dynamic … not configured on route"* — Next cannot
+prove the route is static and refuses to collect its page data.
+
 ```ts
 import type { MetadataRoute } from 'next'
+
+export const dynamic = 'force-static'
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
 

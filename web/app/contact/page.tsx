@@ -5,7 +5,7 @@ import { SITE_SETTINGS_QUERY } from '@/lib/sanity/queries'
 
 export const metadata: Metadata = {
   title: 'Contact',
-  description: 'Get in touch about a piece, a commission, or an exhibition.',
+  description: 'Get in touch about a piece.',
 }
 
 export default async function ContactPage() {
@@ -14,7 +14,6 @@ export default async function ContactPage() {
   return (
     <>
       <h1>Contact</h1>
-      <p>Questions about a piece, a commission, or an exhibition are all welcome.</p>
 
       <ContactForm />
 

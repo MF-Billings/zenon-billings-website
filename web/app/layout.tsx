@@ -4,8 +4,18 @@ import SiteFooter from '@/components/SiteFooter'
 import '@/styles/style.scss'
 
 export const metadata: Metadata = {
-  title: 'Zenon Billings',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'),
+  title: {
+    default: 'Zenon Billings',
+    template: '%s | Zenon Billings',
+  },
   description: 'Watercolour, drawing, and photography by Zenon Billings.',
+  openGraph: {
+    type: 'website',
+    siteName: 'Zenon Billings',
+    locale: 'en_US',
+  },
+  twitter: { card: 'summary_large_image' },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
