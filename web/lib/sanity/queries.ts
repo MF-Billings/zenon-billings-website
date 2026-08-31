@@ -35,6 +35,6 @@ export const ARTWORK_SLUGS_QUERY = defineQuery(`
 
 export const SITE_SETTINGS_QUERY = defineQuery(`
   *[_id == "siteSettings"][0] {
-    artistName, tagline, bio, profileImage, contactEmail, priceCurrency
+    artistName, tagline, bio, profileImage, publicContactAlias, priceCurrency
   }
 `)

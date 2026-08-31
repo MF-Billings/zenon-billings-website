@@ -55,7 +55,7 @@ export type SiteSettings = {
     crop?: SanityImageCrop
     _type: 'image'
   }
-  contactEmail?: string
+  publicContactAlias?: string
   priceCurrency?: string
 }
 
@@ -355,14 +355,14 @@ export type ARTWORK_SLUGS_QUERY_RESULT = Array<{
 
 // Source: ../web/lib/sanity/queries.ts
 // Variable: SITE_SETTINGS_QUERY
-// Query: *[_id == "siteSettings"][0] {    artistName, tagline, bio, profileImage, contactEmail, priceCurrency  }
+// Query: *[_id == "siteSettings"][0] {    artistName, tagline, bio, profileImage, publicContactAlias, priceCurrency  }
 export type SITE_SETTINGS_QUERY_RESULT =
   | {
       artistName: null
       tagline: null
       bio: null
       profileImage: null
-      contactEmail: null
+      publicContactAlias: null
       priceCurrency: null
     }
   | {
@@ -393,7 +393,7 @@ export type SITE_SETTINGS_QUERY_RESULT =
         crop?: SanityImageCrop
         _type: 'image'
       } | null
-      contactEmail: string | null
+      publicContactAlias: string | null
       priceCurrency: string | null
     }
   | null
@@ -406,6 +406,6 @@ declare module '@sanity/client' {
     '\n  *[_type == "artwork" && isFeatured == true && defined(slug.current)]\n    | order(coalesce(yearCreated, 0) desc, _createdAt desc)[0...6] {\n  _id,\n  title,\n  "slug": slug.current,\n  description,\n  medium,\n  image,\n  altText,\n  dimensions { width, height, unit },\n  yearCreated,\n  isFeatured,\n  price,\n  "tags": tags[]->{ _id, name, "slug": slug.current, category }\n}\n': FEATURED_ARTWORKS_QUERY_RESULT
     '\n  *[_type == "artwork" && slug.current == $slug][0] {\n  _id,\n  title,\n  "slug": slug.current,\n  description,\n  medium,\n  image,\n  altText,\n  dimensions { width, height, unit },\n  yearCreated,\n  isFeatured,\n  price,\n  "tags": tags[]->{ _id, name, "slug": slug.current, category }\n}\n': ARTWORK_BY_SLUG_QUERY_RESULT
     '\n  *[_type == "artwork" && defined(slug.current)]{ "slug": slug.current }\n': ARTWORK_SLUGS_QUERY_RESULT
-    '\n  *[_id == "siteSettings"][0] {\n    artistName, tagline, bio, profileImage, contactEmail, priceCurrency\n  }\n': SITE_SETTINGS_QUERY_RESULT
+    '\n  *[_id == "siteSettings"][0] {\n    artistName, tagline, bio, profileImage, publicContactAlias, priceCurrency\n  }\n': SITE_SETTINGS_QUERY_RESULT
   }
 }

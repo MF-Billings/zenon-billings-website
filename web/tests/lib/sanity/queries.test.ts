@@ -32,4 +32,9 @@ describe('GROQ queries', () => {
   it('reads the site settings singleton by its fixed id', () => {
     expect(SITE_SETTINGS_QUERY).toContain('_id == "siteSettings"')
   })
+
+  it('publishes only the disposable contact alias, never a personal inbox field', () => {
+    expect(SITE_SETTINGS_QUERY).toContain('publicContactAlias')
+    expect(SITE_SETTINGS_QUERY).not.toContain('contactEmail')
+  })
 })

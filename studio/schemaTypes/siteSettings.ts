@@ -9,7 +9,15 @@ export default defineType({
     defineField({name: 'tagline', type: 'string'}),
     defineField({name: 'bio', type: 'array', of: [{type: 'block'}]}),
     defineField({name: 'profileImage', type: 'image', options: {hotspot: true}}),
-    defineField({name: 'contactEmail', type: 'string', validation: (rule) => rule.email()}),
+    defineField({
+      name: 'publicContactAlias',
+      title: 'Public contact alias',
+      type: 'string',
+      description:
+        'Published on the contact page in plain sight, so scrapers will find it. Use a ' +
+        'forwarding alias you can delete and replace — never a personal inbox.',
+      validation: (rule) => rule.email(),
+    }),
     defineField({
       name: 'priceCurrency',
       type: 'string',
