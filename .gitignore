@@ -35,3 +35,12 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+
+# Working notes and scratch docs are personal, not project documentation.
+# Everything directly under docs/ is ignored; the project documents below are
+# re-included explicitly. Add a new project doc here to track it — otherwise it
+# stays local, which is the point.
+docs/*
+!docs/execution_plan.md
+!docs/sanity_setup_deviations.md
+!docs/superpowers/
