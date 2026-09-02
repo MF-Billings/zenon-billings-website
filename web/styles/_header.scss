@@ -18,6 +18,13 @@
   letter-spacing: -0.01em;
   text-decoration: none;
   color: var(--ink-primary);
+
+  // Shares --ink-primary with body text, so hover/focus are the only cues
+  // that this is a link rather than a heading.
+  &:hover,
+  &:focus-visible {
+    color: var(--pigment-indigo);
+  }
 }
 
 .site-header__links {
@@ -34,7 +41,9 @@
     text-decoration: none;
     color: var(--ink-muted);
 
-    &:hover {
+    // Neither rule inherits a verified focus ring from Pico, so state it explicitly.
+    &:hover,
+    &:focus-visible {
       color: var(--pigment-indigo);
     }
   }

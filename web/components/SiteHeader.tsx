@@ -8,7 +8,8 @@ export default function SiteHeader() {
         <Link href="/" className="site-header__wordmark lowercase-chrome">
           Zenon Billings
         </Link>
-        <ul className="site-header__links">
+        {/* list-style: none suppresses list semantics in WebKit/VoiceOver without this */}
+        <ul className="site-header__links" role="list">
           <li>
             <Link href="/gallery" className="lowercase-chrome">
               Gallery
