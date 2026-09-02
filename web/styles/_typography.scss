@@ -7,7 +7,8 @@ body {
 
 h1,
 h2,
-h3 {
+h3,
+h4 {
   font-family: var(--font-display), system-ui, sans-serif;
   font-variation-settings: 'wdth' 125;
   line-height: 1.05;
@@ -26,6 +27,15 @@ h2 {
 
 h3 {
   font-size: 1.125rem;
+  font-weight: 500;
+  font-variation-settings: 'wdth' 110;
+}
+
+// The Sanity bio field's block-content style list includes h4; without this,
+// an h4 in the artist's biography would fall through to Inter at a Pico
+// heading colour mid-page.
+h4 {
+  font-size: 1rem;
   font-weight: 500;
   font-variation-settings: 'wdth' 110;
 }

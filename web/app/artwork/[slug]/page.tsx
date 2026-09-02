@@ -85,7 +85,7 @@ export default async function ArtworkPage({ params }: ArtworkPageProps) {
         <h1>{artwork.title}</h1>
         <StudioLabel artwork={artwork} />
         {artwork.description && <p>{artwork.description}</p>}
-        <p className="artwork-detail__medium">
+        <p>
           <MediumChip medium={artwork.medium} />
         </p>
         {artwork.tags && artwork.tags.length > 0 && (

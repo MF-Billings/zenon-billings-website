@@ -13,9 +13,9 @@ export default async function HomePage() {
 
   return (
     <>
-      <section className="hero paper-sheet--deckle">
+      <section className="hero">
         <WashBloom pigment="watercolour" className="hero__bloom" />
-        <hgroup className="hero__group">
+        <hgroup>
           <h1 className="hero__wordmark lowercase-chrome">
             {settings?.artistName ?? 'Zenon Billings'}
           </h1>
@@ -33,7 +33,7 @@ export default async function HomePage() {
       </section>
 
       <p className="home-cta">
-        <Link href="/gallery" role="button" className="lowercase-chrome">
+        <Link href="/gallery" role="button" className="button-pigment lowercase-chrome">
           View the full gallery
         </Link>
       </p>
