@@ -41,3 +41,88 @@
 .artwork-card__title {
   margin: 0.75rem 0 0.25rem;
 }
+
+.artwork-detail {
+  display: grid;
+  gap: var(--space-sheet);
+  padding-block: var(--space-sheet) var(--space-band);
+}
+
+@media (min-width: 900px) {
+  .artwork-detail {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    gap: var(--space-band);
+  }
+}
+
+.artwork-detail__plate {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.artwork-detail__bloom {
+  top: -10%;
+  left: -12%;
+  width: 70%;
+  height: 120%;
+}
+
+.artwork-detail__mount {
+  display: grid;
+  place-items: center;
+}
+
+.artwork-detail__image {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.artwork-detail__placard {
+  h1 {
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    margin-top: 1rem;
+  }
+}
+
+// Keeps the metadata alongside the reader while a tall painting scrolls past.
+// CSS only — no scroll listener, no JavaScript.
+@media (min-width: 900px) {
+  .artwork-detail__placard {
+    position: sticky;
+    top: 2rem;
+    align-self: start;
+  }
+}
+
+.medium-chip {
+  display: inline-block;
+  padding: 0.25rem 0.7rem;
+  border: 1px solid currentcolor;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: var(--medium-other);
+
+  &[data-pigment='watercolour'] {
+    color: var(--medium-watercolour);
+  }
+
+  &[data-pigment='drawing'] {
+    color: var(--medium-drawing);
+  }
+
+  &[data-pigment='photography'] {
+    color: var(--medium-photography);
+  }
+}
+
+.artwork-tags mark {
+  margin-right: 0.25rem;
+  background: color-mix(in srgb, var(--pigment-raw-umber) 18%, transparent);
+  color: var(--ink-primary);
+}

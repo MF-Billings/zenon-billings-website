@@ -13,7 +13,7 @@ export default async function GalleryPage() {
 
   return (
     <>
-      <h1>Gallery</h1>
+      <h1 className="lowercase-chrome">Gallery</h1>
       <GalleryBrowser artworks={artworks} />
     </>
   )

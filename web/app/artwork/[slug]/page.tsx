@@ -1,7 +1,10 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import MediumChip from '@/components/MediumChip'
 import SanityImage from '@/components/SanityImage'
-import { formatDimensions } from '@/lib/artwork/formatDimensions'
+import StudioLabel from '@/components/StudioLabel'
+import WashBloom from '@/components/WashBloom'
+import { pigmentForMedium } from '@/lib/artwork/pigmentForMedium'
 import { client } from '@/lib/sanity/client'
 import { urlFor } from '@/lib/sanity/imageUrl'
 import {
@@ -54,10 +57,8 @@ export default async function ArtworkPage({ params }: ArtworkPageProps) {
 
   if (!artwork) notFound()
 
-  const dimensions = formatDimensions(artwork.dimensions ?? null)
-
   return (
-    <article>
+    <article className="artwork-detail">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -65,47 +66,36 @@ export default async function ArtworkPage({ params }: ArtworkPageProps) {
         }}
       />
 
-      {artwork.image && (
-        <SanityImage
-          source={artwork.image}
-          alt={artwork.altText ?? artwork.title ?? ''}
-          sizes="(max-width: 1024px) 100vw, 60vw"
-          priority
-        />
-      )}
-
-      <h1>{artwork.title}</h1>
-
-      <dl>
-        {artwork.medium && (
-          <>
-            <dt>Medium</dt>
-            <dd>{artwork.medium}</dd>
-          </>
+      <div className="artwork-detail__plate">
+        <WashBloom pigment={pigmentForMedium(artwork.medium)} className="artwork-detail__bloom" />
+        {artwork.image && (
+          <div className="paper-sheet artwork-detail__mount">
+            <SanityImage
+              source={artwork.image}
+              alt={artwork.altText ?? artwork.title ?? ''}
+              sizes="(max-width: 1024px) 100vw, 60vw"
+              priority
+              className="artwork-detail__image"
+            />
+          </div>
         )}
-        {dimensions && (
-          <>
-            <dt>Dimensions</dt>
-            <dd>{dimensions}</dd>
-          </>
-        )}
-        {artwork.yearCreated && (
-          <>
-            <dt>Year</dt>
-            <dd>{artwork.yearCreated}</dd>
-          </>
-        )}
-      </dl>
+      </div>
 
-      {artwork.description && <p>{artwork.description}</p>}
-
-      {artwork.tags && artwork.tags.length > 0 && (
-        <p className="artwork-tags">
-          {artwork.tags.map((tag) => (
-            <mark key={tag._id}>{tag.name}</mark>
-          ))}
+      <div className="artwork-detail__placard">
+        <h1>{artwork.title}</h1>
+        <StudioLabel artwork={artwork} />
+        {artwork.description && <p>{artwork.description}</p>}
+        <p className="artwork-detail__medium">
+          <MediumChip medium={artwork.medium} />
         </p>
-      )}
+        {artwork.tags && artwork.tags.length > 0 && (
+          <p className="artwork-tags">
+            {artwork.tags.map((tag) => (
+              <mark key={tag._id}>{tag.name}</mark>
+            ))}
+          </p>
+        )}
+      </div>
     </article>
   )
 }
