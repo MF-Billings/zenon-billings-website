@@ -1,0 +1,96 @@
+.paper-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+// The paper tooth. A tiled turbulence map as a data URI: no network request,
+// one composited layer, and the single change that stops the page reading as #fff.
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.5;
+  mix-blend-mode: multiply;
+  background-color: var(--paper-cold-press);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='t'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23t)' opacity='0.35'/%3E%3C/svg%3E");
+}
+
+body {
+  background-color: var(--paper-cold-press);
+}
+
+.paper-sheet {
+  background: var(--paper-sheet-surface);
+  padding: var(--space-sheet);
+  box-shadow:
+    0 1px 2px rgb(42 49 56 / 6%),
+    0 8px 24px rgb(42 49 56 / 8%);
+}
+
+.paper-sheet--deckle {
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='1200' preserveAspectRatio='none'%3E%3Cpath d='M0 0h1200v1188c-120 10-180-6-300 2s-180 12-300 4-180-14-300-6-180 10-300 2z' fill='%23fff'/%3E%3C/svg%3E");
+  mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+}
+
+.wash-bloom {
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.14;
+  color: var(--medium-other);
+
+  &[data-pigment='watercolour'] {
+    color: var(--medium-watercolour);
+  }
+
+  &[data-pigment='drawing'] {
+    color: var(--medium-drawing);
+  }
+
+  &[data-pigment='photography'] {
+    color: var(--medium-photography);
+  }
+}
+
+.ink-rule {
+  display: block;
+  width: 100%;
+  height: 8px;
+  color: var(--pigment-payne-grey);
+  opacity: 0.55;
+}
+
+// Off-screen rather than display:none — some bots skip hidden inputs, and a
+// display:none checkbox is unreachable by keyboard.
+.visually-hidden {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+// Texture is the first thing to go when someone has asked for more contrast.
+@media (prefers-contrast: more) {
+  body::before {
+    display: none;
+  }
+
+  .wash-bloom {
+    display: none;
+  }
+}

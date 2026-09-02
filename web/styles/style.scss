@@ -8,6 +8,7 @@
 // Project customizations live below this line. Never edit Pico's source.
 @use 'tokens';
 @use 'typography';
+@use 'materials';
 
 .artwork-grid {
   display: grid;
@@ -55,13 +56,4 @@
   max-width: 18rem;
   height: auto;
   border-radius: var(--pico-border-radius);
-}
-
-// Off-screen rather than display:none — some bots skip hidden inputs.
-.visually-hidden {
-  position: absolute;
-  left: -9999px;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
 }
