@@ -6,23 +6,44 @@ import type { Artwork } from '@/lib/sanity/types'
 type StudioLabelProps = {
   artwork: Pick<Artwork, 'yearCreated' | 'medium' | 'dimensions'>
   className?: string
+  // Opt-in only: the gallery card renders this same component per tile, where a
+  // "Year: … Medium: … Dimensions: …" prefix on every card would be repetitive
+  // noise for screen reader users. The detail page is a single museum-placard
+  // line, where the medium in particular is otherwise ambiguous, so it opts in.
+  withFieldNames?: boolean
 }
 
-export default function StudioLabel({ artwork, className }: StudioLabelProps) {
+// A field name rendered as a sibling before the value, not inside it, so the
+// medium's own span keeps holding only the medium text (existing tests query
+// it by that text and then assert its data-pigment attribute).
+function FieldName({ children }: { children: string }) {
+  return <span className="visually-hidden">{children}</span>
+}
+
+export default function StudioLabel({ artwork, className, withFieldNames }: StudioLabelProps) {
   const dimensions = formatDimensions(artwork.dimensions ?? null)
 
   const parts = [
-    artwork.yearCreated ? <span key="year">{artwork.yearCreated}</span> : null,
-    artwork.medium ? (
-      <span
-        key="medium"
-        className="studio-label__medium"
-        data-pigment={pigmentForMedium(artwork.medium)}
-      >
-        {artwork.medium}
-      </span>
+    artwork.yearCreated ? (
+      <Fragment key="year">
+        {withFieldNames && <FieldName>Year:</FieldName>}
+        <span>{artwork.yearCreated}</span>
+      </Fragment>
     ) : null,
-    dimensions ? <span key="dimensions">{dimensions}</span> : null,
+    artwork.medium ? (
+      <Fragment key="medium">
+        {withFieldNames && <FieldName>Medium:</FieldName>}
+        <span className="studio-label__medium" data-pigment={pigmentForMedium(artwork.medium)}>
+          {artwork.medium}
+        </span>
+      </Fragment>
+    ) : null,
+    dimensions ? (
+      <Fragment key="dimensions">
+        {withFieldNames && <FieldName>Dimensions:</FieldName>}
+        <span>{dimensions}</span>
+      </Fragment>
+    ) : null,
   ].filter((part): part is ReactElement => part !== null)
 
   if (parts.length === 0) return null
