@@ -1,0 +1,48 @@
+.field-ruled {
+  display: block;
+  width: 100%;
+  max-width: 32rem;
+  margin-top: 0.35rem;
+  padding: 0.4rem 0;
+  border: 0;
+  border-bottom: 1px solid var(--pigment-payne-grey);
+  border-radius: 0;
+  background: transparent;
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 1rem;
+  color: var(--ink-primary);
+
+  &:focus {
+    outline: 0;
+    border-bottom-width: 2px;
+    border-bottom-color: var(--pigment-indigo);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--pigment-indigo);
+    outline-offset: 4px;
+  }
+}
+
+.button-pigment {
+  display: inline-block;
+  padding: 0.6rem 1.4rem;
+  border: 0;
+  border-radius: 2px;
+  background: var(--pigment-indigo);
+  color: var(--paper-cold-press);
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--pigment-payne-grey);
+  }
+
+  &[disabled] {
+    opacity: 0.6;
+    cursor: default;
+  }
+}

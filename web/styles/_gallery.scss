@@ -30,3 +30,60 @@
     margin-block-start: var(--space-sheet);
   }
 }
+
+.gallery-filters {
+  display: block;
+  margin-bottom: var(--space-band);
+}
+
+.tag-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  border: 0;
+  padding: 0;
+  margin: 1rem 0;
+}
+
+.tag-chip {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  padding: 0.3rem 0.85rem;
+  border: 1px solid var(--pigment-payne-grey);
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  color: var(--pigment-payne-grey);
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease;
+
+  &:has(:checked) {
+    background: var(--pigment-payne-grey);
+    color: var(--paper-cold-press);
+  }
+
+  // The input is off-screen, so its focus ring has to be drawn on the chip the
+  // visitor can actually see.
+  &:has(:focus-visible) {
+    outline: 2px solid var(--pigment-indigo);
+    outline-offset: 2px;
+  }
+}
+
+// Without :has(), a chip could never show its checked state. Showing the native
+// checkbox is worse-looking and entirely usable, which is the right trade.
+@supports not (selector(:has(*))) {
+  .tag-chip .visually-hidden {
+    position: static;
+    width: auto;
+    height: auto;
+    margin-right: 0.4rem;
+  }
+}
+
+.result-count {
+  margin-top: 1rem;
+}

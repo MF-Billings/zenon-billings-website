@@ -76,4 +76,13 @@ describe('GalleryBrowser', () => {
     await userEvent.type(screen.getByRole('searchbox', { name: /search/i }), 'river')
     expect(screen.getByRole('status')).toHaveTextContent('1 of 2')
   })
+
+  it('keeps every tag reachable as a real checkbox after the chip restyle', async () => {
+    render(<GalleryBrowser artworks={artworks} />)
+    const tag = screen.getByRole('checkbox', { name: 'portrait' })
+
+    expect(tag).not.toBeChecked()
+    await userEvent.click(tag)
+    expect(tag).toBeChecked()
+  })
 })

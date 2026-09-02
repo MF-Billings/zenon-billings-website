@@ -21,11 +21,14 @@ export default function GalleryBrowser({ artworks }: { artworks: Artwork[] }) {
 
   return (
     <>
-      <search>
-        <label htmlFor="artwork-search">Search artwork</label>
+      <search className="gallery-filters">
+        <label htmlFor="artwork-search" className="studio-label">
+          Search artwork
+        </label>
         <input
           id="artwork-search"
           type="search"
+          className="field-ruled"
           placeholder="Title or tag"
           value={filter.searchTerm}
           onChange={(event) =>
@@ -35,11 +38,12 @@ export default function GalleryBrowser({ artworks }: { artworks: Artwork[] }) {
 
         {tags.length > 0 && (
           <fieldset className="tag-filter">
-            <legend>Filter by tag</legend>
+            <legend className="studio-label">Filter by tag</legend>
             {tags.map((tag) => (
-              <label key={tag.slug}>
+              <label key={tag.slug} className="tag-chip">
                 <input
                   type="checkbox"
+                  className="visually-hidden"
                   checked={filter.tagSlugs.includes(tag.slug!)}
                   onChange={() => toggleTag(tag.slug!)}
                 />
@@ -49,7 +53,7 @@ export default function GalleryBrowser({ artworks }: { artworks: Artwork[] }) {
           </fieldset>
         )}
 
-        <p role="status" className="result-count">
+        <p role="status" className="studio-label result-count">
           Showing {visible.length} of {artworks.length}
         </p>
       </search>
