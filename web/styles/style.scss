@@ -1,4 +1,9 @@
-@use 'pico';
+@use 'pico' with (
+  $modules: (
+    'components/card': false,
+    'components/nav': false,
+  )
+);
 
 // Project customizations live below this line. Never edit Pico's source.
 @use 'tokens';
