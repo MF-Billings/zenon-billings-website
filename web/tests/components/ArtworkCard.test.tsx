@@ -10,7 +10,7 @@ const artwork = {
   medium: 'watercolour',
   image: { _type: 'image', asset: { _ref: 'image-abc-1200x900-jpg', _type: 'reference' } },
   altText: 'Trees in autumn colours beside a river',
-  dimensions: '30 x 40 cm',
+  dimensions: { width: 30, height: 40, unit: 'cm' },
   yearCreated: 2024,
   isFeatured: false,
   price: null,
@@ -44,5 +44,16 @@ describe('ArtworkCard', () => {
   it('falls back to the title for alt text when altText is missing', () => {
     render(<ArtworkCard artwork={{ ...artwork, altText: null } as Artwork} />)
     expect(screen.getByRole('img', { name: 'Autumn Landscape' })).toBeInTheDocument()
+  })
+
+  it('mats the image so every card is the same shape regardless of the artwork', () => {
+    const { container } = render(<ArtworkCard artwork={artwork} />)
+    expect(container.querySelector('.artwork-card__mat')).toBeInTheDocument()
+  })
+
+  it('shows the full studio label, not just the year', () => {
+    render(<ArtworkCard artwork={artwork} />)
+    expect(screen.getByText('watercolour')).toBeInTheDocument()
+    expect(screen.getByText('30 × 40 cm')).toBeInTheDocument()
   })
 })
