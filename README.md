@@ -50,20 +50,26 @@ check these two rules first.
 ### Palette
 
 Pigments are named for what they are, never for where they are used. Each artwork medium maps
-to one, in `web/styles/_tokens.scss`, and `web/lib/artwork/pigmentForMedium.ts` resolves a
-medium to its pigment name — including the fallback for unrecognised values.
+to one, in `web/styles/_tokens.scss`. `web/lib/artwork/pigmentForMedium.ts` normalises a raw
+medium string to one of the medium keys below (`'watercolour' | 'drawing' | 'photography' |
+'other'`) — including the fallback for unrecognised values — which components then use to
+look up the pigment via `data-pigment`.
 
-| Medium      | Pigment      | Hex       | Contrast on paper |
-| ----------- | ------------ | --------- | ----------------- |
-| watercolour | indigo       | `#2e3a5c` | 10.1:1            |
-| drawing     | payne's grey | `#3d4f5c` | 7.7:1             |
-| photography | burnt sienna | `#9c5433` | 5.1:1             |
-| other       | raw umber    | `#6b5b45` | 5.9:1             |
+| Medium      | Pigment      | Hex       | Contrast (measured on the rendered ground) |
+| ----------- | ------------ | --------- | ------------------------------------------- |
+| watercolour | indigo       | `#2e3a5c` | 9.60:1                                       |
+| drawing     | payne's grey | `#3d4f5c` | 7.28:1                                       |
+| photography | burnt sienna | `#9c5433` | 4.83:1                                       |
+| other       | raw umber    | `#6b5b45` | 5.61:1                                       |
 
-Body text is `--ink-primary` (`#2a3138`, 11.9:1); studio labels are `--ink-muted`
-(`#6e6a63`, 4.9:1). **Any new text colour must clear 4.5:1 against `--paper-cold-press`**
-(3:1 for display sizes at 24px or larger). The palette bends to the contrast requirement,
-never the reverse.
+Body text is `--ink-primary` (`#2a3138`, 11.29:1); studio labels are `--ink-muted`
+(`#6e6a63`, 4.61:1). These figures are measured against the page's actual rendered
+background — `body::before`'s tiled grain layer, at 50% opacity in `multiply` blend, darkens
+flat `--paper-cold-press` (`#f7f3ec`) to a measured composite around `rgb(241, 237, 230)`, and
+that composite is what text outside a `.paper-sheet` sits on, not the flat token. **Any new
+text colour must clear 4.5:1 against the rendered ground, not just the `--paper-cold-press`
+token** (3:1 for display sizes at 24px or larger) — see the spec's Contrast section for how to
+measure it. The palette bends to the contrast requirement, never the reverse.
 
 ### Typography
 

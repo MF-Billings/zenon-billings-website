@@ -130,21 +130,33 @@ the contrast floor below.
 
 ### Contrast
 
-Computed against `--paper-cold-press` (relative luminance 0.900). WCAG AA requires 4.5:1 for
-body text and 3:1 for large display text.
+WCAG AA requires 4.5:1 for body text and 3:1 for large display text.
 
-| Token | Ratio on paper | Verdict |
-|---|---|---|
-| `--ink-primary` | 11.9:1 | AAA |
-| `--pigment-indigo` | 10.1:1 | AAA |
-| `--pigment-payne-grey` | 7.7:1 | AAA |
-| `--pigment-raw-umber` | 5.9:1 | AA |
-| `--pigment-burnt-sienna` | 5.1:1 | AA |
-| `--ink-muted` | 4.9:1 | AA (covers 0.75rem studio labels) |
+The table below was originally computed against flat `--paper-cold-press` (relative luminance
+0.900). That ground never actually renders: `body::before` lays a fixed, tiled `feTurbulence`
+grain layer at 50% opacity in `mix-blend-mode: multiply` over the paper, and text outside a
+`.paper-sheet` sits on that composite, not on the flat token value. The figures below are
+**measured against the rendered, composited ground** (by screenshotting a blank patch of body
+background and averaging its pixels), not calculated from the tokens — the calculated numbers
+were what shipped without this check, and `--ink-muted` was measuring above floor on paper
+while landing close to it on the real page.
 
-These are calculated values and must be re-verified against the rendered page during
-implementation. **The palette bends to the contrast requirement, never the reverse.** Text
-never sits directly on a bloom without a solid backing.
+| Token | Ratio on paper (calculated) | Ratio on rendered ground (measured) | Verdict |
+|---|---|---|---|
+| `--ink-primary` | 11.9:1 | 11.29:1 | AAA |
+| `--pigment-indigo` | 10.1:1 | 9.60:1 | AAA |
+| `--pigment-payne-grey` | 7.7:1 | 7.28:1 | AAA |
+| `--pigment-raw-umber` | 5.9:1 | 5.61:1 | AA |
+| `--pigment-burnt-sienna` | 5.1:1 | 4.83:1 | AA |
+| `--ink-muted` | 4.9:1 | 4.61:1 | AA (covers 0.75rem studio labels — clears 4.5:1, ~2% headroom) |
+
+Measured by loading the built static export in Playwright, screenshotting a blank stretch of
+`body` background away from any glyphs, averaging its pixels to `rgb(241, 237, 230)`, and
+computing the ratio against that instead of the token's flat value. `--ink-muted` clears the
+4.5:1 floor against the real ground, but narrowly enough that it is worth re-checking after any
+future change to the grain's opacity, blend mode, or the paper token itself. **The palette
+bends to the contrast requirement, never the reverse.** Text never sits directly on a bloom
+without a solid backing.
 
 ---
 
@@ -244,7 +256,11 @@ with a drop cap set in Archivo. No tape graphics — that is the scrapbook line.
 **Contact.** Form on a paper sheet, inputs as ruled lines matching the gallery search, submit
 as a pigment button, alias link with a brush-stroke underline.
 
-**Footer.** Ink rule above, studio label, one small bloom bleeding off the bottom.
+**Footer.** Ink rule above, studio label. No bloom: a footer bloom was specified here, but on
+the artwork detail page the placard already spends this viewport's one-bloom allowance on the
+plate bloom behind the image, and adding a second in the footer would break the "at most one
+wash bloom visible per viewport" rule on that page. It was dropped site-wide, not just there,
+so the footer treats every page the same way.
 
 ---
 
@@ -375,7 +391,9 @@ and tells us nothing.
 - Paper grain: one tiled data URI, ~400 bytes, single fixed layer.
 - Blooms capped in size, small `viewBox` scaled up, never inside scrolling or animated
   elements.
-- Trimming Pico's card and nav modules roughly offsets the CSS added.
+- Trimming Pico's card and nav modules does not offset the CSS added. Measured against the
+  built static export, this styling layer is +7.7 KB raw / +2.1 KB gzipped over the trimmed
+  Pico baseline.
 - `:has()` is baseline in current browsers, but the failure mode matters: without it, chips
   render with no visible checked state. An `@supports not (selector(:has(*)))` block keeps the
   native checkboxes visible as a fallback.
