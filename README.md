@@ -23,6 +23,55 @@ zenon-billings/
 └── docs/
 ```
 
+## Design system
+
+The site's visual identity is **studio / pigment**: the chrome is made of the same materials
+as the work — paper, water, pigment. The full rationale and the rejected alternatives are in
+`docs/superpowers/specs/2026-09-01-studio-pigment-design.md`.
+
+### Two rules
+
+1. **Discipline in the type, handmade in the surfaces.** Personality belongs to the
+   background plane — paper, washes, drawn rules. No handwriting faces. No rotated text.
+2. **At most one wash bloom visible per viewport.** They accumulate faster than they should.
+
+The failure mode is scrapbook, and it arrives by accumulation. If the design starts drifting,
+check these two rules first.
+
+### Where to change what
+
+| Change                                        | File                          |
+| --------------------------------------------- | ----------------------------- |
+| A colour, spacing value, or the mat ratio     | `web/styles/_tokens.scss`     |
+| Type scale or the studio label                | `web/styles/_typography.scss` |
+| Paper texture, blooms, ink rules, deckle edge | `web/styles/_materials.scss`  |
+| Anything specific to one page                 | `web/styles/_<area>.scss`     |
+
+### Palette
+
+Pigments are named for what they are, never for where they are used. Each artwork medium maps
+to one, in `_tokens.scss`, and `lib/artwork/pigmentForMedium.ts` resolves a medium to its
+pigment name — including the fallback for unrecognised values.
+
+| Medium      | Pigment      | Hex       | Contrast on paper |
+| ----------- | ------------ | --------- | ----------------- |
+| watercolour | indigo       | `#2e3a5c` | 10.1:1            |
+| drawing     | payne's grey | `#3d4f5c` | 7.7:1             |
+| photography | burnt sienna | `#9c5433` | 5.1:1             |
+| other       | raw umber    | `#6b5b45` | 5.9:1             |
+
+Body text is `--ink-primary` (`#2a3138`, 11.9:1); studio labels are `--ink-muted`
+(`#6e6a63`, 4.9:1). **Any new text colour must clear 4.5:1 against `--paper-cold-press`**
+(3:1 for display sizes at 24px or larger). The palette bends to the contrast requirement,
+never the reverse.
+
+### Typography
+
+Archivo Expanded (`wdth` 125) for display, Inter for everything else, both self-hosted via
+`next/font`. Lowercase is applied through the `.lowercase-chrome` class and covers site chrome
+only — the wordmark, navigation, and headings the code controls. **Artwork titles render
+exactly as the artist entered them in Sanity.**
+
 ## Setup
 
 ```bash

@@ -17,7 +17,7 @@ zenon-billings/
 │   ├── lib/          # Sanity client, query helpers, utilities
 │   ├── public/       # Static assets
 │   ├── scripts/      # Dev tooling (seed script)
-│   ├── styles/       # Global CSS/SCSS (Pico.css customizations)
+│   ├── styles/       # SCSS entry point + per-area partials (see §3)
 │   ├── tests/        # Mirrors app/components structure
 │   └── package.json
 ├── studio/           # Sanity Studio (its own package)
@@ -43,7 +43,12 @@ the root, the Studio could resolve that copy instead of its own and fail at runt
 - **Hosting**: Cloudflare Pages. No Docker, no containerization — there's no server to run.
 - **Tagging**: flat Sanity `tag` documents referenced by `artwork` — no hierarchy library needed.
 - **CSS**: `Pico.css` (SCSS), compiled via Next.js's built-in Sass support.
-    - All customizations happen in `styles/style.scss`.
+    - `styles/style.scss` is the entry point only: it imports Pico and `@use`s the partials.
+    - Customizations live in per-area partials — `_tokens.scss` (the palette and the
+      `--pico-*` bridge), `_typography.scss`, `_materials.scss`, and one partial per page
+      or component area.
+    - Change a colour or a spacing value in `_tokens.scss`, never at the point of use.
+    - Do not edit Pico's source.
     - Do not write inline styles unless absolutely necessary.
 
 ## 4. Testing Guidelines
