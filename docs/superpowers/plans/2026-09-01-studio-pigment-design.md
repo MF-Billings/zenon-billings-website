@@ -144,6 +144,14 @@ Create `styles/_tokens.scss`:
   --pico-primary: var(--pigment-indigo);
   --pico-primary-hover: var(--pigment-payne-grey);
   --pico-primary-focus: color-mix(in srgb, var(--pigment-indigo) 25%, transparent);
+  --pico-primary-underline: color-mix(in srgb, var(--pigment-indigo) 40%, transparent);
+  // Buttons read -background and -inverse, never --pico-primary. Omitting these
+  // leaves every Pico button in its default blue no matter what --pico-primary says.
+  --pico-primary-background: var(--pigment-indigo);
+  --pico-primary-border: var(--pigment-indigo);
+  --pico-primary-inverse: var(--paper-cold-press);
+  --pico-primary-hover-background: var(--pigment-payne-grey);
+  --pico-primary-hover-border: var(--pigment-payne-grey);
   --pico-h1-color: var(--ink-primary);
   --pico-h2-color: var(--ink-primary);
   --pico-h3-color: var(--ink-primary);
