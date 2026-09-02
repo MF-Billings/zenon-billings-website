@@ -50,8 +50,8 @@ check these two rules first.
 ### Palette
 
 Pigments are named for what they are, never for where they are used. Each artwork medium maps
-to one, in `_tokens.scss`, and `lib/artwork/pigmentForMedium.ts` resolves a medium to its
-pigment name — including the fallback for unrecognised values.
+to one, in `web/styles/_tokens.scss`, and `web/lib/artwork/pigmentForMedium.ts` resolves a
+medium to its pigment name — including the fallback for unrecognised values.
 
 | Medium      | Pigment      | Hex       | Contrast on paper |
 | ----------- | ------------ | --------- | ----------------- |
