@@ -14,9 +14,4 @@
 @use 'header';
 @use 'home';
 @use 'forms';
-
-.profile-image {
-  max-width: 18rem;
-  height: auto;
-  border-radius: var(--pico-border-radius);
-}
+@use 'about';

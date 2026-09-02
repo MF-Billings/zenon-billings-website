@@ -1,0 +1,39 @@
+.about {
+  padding-block: var(--space-sheet) var(--space-band);
+}
+
+.about__spread {
+  display: grid;
+  gap: var(--space-band);
+  margin-top: var(--space-sheet);
+}
+
+@media (min-width: 800px) {
+  .about__spread {
+    grid-template-columns: 18rem minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+.about__portrait {
+  margin: 0;
+  transform: rotate(calc(var(--edge-tilt) * -1));
+}
+
+.profile-image {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+// A drop cap is the one piece of editorial ornament the bio gets; the type
+// stays disciplined everywhere else.
+.about__bio > p:first-of-type::first-letter {
+  float: left;
+  margin: 0.08em 0.08em 0 0;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-variation-settings: 'wdth' 125;
+  font-size: 3.2em;
+  line-height: 0.82;
+  color: var(--pigment-indigo);
+}

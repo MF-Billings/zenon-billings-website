@@ -13,20 +13,26 @@ export default async function AboutPage() {
   const settings = await client.fetch(SITE_SETTINGS_QUERY)
 
   return (
-    <>
-      <h1>About {settings?.artistName ?? 'the artist'}</h1>
+    <div className="about">
+      <h1 className="lowercase-chrome">About {settings?.artistName ?? 'the artist'}</h1>
 
-      {settings?.profileImage && (
-        <SanityImage
-          source={settings.profileImage}
-          alt={`Portrait of ${settings.artistName ?? 'the artist'}`}
-          widths={[300, 600]}
-          sizes="(max-width: 600px) 100vw, 300px"
-          className="profile-image"
-        />
-      )}
+      <div className="about__spread">
+        {settings?.profileImage && (
+          <figure className="paper-sheet about__portrait">
+            <SanityImage
+              source={settings.profileImage}
+              alt={`Portrait of ${settings.artistName ?? 'the artist'}`}
+              widths={[300, 600]}
+              sizes="(max-width: 600px) 100vw, 300px"
+              className="profile-image"
+            />
+          </figure>
+        )}
 
-      {settings?.bio ? <PortableText value={settings.bio} /> : <p>Biography coming soon.</p>}
-    </>
+        <div className="about__bio">
+          {settings?.bio ? <PortableText value={settings.bio} /> : <p>Biography coming soon.</p>}
+        </div>
+      </div>
+    </div>
   )
 }
