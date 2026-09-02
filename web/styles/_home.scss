@@ -1,0 +1,43 @@
+.hero {
+  position: relative;
+  isolation: isolate;
+  padding-block: clamp(2rem, 7vw, 5rem) var(--space-band);
+  overflow: hidden;
+}
+
+.hero__bloom {
+  // The bloom bleeds past the container on purpose; the parent clips it so the
+  // overhang never reaches the document and produces a horizontal scrollbar.
+  top: -20%;
+  right: -15%;
+  width: 60%;
+  height: 130%;
+}
+
+.hero__wordmark {
+  font-size: clamp(3rem, 9vw, 7rem);
+  font-weight: 600;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  margin: 0;
+  max-width: 14ch;
+}
+
+.hero__tagline {
+  margin-top: 1.25rem;
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  color: var(--ink-muted);
+  max-width: 40ch;
+}
+
+.home-featured {
+  padding-block: var(--space-band) 0;
+}
+
+.home-featured__rule {
+  margin: 0.5rem 0 var(--space-sheet);
+}
+
+.home-cta {
+  margin-top: var(--space-band);
+}
