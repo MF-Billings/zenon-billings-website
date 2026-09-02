@@ -59,22 +59,36 @@ export default function ContactForm({
         </div>
       )}
 
-      <label htmlFor="contact-name">Name</label>
-      <input id="contact-name" value={message.name} onChange={update('name')} autoComplete="name" />
+      <label htmlFor="contact-name" className="studio-label">
+        Name
+      </label>
+      <input
+        id="contact-name"
+        className="field-ruled"
+        value={message.name}
+        onChange={update('name')}
+        autoComplete="name"
+      />
 
-      <label htmlFor="contact-email">Email</label>
+      <label htmlFor="contact-email" className="studio-label">
+        Email
+      </label>
       <input
         id="contact-email"
         type="email"
+        className="field-ruled"
         value={message.email}
         onChange={update('email')}
         autoComplete="email"
       />
 
-      <label htmlFor="contact-message">Message</label>
+      <label htmlFor="contact-message" className="studio-label">
+        Message
+      </label>
       <textarea
         id="contact-message"
         rows={5}
+        className="field-ruled"
         value={message.message}
         onChange={update('message')}
       />
@@ -90,7 +104,7 @@ export default function ContactForm({
         onChange={(event) => setHoneypot(event.target.value)}
       />
 
-      <button type="submit" aria-busy={sending} disabled={sending}>
+      <button type="submit" className="button-pigment" aria-busy={sending} disabled={sending}>
         {sending ? 'Sending…' : 'Send message'}
       </button>
     </form>

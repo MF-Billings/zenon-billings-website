@@ -13,12 +13,14 @@ export default async function ContactPage() {
   const settings = await client.fetch(SITE_SETTINGS_QUERY)
 
   return (
-    <>
-      <h1>Contact</h1>
+    <div className="contact">
+      <h1 className="lowercase-chrome">Contact</h1>
 
-      <ContactForm />
+      <div className="paper-sheet contact__sheet">
+        <ContactForm />
+      </div>
 
       <ContactAliasLink alias={settings?.publicContactAlias} />
-    </>
+    </div>
   )
 }

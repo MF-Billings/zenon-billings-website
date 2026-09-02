@@ -1,0 +1,49 @@
+.contact {
+  padding-block: var(--space-sheet) var(--space-band);
+}
+
+.contact__sheet {
+  max-width: 34rem;
+  margin-top: var(--space-sheet);
+
+  textarea.field-ruled {
+    border: 1px solid var(--pigment-payne-grey);
+    padding: 0.6rem;
+    resize: vertical;
+  }
+
+  label {
+    display: block;
+    margin-top: 1.25rem;
+  }
+
+  [role='alert'] {
+    color: var(--pigment-burnt-sienna);
+  }
+}
+
+.contact-alias {
+  margin-top: var(--space-sheet);
+  color: var(--ink-muted);
+}
+
+// A brush stroke rather than a border: it grows from nothing on hover the way
+// pigment loads onto paper.
+.brush-underline {
+  text-decoration: none;
+  background-image: linear-gradient(
+    to right,
+    var(--pigment-burnt-sienna),
+    var(--pigment-burnt-sienna)
+  );
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 100% 1px;
+  transition: background-size 220ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  color: var(--pigment-burnt-sienna);
+
+  &:hover,
+  &:focus-visible {
+    background-size: 100% 3px;
+  }
+}
