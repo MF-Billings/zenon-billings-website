@@ -1,4 +1,11 @@
-.field-ruled {
+// Qualified with the element (input.field-ruled / textarea.field-ruled) rather
+// than left as a bare class: Pico's own reset selector for these fields is
+// `input:not([type=checkbox], [type=radio], [type=range], [type=file])`, and
+// per Selectors 4 `:not()` takes the specificity of its most specific argument,
+// putting that branch at (0,1,1) — one level above a bare class. Qualifying
+// here matches that and wins on source order (this file loads after Pico).
+input.field-ruled,
+textarea.field-ruled {
   display: block;
   width: 100%;
   max-width: 32rem;

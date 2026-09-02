@@ -6,8 +6,15 @@
   max-width: 34rem;
   margin-top: var(--space-sheet);
 
+  // Boxed rather than a ruled line, unlike the single-line fields — but the
+  // bottom edge is left to the shared .field-ruled/:focus rules in
+  // _forms.scss so this textarea thickens and re-inks on focus exactly like
+  // the inputs, instead of a same-specificity, later-loaded rule silently
+  // pinning it back to a 1px payne-grey bottom border.
   textarea.field-ruled {
-    border: 1px solid var(--pigment-payne-grey);
+    border-top: 1px solid var(--pigment-payne-grey);
+    border-left: 1px solid var(--pigment-payne-grey);
+    border-right: 1px solid var(--pigment-payne-grey);
     padding: 0.6rem;
     resize: vertical;
   }

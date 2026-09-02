@@ -15,20 +15,38 @@ body::before {
   pointer-events: none;
   opacity: 0.5;
   mix-blend-mode: multiply;
-  background-color: var(--paper-cold-press);
+  // No background-color here: this layer is multiply-blended over `body`,
+  // which already paints --paper-cold-press. Painting the same colour again
+  // underneath a multiply blend just darkens the paper for no visual gain,
+  // and was quietly failing the contrast floor for text outside .paper-sheet.
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='t'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23t)' opacity='0.35'/%3E%3C/svg%3E");
+  // Pico's layout/document module sets `background-repeat: no-repeat` on every
+  // element, including ::before/::after, as a deliberate global default. This
+  // 180x180 tile needs the opposite — confirmed by rendering the page: without
+  // this, the noise painted once in the top-left corner and the rest of the
+  // viewport stayed flat paper.
+  background-repeat: repeat;
 }
 
 body {
   background-color: var(--paper-cold-press);
+  // Gives `body::before` its own local stacking context, exactly like `.hero`
+  // and `.artwork-detail__plate` do for their own WashBloom children below.
+  // Without it, `body`'s own background is an ordinary in-flow box painted
+  // *above* a negative z-index descendant in the root stacking context —
+  // confirmed by rendering the page and forcing the grain layer opaque: it
+  // stayed fully hidden behind flat paper until this was added. `isolation`
+  // only affects paint order, not layout, so it has no visual side effect
+  // of its own.
+  isolation: isolate;
 }
 
 .paper-sheet {
   background: var(--paper-sheet-surface);
   padding: var(--space-sheet);
   box-shadow:
-    0 1px 2px rgb(42 49 56 / 6%),
-    0 8px 24px rgb(42 49 56 / 8%);
+    0 1px 2px color-mix(in srgb, var(--shadow-ink) 6%, transparent),
+    0 8px 24px color-mix(in srgb, var(--shadow-ink) 8%, transparent);
 }
 
 .paper-sheet--deckle {
@@ -75,12 +93,17 @@ body {
   overflow: hidden;
 }
 
+// Pico's own utilities/reduce-motion module (enabled) already ships
+// transition-duration/animation-duration: 0 !important — and does it better,
+// exempting [aria-busy="true"] so the contact form's sending spinner keeps
+// animating. Duplicating it here only re-did that work; neither version
+// touched the card's `transform`, so under reduced motion the card still
+// lifted and straightened, just instantly. This is what actually disables
+// the lift, per the spec's accessibility section.
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    transition-duration: 0.01ms !important;
-    animation-duration: 0.01ms !important;
+  .artwork-card:hover,
+  .artwork-card:focus-within {
+    transform: rotate(var(--tilt, 0deg));
   }
 }
 

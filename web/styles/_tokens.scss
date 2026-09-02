@@ -22,15 +22,27 @@
   --mat-inset: clamp(0.75rem, 2vw, 1.25rem);
   --edge-tilt: 0.4deg;
   --card-ratio: 4 / 5;
+  --shadow-ink: var(--ink-primary);
+}
 
-  // The single seam with Pico. When Pico renames a variable, this block is the
-  // only place that has to change.
+// The single seam with Pico. When Pico renames a variable, this block is the
+// only place that has to change.
+//
+// Qualified as `:root:not([data-theme=dark])` — the exact selector Pico's own
+// light-theme block uses — rather than a bare `:root`. Pico's light theme is
+// declared there at specificity (0,2,0); a bare `:root` is (0,1,0) and silently
+// lost that fight, so every one of these custom properties resolved to Pico's
+// own stock blue theme instead of ours (confirmed by measuring the rendered
+// page: `--pico-primary` computed to Pico's `#0172ad`, not our indigo). Same
+// pattern as the `.field-ruled` fix in _forms.scss, just with a much bigger
+// blast radius — this bridge feeds every unstyled Pico control on the site.
+:root:not([data-theme='dark']) {
   --pico-background-color: var(--paper-cold-press);
   --pico-color: var(--ink-primary);
   --pico-muted-color: var(--ink-muted);
   --pico-primary: var(--pigment-indigo);
   --pico-primary-hover: var(--pigment-payne-grey);
-  --pico-primary-focus: color-mix(in srgb, var(--pigment-indigo) 25%, transparent);
+  --pico-primary-focus: color-mix(in srgb, var(--pigment-indigo) 70%, transparent);
   --pico-primary-underline: color-mix(in srgb, var(--pigment-indigo) 40%, transparent);
   // Buttons read -background and -inverse, never --pico-primary. Omitting these
   // leaves every Pico button in its default blue no matter what --pico-primary says.
@@ -42,6 +54,7 @@
   --pico-h1-color: var(--ink-primary);
   --pico-h2-color: var(--ink-primary);
   --pico-h3-color: var(--ink-primary);
+  --pico-h4-color: var(--ink-primary);
   --pico-border-radius: 2px;
   --pico-spacing: 1rem;
 }
