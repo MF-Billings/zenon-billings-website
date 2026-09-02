@@ -357,16 +357,15 @@ Switch off the Pico modules our own layer fully replaces, so we stop shipping CS
 
 **No unit test.** Verification is that the build succeeds and the existing suite stays green.
 
-- [ ] **Step 1: Read the real module names**
+- [ ] **Step 1: Confirm the module API (already verified — this is a sanity check)**
 
-The exact keys depend on the installed Pico version, so read them rather than guessing:
+The installed version is Pico v2 with `$modules` declared at `node_modules/@picocss/pico/scss/_settings.scss:94` as `$modules: () !default;` followed by `map.merge(<defaults>, $modules)` — so a map passed through `@use ... with` overrides the defaults it names and leaves the rest alone. The keys `"components/card"` and `"components/nav"` both exist in that default map.
 
 ```bash
-ls node_modules/@picocss/pico/scss/components/
-grep -n '\$modules' node_modules/@picocss/pico/scss/settings/_index.scss
+sed -n '94,141p' node_modules/@picocss/pico/scss/_settings.scss
 ```
 
-Expected: a `components/` listing containing files like `_card.scss` and `_nav.scss`, and a `$modules` map default in the settings file. The map keys are paths like `"components/card"`.
+Expected: the defaults map, including `"components/card": true` and `"components/nav": true`.
 
 - [ ] **Step 2: Disable the two replaced modules**
 
