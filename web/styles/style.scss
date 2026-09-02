@@ -10,12 +10,7 @@
 @use 'typography';
 @use 'materials';
 @use 'artwork';
-
-.artwork-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
-  gap: var(--pico-spacing);
-}
+@use 'gallery';
 
 .tag-filter {
   display: flex;

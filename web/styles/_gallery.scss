@@ -1,0 +1,32 @@
+.artwork-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: var(--space-sheet);
+  align-items: start;
+}
+
+// Sheets pinned to a wall are never perfectly square to each other. The cycle is
+// positional rather than random so it stays identical between renders.
+.artwork-grid > :nth-child(4n + 1) {
+  --tilt: var(--edge-tilt);
+}
+
+.artwork-grid > :nth-child(4n + 2) {
+  --tilt: calc(var(--edge-tilt) * -0.75);
+}
+
+.artwork-grid > :nth-child(4n + 3) {
+  --tilt: calc(var(--edge-tilt) * 0.6);
+}
+
+.artwork-grid > :nth-child(4n + 4) {
+  --tilt: calc(var(--edge-tilt) * -1);
+}
+
+// Vertical only: a horizontal offset would push the outer column past the
+// container and produce a horizontal scrollbar.
+@media (min-width: 768px) {
+  .artwork-grid > :nth-child(even) {
+    margin-block-start: var(--space-sheet);
+  }
+}
