@@ -49,3 +49,19 @@ p {
   color: var(--ink-muted);
   margin: 0;
 }
+
+.studio-label__medium {
+  color: var(--medium-other);
+
+  &[data-pigment='watercolour'] {
+    color: var(--medium-watercolour);
+  }
+
+  &[data-pigment='drawing'] {
+    color: var(--medium-drawing);
+  }
+
+  &[data-pigment='photography'] {
+    color: var(--medium-photography);
+  }
+}
