@@ -14,4 +14,14 @@ describe('SiteHeader', () => {
     render(<SiteHeader />)
     expect(screen.getByRole('navigation')).toBeInTheDocument()
   })
+
+  it('marks the wordmark as chrome, which is what makes it lowercase', () => {
+    const { container } = render(<SiteHeader />)
+    expect(container.querySelector('.site-header__wordmark')).toHaveClass('lowercase-chrome')
+  })
+
+  it('draws the rule beneath the nav', () => {
+    const { container } = render(<SiteHeader />)
+    expect(container.querySelector('.ink-rule')).toBeInTheDocument()
+  })
 })

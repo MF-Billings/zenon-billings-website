@@ -11,4 +11,9 @@ describe('SiteFooter', () => {
     render(<SiteFooter />)
     expect(screen.getByRole('contentinfo')).toBeInTheDocument()
   })
+
+  it('draws the rule above the footer text', () => {
+    const { container } = render(<SiteFooter />)
+    expect(container.querySelector('.ink-rule')).toBeInTheDocument()
+  })
 })
