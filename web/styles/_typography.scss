@@ -1,0 +1,51 @@
+body {
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  color: var(--ink-primary);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-variation-settings: 'wdth' 125;
+  line-height: 1.05;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: clamp(2.25rem, 5vw, 3.5rem);
+  font-weight: 600;
+}
+
+h2 {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 500;
+}
+
+h3 {
+  font-size: 1.125rem;
+  font-weight: 500;
+  font-variation-settings: 'wdth' 110;
+}
+
+// Chrome the code controls is lowercase; artwork titles keep the artist's own
+// capitalisation, so this is opt-in rather than a blanket rule on headings.
+.lowercase-chrome {
+  text-transform: lowercase;
+}
+
+p {
+  max-width: 68ch;
+}
+
+.studio-label {
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  line-height: 1.5;
+  color: var(--ink-muted);
+  margin: 0;
+}

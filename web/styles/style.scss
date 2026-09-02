@@ -1,6 +1,8 @@
 @use 'pico';
 
 // Project customizations live below this line. Never edit Pico's source.
+@use 'tokens';
+@use 'typography';
 
 .artwork-grid {
   display: grid;

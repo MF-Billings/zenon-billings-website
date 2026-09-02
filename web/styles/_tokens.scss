@@ -1,0 +1,47 @@
+// Pigments are named for what they are, never for where they are used, so a
+// value can be re-used without carrying a page or component name with it.
+:root {
+  --paper-cold-press: #f7f3ec;
+  --paper-sheet-surface: #fbf9f4;
+
+  --pigment-payne-grey: #3d4f5c;
+  --pigment-burnt-sienna: #9c5433;
+  --pigment-indigo: #2e3a5c;
+  --pigment-raw-umber: #6b5b45;
+
+  --ink-primary: #2a3138;
+  --ink-muted: #6e6a63;
+
+  --medium-watercolour: var(--pigment-indigo);
+  --medium-drawing: var(--pigment-payne-grey);
+  --medium-photography: var(--pigment-burnt-sienna);
+  --medium-other: var(--pigment-raw-umber);
+
+  --space-band: clamp(3rem, 8vw, 6rem);
+  --space-sheet: clamp(1.5rem, 3vw, 2.5rem);
+  --mat-inset: clamp(0.75rem, 2vw, 1.25rem);
+  --edge-tilt: 0.4deg;
+  --card-ratio: 4 / 5;
+
+  // The single seam with Pico. When Pico renames a variable, this block is the
+  // only place that has to change.
+  --pico-background-color: var(--paper-cold-press);
+  --pico-color: var(--ink-primary);
+  --pico-muted-color: var(--ink-muted);
+  --pico-primary: var(--pigment-indigo);
+  --pico-primary-hover: var(--pigment-payne-grey);
+  --pico-primary-focus: color-mix(in srgb, var(--pigment-indigo) 25%, transparent);
+  --pico-primary-underline: color-mix(in srgb, var(--pigment-indigo) 40%, transparent);
+  // Buttons read -background and -inverse, never --pico-primary. Omitting these
+  // leaves every Pico button in its default blue no matter what --pico-primary says.
+  --pico-primary-background: var(--pigment-indigo);
+  --pico-primary-border: var(--pigment-indigo);
+  --pico-primary-inverse: var(--paper-cold-press);
+  --pico-primary-hover-background: var(--pigment-payne-grey);
+  --pico-primary-hover-border: var(--pigment-payne-grey);
+  --pico-h1-color: var(--ink-primary);
+  --pico-h2-color: var(--ink-primary);
+  --pico-h3-color: var(--ink-primary);
+  --pico-border-radius: 2px;
+  --pico-spacing: 1rem;
+}
