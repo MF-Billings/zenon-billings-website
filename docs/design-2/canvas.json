@@ -1,0 +1,57 @@
+{
+  "pages": [
+    { "id": "page-1", "name": "The design" },
+    { "id": "page-2", "name": "Alternate directions" }
+  ],
+  "artboards": [
+    { "file": "Main.dc.html", "title": "Home", "page": "page-1", "x": 0, "y": 0, "w": 1440, "h": 2700 },
+    { "file": "Watercolour.dc.html", "title": "Room one — Watercolour", "page": "page-1", "x": 1600, "y": 0, "w": 1440, "h": 2400 },
+    { "file": "Photography.dc.html", "title": "Room two — Photography", "page": "page-1", "x": 3200, "y": 0, "w": 1440, "h": 3760 },
+    { "file": "Artwork.dc.html", "title": "Artwork detail", "page": "page-1", "x": 4800, "y": 0, "w": 1440, "h": 1760 },
+    { "file": "AltCatalogue.dc.html", "title": "Direction B — Catalogue", "page": "page-2", "x": 0, "y": 0, "w": 1000, "h": 1020 },
+    { "file": "AltImmersive.dc.html", "title": "Direction C — Immersive", "page": "page-2", "x": 1120, "y": 0, "w": 1000, "h": 720 }
+  ],
+  "annotations": [
+    {
+      "id": "placeholder-imagery",
+      "page": "page-1",
+      "x": 0,
+      "y": -430,
+      "w": 500,
+      "text": "PLACEHOLDER IMAGERY\n\nAll 16 images are public-domain works from the Art Institute of Chicago — Homer, Sargent, Le Gray, Watkins — standing in for Zenon's work.\n\nTitles, dates and dimensions are the real ones, which is why they read 1856—1914. Swap in real work and the captions keep their shape.\n\nAnything in [SQUARE BRACKETS] is copy I drafted or left for you to fill."
+    },
+    {
+      "id": "two-rooms",
+      "page": "page-1",
+      "x": 540,
+      "y": -430,
+      "w": 500,
+      "text": "WHY THE TWO ROOMS LOOK DIFFERENT\n\nThe colour came out of the work rather than a guess. The watercolours cluster cool — teal, hue 150-200. The photographs cluster warm — sepia, hue 40-50. So paper-cream sets off the paintings, warm charcoal sets off the prints.\n\nIdentical in both: wordmark, nav, caption grammar, 1px rules, vertical rhythm.\n\nDifferent: the ground, and 3-up matted versus 2-up large."
+    },
+    {
+      "id": "schema-notes",
+      "page": "page-1",
+      "x": 1600,
+      "y": -430,
+      "w": 520,
+      "text": "WHAT THIS PULLS FROM YOUR SCHEMA\n\nThe caption line uses four fields the site renders nowhere today: medium, yearCreated, dimensions, price. ArtworkCard currently shows title and year only.\n\nTwo gaps I ran into: there is no support field, so captions say \"Watercolour\" rather than \"Watercolour on paper\"; and no availability field, so a sold work can only fall back to \"Enquire\".\n\nThe rooms key off medium, so the \"acrylic on canvas\" TODO adds a third room instead of forcing a redesign."
+    },
+    {
+      "id": "no-duplicate-name",
+      "page": "page-1",
+      "x": 2160,
+      "y": -430,
+      "w": 460,
+      "text": "ON THE HOMEPAGE TODO\n\nnotes.md has \"remove duplicate name display on homepage\" open.\n\nSo the name appears exactly once, in the header. The hero leads with the tagline instead of repeating it — which is why the big line is \"Two ways of looking at landscape\" and not the artist's name."
+    },
+    {
+      "id": "alternates",
+      "page": "page-2",
+      "x": 0,
+      "y": -300,
+      "w": 700,
+      "text": "TWO OTHER STANCES\n\nSketches rather than finished pages — enough to point at.\n\nB lists the work as an archive, with medium as a column instead of a room. C shows one piece at a time on a single dark ground and drops the room split altogether.\n\nEach artboard carries its own tradeoff at the bottom."
+    }
+  ],
+  "launch": { "view": "canvas", "page": "page-1" }
+}

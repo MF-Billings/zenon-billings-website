@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&amp;family=EB+Garamond:ital,wght@0,400;1,400&amp;family=Archivo:wght@400;500&amp;display=swap">
+  <style>
+    body { margin: 0; }
+    .lbl { font-family: 'Archivo', 'Helvetica Neue', Arial, sans-serif; font-size: 9.5px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.16em; }
+    .meta { font-family: 'Archivo', 'Helvetica Neue', Arial, sans-serif; font-size: 11.5px; letter-spacing: 0.01em; margin: 0; }
+    .nav { font-family: 'Archivo', 'Helvetica Neue', Arial, sans-serif; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.14em; text-decoration: none; }
+    .wm { font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 400; font-size: 21px; letter-spacing: 0.03em; text-decoration: none; }
+    .wtitle { font-family: 'EB Garamond', Georgia, serif; font-size: 19px; font-style: italic; margin: 0; }
+    a { color: #A98C6B; }
+    a:hover { color: #EDE6DC; }
+  </style>
+</helmet>
+
+<div style="background: #1A1714; color: #EDE6DC; min-height: 100%; display: flex; flex-direction: column; padding: 36px 44px 32px;">
+
+  <div style="display: flex; justify-content: space-between; align-items: baseline;">
+    <a href="#" class="wm" style="color: #EDE6DC;">Zenon Billings</a>
+    <span class="lbl" style="color: #7E7469;">Alternate direction C · Immersive</span>
+  </div>
+
+  <div style="flex-grow: 1; display: flex; align-items: center; justify-content: center; padding: 30px 0;">
+    <img src="16779-hero.jpg" alt="Storm clouds breaking over a teal sea" style="width: 592px; height: auto; display: block;">
+  </div>
+
+  <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 40px; border-top: 1px solid #332C26; padding-top: 18px;">
+    <div style="display: flex; flex-direction: column; gap: 6px;">
+      <p class="wtitle" style="color: #EDE6DC;">Breaking Storm, Coast of Maine</p>
+      <p class="meta" style="color: #A2978A;">Watercolour · 1894 · 38.4 × 54.6 cm · $1,850</p>
+    </div>
+    <div style="display: flex; align-items: center; gap: 22px;">
+      <span class="meta" style="color: #7E7469; white-space: nowrap;">01 / 16</span>
+      <div style="display: flex; gap: 8px;">
+        <a href="#" aria-label="Previous work" style="border: 1px solid #332C26; padding: 9px 11px; display: inline-flex; color: #A2978A;">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 10H4"></path><path d="M9 5l-5 5 5 5"></path></svg>
+        </a>
+        <a href="#" aria-label="Next work" style="border: 1px solid #332C26; padding: 9px 11px; display: inline-flex; color: #EDE6DC;">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10h12"></path><path d="M11 5l5 5-5 5"></path></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <p class="meta" style="color: #7E7469; margin-top: 22px; line-height: 1.7; max-width: 48em;">One work at a time on a single dark ground, medium noted in the caption rather than given its own room. Puts the image first and unifies the two practices. Tradeoff: it hides the shape of the collection, and browsing is slower.</p>
+
+</div>
+</x-dc>
+</body>
+</html>

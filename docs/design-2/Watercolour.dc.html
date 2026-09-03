@@ -1,0 +1,166 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&amp;family=EB+Garamond:ital,wght@0,400;0,500;1,400&amp;family=Archivo:wght@400;500&amp;display=swap">
+  <style>
+    body { margin: 0; }
+    .lbl { font-family: 'Archivo', 'Helvetica Neue', Arial, sans-serif; font-size: 10.5px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.16em; }
+    .meta { font-family: 'Archivo', 'Helvetica Neue', Arial, sans-serif; font-size: 12px; letter-spacing: 0.01em; line-height: 1.6; }
+    .nav { font-family: 'Archivo', 'Helvetica Neue', Arial, sans-serif; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.14em; text-decoration: none; }
+    .chip { font-family: 'Archivo', 'Helvetica Neue', Arial, sans-serif; font-size: 11px; text-transform: uppercase; letter-spacing: 0.13em; text-decoration: none; padding-bottom: 5px; }
+    .wm { font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 400; font-size: 25px; letter-spacing: 0.03em; text-decoration: none; }
+    .disp { font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 300; letter-spacing: -0.005em; margin: 0; }
+    .prose { font-family: 'EB Garamond', Georgia, serif; font-size: 18px; line-height: 1.66; margin: 0; }
+    .wtitle { font-family: 'EB Garamond', Georgia, serif; font-size: 17px; font-style: italic; margin: 0; }
+    a { color: #4F7A85; }
+    a:hover { color: #33383F; }
+  </style>
+</helmet>
+
+<div style="background: #F7F3EC; color: #33383F; min-height: 100%;">
+
+  <header style="display: flex; justify-content: space-between; align-items: baseline; padding: 36px 72px 0;">
+    <a href="#" class="wm" style="color: #33383F;">Zenon Billings</a>
+    <nav style="display: flex; gap: 34px; align-items: baseline;">
+      <a href="#" class="nav" style="color: #33383F; border-bottom: 1px solid #4F7A85; padding-bottom: 3px;">Watercolour</a>
+      <a href="#" class="nav" style="color: #6E7480;">Photography</a>
+      <a href="#" class="nav" style="color: #6E7480;">About</a>
+      <a href="#" class="nav" style="color: #6E7480;">Contact</a>
+    </nav>
+  </header>
+
+  <section style="padding: 88px 72px 0; display: grid; grid-template-columns: 1fr 400px; gap: 96px; align-items: end;">
+    <div style="display: flex; flex-direction: column; gap: 20px; align-items: flex-start;">
+      <span class="lbl" style="color: #6E7480;">Room one</span>
+      <h1 class="disp" style="font-size: 84px; line-height: 1;">Watercolour</h1>
+    </div>
+    <p class="prose" style="color: #4A5058; padding-bottom: 10px;">Painted on cold-pressed rag paper, mostly on location. Sizes are the sheet, not the frame.</p>
+  </section>
+
+  <section style="padding: 64px 72px 0;">
+    <div style="border-top: 1px solid #DDD6C9; border-bottom: 1px solid #DDD6C9; padding: 16px 0; display: flex; justify-content: space-between; align-items: center; gap: 40px;">
+      <div style="display: flex; gap: 26px; align-items: center; flex-wrap: wrap;">
+        <a href="#" class="chip" style="color: #33383F; border-bottom: 1px solid #33383F;">All</a>
+        <a href="#" class="chip" style="color: #6E7480;">Coast</a>
+        <a href="#" class="chip" style="color: #6E7480;">Trees</a>
+        <a href="#" class="chip" style="color: #6E7480;">Garden</a>
+        <a href="#" class="chip" style="color: #6E7480;">Weather</a>
+        <a href="#" class="chip" style="color: #6E7480;">Still life</a>
+      </div>
+      <div style="display: flex; align-items: center; gap: 28px;">
+        <div style="display: flex; align-items: center; gap: 9px; border-bottom: 1px solid #DDD6C9; padding-bottom: 5px; min-width: 168px;">
+          <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="#6E7480" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="5.5"></circle><path d="M13.5 13.5L17 17"></path></svg>
+          <span class="meta" style="color: #9A9086;">Search titles</span>
+        </div>
+        <span class="meta" style="color: #6E7480; white-space: nowrap;">9 works</span>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding: 72px 72px 0;">
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 88px 64px; align-items: start;">
+
+      <a href="#" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 18px;">
+        <img src="16779.jpg" alt="Storm clouds over a teal sea" style="width: 100%; height: auto; display: block;">
+        <div style="display: flex; flex-direction: column; gap: 7px;">
+          <p class="wtitle">Breaking Storm, Coast of Maine</p>
+          <p class="meta" style="color: #6E7480;">Watercolour · 1894 · 38.4 × 54.6 cm</p>
+          <p class="meta" style="color: #33383F;">$1,850</p>
+        </div>
+      </a>
+
+      <a href="#" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 18px;">
+        <img src="16812.jpg" alt="Two figures on a headland under a heavy sky" style="width: 100%; height: auto; display: block;">
+        <div style="display: flex; flex-direction: column; gap: 7px;">
+          <p class="wtitle">The Outlook, Maine Coast</p>
+          <p class="meta" style="color: #6E7480;">Watercolour · 1894 · 35.4 × 50.5 cm</p>
+          <p class="meta" style="color: #33383F;">$1,650</p>
+        </div>
+      </a>
+
+      <a href="#" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 18px;">
+        <img src="38666.jpg" alt="Figures in shallow water under palms" style="width: 100%; height: auto; display: block;">
+        <div style="display: flex; flex-direction: column; gap: 7px;">
+          <p class="wtitle">The Water Fan</p>
+          <p class="meta" style="color: #6E7480;">Watercolour · 1898 · 37.4 × 53.4 cm</p>
+          <p class="meta" style="color: #9A9086;">Enquire</p>
+        </div>
+      </a>
+
+      <a href="#" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 18px;">
+        <img src="14792.jpg" alt="Olive trees on a hillside" style="width: 100%; height: auto; display: block;">
+        <div style="display: flex; flex-direction: column; gap: 7px;">
+          <p class="wtitle">Olive Trees, Corfu</p>
+          <p class="meta" style="color: #6E7480;">Watercolour · 1909 · 35.6 × 50.8 cm</p>
+          <p class="meta" style="color: #9A9086;">Enquire</p>
+        </div>
+      </a>
+
+      <a href="#" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 18px;">
+        <img src="14794.jpg" alt="Timber sheds below a mountain" style="width: 100%; height: auto; display: block;">
+        <div style="display: flex; flex-direction: column; gap: 7px;">
+          <p class="wtitle">Woodsheds, Tyrol</p>
+          <p class="meta" style="color: #6E7480;">Watercolour · 1914 · 40.0 × 53.6 cm</p>
+          <p class="meta" style="color: #33383F;">$1,950</p>
+        </div>
+      </a>
+
+      <a href="#" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 18px;">
+        <img src="133456.jpg" alt="A terrace and garden in strong sun" style="width: 100%; height: auto; display: block;">
+        <div style="display: flex; flex-direction: column; gap: 7px;">
+          <p class="wtitle">Tarragona Terrace and Garden</p>
+          <p class="meta" style="color: #6E7480;">Watercolour · c. 1908 · 30.5 × 45.9 cm</p>
+          <p class="meta" style="color: #33383F;">$2,100</p>
+        </div>
+      </a>
+
+      <a href="#" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 18px;">
+        <img src="16733.jpg" alt="A road winding through Provence" style="width: 100%; height: auto; display: block;">
+        <div style="display: flex; flex-direction: column; gap: 7px;">
+          <p class="wtitle">Road in Provence</p>
+          <p class="meta" style="color: #6E7480;">Watercolour · c. 1885 · 50.2 × 50.4 cm</p>
+          <p class="meta" style="color: #33383F;">$2,400</p>
+        </div>
+      </a>
+
+      <a href="#" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 18px;">
+        <img src="14817.jpg" alt="A loose study of cut flowers" style="width: 100%; height: auto; display: block;">
+        <div style="display: flex; flex-direction: column; gap: 7px;">
+          <p class="wtitle">Flowers</p>
+          <p class="meta" style="color: #6E7480;">Watercolour · 1880 · 66.5 × 56.0 cm</p>
+          <p class="meta" style="color: #9A9086;">Enquire</p>
+        </div>
+      </a>
+
+      <a href="#" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 18px;">
+        <img src="9485.jpg" alt="Sheet of snail and plant studies" style="width: 100%; height: auto; display: block;">
+        <div style="display: flex; flex-direction: column; gap: 7px;">
+          <p class="wtitle">Sketches of Snails, Flowering Plant</p>
+          <p class="meta" style="color: #6E7480;">Watercolour · 1864 · 19.8 × 12.6 cm</p>
+          <p class="meta" style="color: #33383F;">$480</p>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <footer style="margin-top: 128px; border-top: 1px solid #DDD6C9; padding: 30px 72px 40px; display: flex; justify-content: space-between; align-items: baseline;">
+    <span class="meta" style="color: #6E7480;">© 2026 Zenon Billings</span>
+    <nav style="display: flex; gap: 28px;">
+      <a href="#" class="nav" style="color: #6E7480;">Watercolour</a>
+      <a href="#" class="nav" style="color: #6E7480;">Photography</a>
+      <a href="#" class="nav" style="color: #6E7480;">About</a>
+      <a href="#" class="nav" style="color: #6E7480;">Contact</a>
+    </nav>
+  </footer>
+
+</div>
+</x-dc>
+</body>
+</html>

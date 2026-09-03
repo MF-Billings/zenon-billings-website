@@ -1,0 +1,148 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&amp;family=EB+Garamond:ital,wght@0,400;0,500;1,400&amp;family=Archivo:wght@400;500&amp;display=swap">
+  <style>
+    body { margin: 0; }
+    .lbl { font-family: 'Archivo', 'Helvetica Neue', Arial, sans-serif; font-size: 10.5px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.16em; }
+    .meta { font-family: 'Archivo', 'Helvetica Neue', Arial, sans-serif; font-size: 12px; letter-spacing: 0.01em; line-height: 1.6; }
+    .nav { font-family: 'Archivo', 'Helvetica Neue', Arial, sans-serif; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.14em; text-decoration: none; }
+    .chip { font-family: 'Archivo', 'Helvetica Neue', Arial, sans-serif; font-size: 11px; text-transform: uppercase; letter-spacing: 0.13em; text-decoration: none; padding-bottom: 5px; }
+    .wm { font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 400; font-size: 25px; letter-spacing: 0.03em; text-decoration: none; }
+    .disp { font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 300; letter-spacing: -0.005em; margin: 0; }
+    .prose { font-family: 'EB Garamond', Georgia, serif; font-size: 18px; line-height: 1.66; margin: 0; }
+    .wtitle { font-family: 'EB Garamond', Georgia, serif; font-size: 17px; font-style: italic; margin: 0; }
+    a { color: #A98C6B; }
+    a:hover { color: #EDE6DC; }
+  </style>
+</helmet>
+
+<div style="background: #221E1A; color: #EDE6DC; min-height: 100%;">
+
+  <header style="display: flex; justify-content: space-between; align-items: baseline; padding: 36px 72px 0;">
+    <a href="#" class="wm" style="color: #EDE6DC;">Zenon Billings</a>
+    <nav style="display: flex; gap: 34px; align-items: baseline;">
+      <a href="#" class="nav" style="color: #A2978A;">Watercolour</a>
+      <a href="#" class="nav" style="color: #EDE6DC; border-bottom: 1px solid #A98C6B; padding-bottom: 3px;">Photography</a>
+      <a href="#" class="nav" style="color: #A2978A;">About</a>
+      <a href="#" class="nav" style="color: #A2978A;">Contact</a>
+    </nav>
+  </header>
+
+  <section style="padding: 88px 72px 0; display: grid; grid-template-columns: 1fr 400px; gap: 96px; align-items: end;">
+    <div style="display: flex; flex-direction: column; gap: 20px; align-items: flex-start;">
+      <span class="lbl" style="color: #A2978A;">Room two</span>
+      <h1 class="disp" style="font-size: 84px; line-height: 1; color: #EDE6DC;">Photography</h1>
+    </div>
+    <p class="prose" style="color: #A2978A; padding-bottom: 10px;">Silver prints, shown larger and fewer to the row. Sizes are the print, not the mount.</p>
+  </section>
+
+  <section style="padding: 64px 72px 0;">
+    <div style="border-top: 1px solid #3C352E; border-bottom: 1px solid #3C352E; padding: 16px 0; display: flex; justify-content: space-between; align-items: center; gap: 40px;">
+      <div style="display: flex; gap: 26px; align-items: center; flex-wrap: wrap;">
+        <a href="#" class="chip" style="color: #EDE6DC; border-bottom: 1px solid #EDE6DC;">All</a>
+        <a href="#" class="chip" style="color: #A2978A;">Coast</a>
+        <a href="#" class="chip" style="color: #A2978A;">Trees</a>
+        <a href="#" class="chip" style="color: #A2978A;">Mountain</a>
+        <a href="#" class="chip" style="color: #A2978A;">Weather</a>
+        <a href="#" class="chip" style="color: #A2978A;">River</a>
+      </div>
+      <div style="display: flex; align-items: center; gap: 28px;">
+        <div style="display: flex; align-items: center; gap: 9px; border-bottom: 1px solid #3C352E; padding-bottom: 5px; min-width: 168px;">
+          <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="#A2978A" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="5.5"></circle><path d="M13.5 13.5L17 17"></path></svg>
+          <span class="meta" style="color: #7E7469;">Search titles</span>
+        </div>
+        <span class="meta" style="color: #A2978A; white-space: nowrap;">7 works</span>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding: 80px 72px 0;">
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 88px 56px; align-items: start;">
+
+      <a href="#" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 20px;">
+        <img src="126485-lg.jpg" alt="Luminous cloudbank over a dark sea" style="width: 100%; height: auto; display: block;">
+        <div style="display: flex; flex-direction: column; gap: 7px;">
+          <p class="wtitle" style="color: #EDE6DC;">Cloudy Sky, Mediterranean Sea</p>
+          <p class="meta" style="color: #A2978A;">Photography · 1857 · 30.9 × 41.8 cm</p>
+          <p class="meta" style="color: #EDE6DC;">$640</p>
+        </div>
+      </a>
+
+      <a href="#" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 20px;">
+        <img src="60482-lg.jpg" alt="An olive tree, upright format" style="width: 100%; height: auto; display: block;">
+        <div style="display: flex; flex-direction: column; gap: 7px;">
+          <p class="wtitle" style="color: #EDE6DC;">Olivier, Nice</p>
+          <p class="meta" style="color: #A2978A;">Photography · c. 1900 · 22.0 × 17.5 cm</p>
+          <p class="meta" style="color: #EDE6DC;">$520</p>
+        </div>
+      </a>
+
+      <a href="#" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 20px;">
+        <img src="152666-lg.jpg" alt="A Swiss valley in flat light" style="width: 100%; height: auto; display: block;">
+        <div style="display: flex; flex-direction: column; gap: 7px;">
+          <p class="wtitle" style="color: #EDE6DC;">Landscape, Switzerland</p>
+          <p class="meta" style="color: #A2978A;">Photography · c. 1860 · 23.7 × 30.1 cm</p>
+          <p class="meta" style="color: #8A8177;">Enquire</p>
+        </div>
+      </a>
+
+      <a href="#" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 20px;">
+        <img src="68994-lg.jpg" alt="A single tree in the forest of Fontainebleau" style="width: 100%; height: auto; display: block;">
+        <div style="display: flex; flex-direction: column; gap: 7px;">
+          <p class="wtitle" style="color: #EDE6DC;">Tree, Forest of Fontainebleau</p>
+          <p class="meta" style="color: #A2978A;">Photography · c. 1856 · 31.8 × 41.6 cm</p>
+          <p class="meta" style="color: #EDE6DC;">$780</p>
+        </div>
+      </a>
+
+      <a href="#" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 20px;">
+        <img src="105101-lg.jpg" alt="Yosemite valley seen from the Mariposa trail" style="width: 100%; height: auto; display: block;">
+        <div style="display: flex; flex-direction: column; gap: 7px;">
+          <p class="wtitle" style="color: #EDE6DC;">First View of the Yosemite Valley</p>
+          <p class="meta" style="color: #A2978A;">Photography · 1865 · 39.9 × 52.4 cm</p>
+          <p class="meta" style="color: #EDE6DC;">$1,240</p>
+        </div>
+      </a>
+
+      <a href="#" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 20px;">
+        <img src="236166-lg.jpg" alt="Castle Rock above the Green River" style="width: 100%; height: auto; display: block;">
+        <div style="display: flex; flex-direction: column; gap: 7px;">
+          <p class="wtitle" style="color: #EDE6DC;">Castle Rock, Green River Valley</p>
+          <p class="meta" style="color: #A2978A;">Photography · 1868 · 15.3 × 20.2 cm</p>
+          <p class="meta" style="color: #8A8177;">Enquire</p>
+        </div>
+      </a>
+
+      <a href="#" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 20px;">
+        <img src="63554-lg.jpg" alt="A wide river seen from the bank at Mendocino" style="width: 100%; height: auto; display: block;">
+        <div style="display: flex; flex-direction: column; gap: 7px;">
+          <p class="wtitle" style="color: #EDE6DC;">Big River, Mendocino</p>
+          <p class="meta" style="color: #A2978A;">Photography · 1863 · 40.0 × 52.5 cm</p>
+          <p class="meta" style="color: #EDE6DC;">$1,100</p>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <footer style="margin-top: 128px; border-top: 1px solid #3C352E; padding: 30px 72px 40px; display: flex; justify-content: space-between; align-items: baseline;">
+    <span class="meta" style="color: #A2978A;">© 2026 Zenon Billings</span>
+    <nav style="display: flex; gap: 28px;">
+      <a href="#" class="nav" style="color: #A2978A;">Watercolour</a>
+      <a href="#" class="nav" style="color: #A2978A;">Photography</a>
+      <a href="#" class="nav" style="color: #A2978A;">About</a>
+      <a href="#" class="nav" style="color: #A2978A;">Contact</a>
+    </nav>
+  </footer>
+
+</div>
+</x-dc>
+</body>
+</html>
