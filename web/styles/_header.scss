@@ -34,6 +34,13 @@
   padding: 0;
   list-style: none;
 
+  // list-style on the ul is inherited, but Pico's `ul li { list-style: square }`
+  // matches the li directly, and a direct match always beats an inherited value
+  // regardless of specificity. Must be cancelled on the li itself.
+  li {
+    list-style: none;
+  }
+
   a {
     font-size: 0.8125rem;
     font-weight: 500;
