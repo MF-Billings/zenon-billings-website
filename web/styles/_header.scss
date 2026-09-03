@@ -34,11 +34,11 @@
   padding: 0;
   list-style: none;
 
-  // list-style on the ul is inherited, but Pico's `ul li { list-style: square }`
-  // matches the li directly, and a direct match always beats an inherited value
-  // regardless of specificity. Must be cancelled on the li itself.
+  // The square marker is a deliberate design choice, kept as an owned rule on
+  // the li itself rather than relying on inheritance from Pico so it survives
+  // any future change to which Pico modules are enabled.
   li {
-    list-style: none;
+    list-style: square;
   }
 
   a {
