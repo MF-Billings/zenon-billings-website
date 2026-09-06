@@ -44,3 +44,9 @@ docs/*
 !docs/execution_plan.md
 !docs/sanity_setup_deviations.md
 !docs/superpowers/
+
+# Local working copy of docs/. Kept deliberately; never tracked.
+.docs/
+
+# Windows alternate-data-stream markers left by copying through Explorer
+*:Zone.Identifier

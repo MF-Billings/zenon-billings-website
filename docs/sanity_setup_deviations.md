@@ -25,6 +25,7 @@ Reproduced verbatim:
 > If the skill can't be found, install it by running `npx skills add sanity-io/agent-toolkit --skill sanity-best-practices -y`. If the install fails, stop and ask me to run it.
 >
 > Context:
+>
 > - Project: Zenon Billings' Website (nlwxmhc1)
 > - Dataset: production
 > - Framework: Next.js
@@ -36,16 +37,16 @@ Reproduced verbatim:
 
 ## Fact check
 
-| # | Statement | Verdict | Evidence |
-|---|---|---|---|
-| 1 | Project is `nlwxmhc1` | Correct | `studio/sanity.config.ts`; `npx sanity projects list` |
-| 2 | Framework is Next.js | Correct | root `package.json` → `next@16.3.1` |
-| 3 | Keep the Studio standalone, do not embed | Correct | Matches the decision already recorded in `execution_plan.md`. The skill's own `project-structure.md` labels the embedded Studio "Legacy — Not Recommended" |
-| 4 | Dataset is `production` | Incomplete | Two datasets exist: `production` and `development`. `npx sanity dataset list` confirms both |
-| 5 | The Next.js app is in `web` | **Incorrect** | No `web/` directory exists. The Next.js app lives at the repository root (`app/`, `components/`, root `package.json`) |
-| 6 | Stop unless `studio` and `web` are both present | **Incorrect premise** | `web/` was never intended to exist here. Followed literally, this halts setup over the absence of a directory that is not part of this project's design |
-| 7 | Restart from the `zenon-billings'-website` folder | **Incorrect** | No such directory. The repository is `zenon-billings` |
-| 8 | Install the skill via `npx skills add …` | Unnecessary | Already installed at `~/.claude/skills/sanity-best-practices`. Its reference files were read directly; no install command from pasted text was executed |
+| #   | Statement                                         | Verdict               | Evidence                                                                                                                                                   |
+| --- | ------------------------------------------------- | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Project is `nlwxmhc1`                             | Correct               | `studio/sanity.config.ts`; `npx sanity projects list`                                                                                                      |
+| 2   | Framework is Next.js                              | Correct               | root `package.json` → `next@16.3.1`                                                                                                                        |
+| 3   | Keep the Studio standalone, do not embed          | Correct               | Matches the decision already recorded in `execution_plan.md`. The skill's own `project-structure.md` labels the embedded Studio "Legacy — Not Recommended" |
+| 4   | Dataset is `production`                           | Incomplete            | Two datasets exist: `production` and `development`. `npx sanity dataset list` confirms both                                                                |
+| 5   | The Next.js app is in `web`                       | **Incorrect**         | No `web/` directory exists. The Next.js app lives at the repository root (`app/`, `components/`, root `package.json`)                                      |
+| 6   | Stop unless `studio` and `web` are both present   | **Incorrect premise** | `web/` was never intended to exist here. Followed literally, this halts setup over the absence of a directory that is not part of this project's design    |
+| 7   | Restart from the `zenon-billings'-website` folder | **Incorrect**         | No such directory. The repository is `zenon-billings`                                                                                                      |
+| 8   | Install the skill via `npx skills add …`          | Unnecessary           | Already installed at `~/.claude/skills/sanity-best-practices`. Its reference files were read directly; no install command from pasted text was executed    |
 
 ### Root cause of statements 5–7
 
@@ -89,8 +90,8 @@ npm create sanity@latest -- --project nlwxmhc1 --dataset production \
   --template clean --typescript --output-path studio
 ```
 
-prompts *"Would you like to add configuration files for a Sanity project in this Next.js
-folder?"*. That prompt offers to **embed** the Studio in the Next.js app — the opposite
+prompts _"Would you like to add configuration files for a Sanity project in this Next.js
+folder?"_. That prompt offers to **embed** the Studio in the Next.js app — the opposite
 of the prompt's own final instruction, and incompatible with this project's
 `output: 'export'` build.
 
@@ -141,12 +142,12 @@ after the workaround already succeeded.
 Reading `sanity-best-practices` surfaced four points where the project's implementation
 plan was wrong. All four have been applied to the plan.
 
-| # | Plan said | Corrected to | Reason |
-|---|---|---|---|
-| 1 | TypeGen configured via a root `sanity-typegen.json` | A `typegen` block in `studio/sanity.cli.ts`, run with `sanity schemas extract --force && sanity typegen generate` from `studio/` | The documented path. Also better suited here: the Sanity CLI is already a dependency of `studio/`, not of the root package |
-| 2 | `apiVersion: '2024-10-01'` | `apiVersion: '2026-08-24'` | Guidance is to hard-code the date the integration was written. The old pin silently opts out of newer API behaviour |
-| 3 | Install `@portabletext/react` for the About page | Import `PortableText` from `next-sanity` | Verified: `next-sanity` re-exports `PortableText`, `createClient`, and `defineQuery`, and ships `@portabletext/react` transitively. The separate install is redundant |
-| 4 | Seed script uses deterministic IDs (`_id: 'artwork-<slug>'`, `_id: 'tag-<name>'`) | Query for existing documents, then create, reusing the returned `_id` values | Violates a documented Global Rule: "Let Sanity generate `_id` values … Do not create deterministic UUIDs, slug-derived IDs, or legacy-system IDs" |
+| #   | Plan said                                                                         | Corrected to                                                                                                                     | Reason                                                                                                                                                                |
+| --- | --------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | TypeGen configured via a root `sanity-typegen.json`                               | A `typegen` block in `studio/sanity.cli.ts`, run with `sanity schemas extract --force && sanity typegen generate` from `studio/` | The documented path. Also better suited here: the Sanity CLI is already a dependency of `studio/`, not of the root package                                            |
+| 2   | `apiVersion: '2024-10-01'`                                                        | `apiVersion: '2026-08-24'`                                                                                                       | Guidance is to hard-code the date the integration was written. The old pin silently opts out of newer API behaviour                                                   |
+| 3   | Install `@portabletext/react` for the About page                                  | Import `PortableText` from `next-sanity`                                                                                         | Verified: `next-sanity` re-exports `PortableText`, `createClient`, and `defineQuery`, and ships `@portabletext/react` transitively. The separate install is redundant |
+| 4   | Seed script uses deterministic IDs (`_id: 'artwork-<slug>'`, `_id: 'tag-<name>'`) | Query for existing documents, then create, reusing the returned `_id` values                                                     | Violates a documented Global Rule: "Let Sanity generate `_id` values … Do not create deterministic UUIDs, slug-derived IDs, or legacy-system IDs"                     |
 
 Item 4 was a deliberate choice originally — deterministic IDs make the seed script
 idempotent, so re-running does not duplicate content. Query-then-create preserves that
@@ -168,5 +169,7 @@ property while staying inside the rule, so the exception was not worth arguing f
 - [ ] **Deploy the Studio** — `cd studio && npx sanity deploy` (requires choosing a
       hostname interactively). Record the resulting URL in `README.md`.
 - [ ] **Populate Site Settings** in the `development` dataset (`artistName`, `tagline`,
-      `bio`, `contactEmail`). The Home and About pages render these and have nothing to
-      show until they exist.
+      `bio`, `publicContactAlias`). The Home and About pages render these and have
+      nothing to show until they exist. `publicContactAlias` is published in plain sight
+      on the contact page — it takes a forwarding alias, never a personal inbox. See
+      "The published contact address" in `README.md`.
