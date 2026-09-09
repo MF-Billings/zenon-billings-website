@@ -6,7 +6,18 @@
   // increased by the same amount so the wordmark doesn't shift on screen.
   margin-top: calc(var(--pico-block-spacing-vertical) * -1);
   padding-block: calc(clamp(2rem, 7vw, 5rem) + var(--pico-block-spacing-vertical)) var(--space-band);
-  overflow: hidden;
+  // `overflow-x: clip` alone (not the `overflow: hidden` shorthand) is what keeps the
+  // bloom's sideways bleed from ever registering as document scrollable overflow,
+  // without also confining paint on the vertical axis — `clip` is specifically exempt
+  // from the "opposite axis silently becomes auto" rule that a lone `overflow-x: hidden`
+  // would trigger, so `overflow-y` stays legitimately `visible` here.
+  overflow-x: clip;
+  // The vertical clip is left to `clip-path`, which is paint-only and has no bearing on
+  // scrollable overflow: a negative top inset lets the wash bleed up past the border box
+  // and behind the header rule instead of stopping flush at it, while 0 on the other
+  // three sides keeps the sides tight (redundant with overflow-x above) and the bottom
+  // tight against the next section, so nothing new bleeds down into it.
+  clip-path: inset(-2rem 0 0 0);
 }
 
 .hero__bloom {
