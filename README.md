@@ -203,6 +203,8 @@ Run these from `web/`, or from the repository root via the delegating scripts in
 | `npm run format:check`  | Prettier, check only                                            |
 | `npm run import:artwork` | Import real artwork from YAML — see above                      |
 
+The Playwright e2e suite requires `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY` to be set to a non-empty value in `web/.env.local` **before** running `npm run build`, because the static export bakes the value in at build time. Any placeholder works locally — the tests intercept Web3Forms requests and do not send them.
+
 ### Studio commands (run from `studio/`)
 
 | Command                                                     | What it does                                                                 |
