@@ -46,6 +46,7 @@
 }
 
 .tag-chip {
+  position: relative;
   display: inline-flex;
   align-items: center;
   white-space: nowrap;
@@ -65,7 +66,7 @@
     color: var(--paper-cold-press);
   }
 
-  // The input is off-screen, so its focus ring has to be drawn on the chip the
+  // The input is invisible, so its focus ring has to be drawn on the chip the
   // visitor can actually see.
   &:has(:focus-visible) {
     outline: 2px solid var(--pigment-indigo);
@@ -73,13 +74,25 @@
   }
 }
 
+// Covers the whole pill rather than .visually-hidden's 1px clip: opacity, not
+// clip or an off-screen position, so the native control still sits exactly
+// where it's drawn and can be hit anywhere on the chip — by a pointer, and by
+// a test driving one — while staying invisible and in the accessibility tree.
+.tag-chip__input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
 // Without :has(), a chip could never show its checked state. Showing the native
 // checkbox is worse-looking and entirely usable, which is the right trade.
 @supports not (selector(:has(*))) {
-  .tag-chip .visually-hidden {
+  .tag-chip__input {
     position: static;
-    width: auto;
-    height: auto;
+    inset: auto;
+    opacity: 1;
     margin-right: 0.4rem;
   }
 }

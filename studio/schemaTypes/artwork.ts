@@ -12,15 +12,33 @@ export default defineType({
       options: {source: 'title'},
       validation: (rule) => rule.required(),
     }),
-    defineField({name: 'description', type: 'text', rows: 4}),
+    defineField({
+      name: 'description',
+      type: 'text',
+      rows: 4,
+      description: 'Catalogue copy about the work, written in the third person.',
+    }),
+    defineField({
+      name: 'artistNote',
+      title: "In the artist's words",
+      type: 'text',
+      rows: 4,
+      description:
+        'A first-person note from the artist about this work. Rendered separately from ' +
+        'the description, so the two voices stay distinguishable.',
+    }),
     defineField({
       name: 'medium',
       type: 'string',
       options: {
         list: [
           {title: 'Watercolour', value: 'watercolour'},
+          {title: 'Acrylic', value: 'acrylic'},
+          {title: 'Oil', value: 'oil'},
+          {title: 'Pastel', value: 'pastel'},
           {title: 'Drawing', value: 'drawing'},
           {title: 'Photography', value: 'photography'},
+          {title: 'Mixed media', value: 'mixed-media'},
           {title: 'Other', value: 'other'},
         ],
       },

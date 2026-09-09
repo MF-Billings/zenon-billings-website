@@ -27,6 +27,7 @@ describe('artwork schema', () => {
         'title',
         'slug',
         'description',
+        'artistNote',
         'medium',
         'image',
         'altText',
@@ -37,6 +38,28 @@ describe('artwork schema', () => {
         'tags',
       ]),
     )
+  })
+
+  it('separates the artist note from the catalogue description', () => {
+    expect(fieldNamed('description')?.type).toBe('text')
+    expect(fieldNamed('artistNote')?.type).toBe('text')
+  })
+
+  it('offers every medium the collection actually uses', () => {
+    const values = (
+      fieldNamed('medium')?.options?.list as {title: string; value: string}[] | undefined
+    )?.map((option) => option.value)
+
+    expect(values).toEqual([
+      'watercolour',
+      'acrylic',
+      'oil',
+      'pastel',
+      'drawing',
+      'photography',
+      'mixed-media',
+      'other',
+    ])
   })
 
   it('enables hotspot on the image so crops stay art-directed', () => {

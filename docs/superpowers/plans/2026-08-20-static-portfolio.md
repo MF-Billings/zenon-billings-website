@@ -10,6 +10,14 @@
 
 **Spec:** `docs/execution_plan.md`
 
+> **Amended 2026-08-30 — `siteSettings.contactEmail` no longer exists.** The schema,
+> GROQ, and contact-page snippets below still show it. It was replaced by
+> `publicContactAlias`, and the mailto markup moved into `components/ContactAliasLink.tsx`,
+> because a statically-exported page publishes whatever address it renders — so the field
+> now names, and documents, a disposable forwarding alias. This plan is kept as the
+> historical record of what was built; `README.md` → "The published contact address" is
+> the current documentation.
+
 ## Global Constraints
 
 Every task's requirements implicitly include this section.

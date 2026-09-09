@@ -83,14 +83,26 @@ body {
   opacity: 0.55;
 }
 
-// Off-screen rather than display:none — some bots skip hidden inputs, and a
-// display:none checkbox is unreachable by keyboard.
+// Clipped in place rather than display:none or shifted off-screen: display:none
+// drops a control out of the tab order, and left:-9999px moves its hit target
+// somewhere no pointer (a visitor's or a test's) can ever reach. Clipping to a
+// point keeps the control focusable and clickable exactly where it visually
+// sits — this is the standard sr-only pattern, taken property-for-property
+// (including every !important) from Bootstrap's own .visually-hidden. The
+// !importants are load-bearing, not decorative: Pico's own
+// `input:not([type=checkbox], [type=radio]) { width: 100% }` ties this
+// class's specificity, and a utility whose whole job is "always invisible,
+// regardless of what else targets this element" has to win that fight.
 .visually-hidden {
-  position: absolute;
-  left: -9999px;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
 }
 
 // Pico's own utilities/reduce-motion module (enabled) already ships

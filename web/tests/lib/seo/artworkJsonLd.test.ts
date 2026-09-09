@@ -29,9 +29,16 @@ describe('buildArtworkJsonLd', () => {
     expect(jsonLd.dateCreated).toBe(2024)
   })
 
-  it('credits the artist from site settings', () => {
-    const jsonLd = buildArtworkJsonLd(artwork, settings, 'https://example.com')
-    expect(jsonLd.creator).toEqual({ '@type': 'Person', name: 'Zenon Billings' })
+  it('always credits Zenon Billings as the creator, whatever site settings hold', () => {
+    const otherName = { ...settings, artistName: 'Someone Else' } as SiteSettings
+    expect(buildArtworkJsonLd(artwork, otherName, 'https://example.com').creator).toEqual({
+      '@type': 'Person',
+      name: 'Zenon Billings',
+    })
+    expect(buildArtworkJsonLd(artwork, null, 'https://example.com').creator).toEqual({
+      '@type': 'Person',
+      name: 'Zenon Billings',
+    })
   })
 
   it('points at the canonical url for this artwork', () => {
@@ -63,11 +70,6 @@ describe('buildArtworkJsonLd', () => {
     const offers = buildArtworkJsonLd(priced, null, 'https://example.com').offers as
       Record<string, unknown> | undefined
     expect(offers?.priceCurrency).toBe('USD')
-  })
-
-  it('falls back to the site name when settings have no artist name', () => {
-    const jsonLd = buildArtworkJsonLd(artwork, null, 'https://example.com')
-    expect(jsonLd.creator).toEqual({ '@type': 'Person', name: 'Zenon Billings' })
   })
 
   it('states width and height as QuantitativeValue with a UN/CEFACT unitCode', () => {

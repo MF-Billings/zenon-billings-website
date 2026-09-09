@@ -1,7 +1,6 @@
 import { urlFor } from '@/lib/sanity/imageUrl'
 import type { Artwork, SiteSettings } from '@/lib/sanity/types'
 
-const DEFAULT_ARTIST_NAME = 'Zenon Billings'
 const DEFAULT_CURRENCY = 'USD'
 
 type DimensionUnit = NonNullable<NonNullable<Artwork['dimensions']>['unit']>
@@ -51,7 +50,7 @@ export function buildArtworkJsonLd(
     dateCreated: artwork.yearCreated ?? undefined,
     url: `${siteUrl}/artwork/${artwork.slug}`,
     image: artwork.image ? urlFor(artwork.image).width(1200).url() : undefined,
-    creator: { '@type': 'Person', name: settings?.artistName ?? DEFAULT_ARTIST_NAME },
+    creator: { '@type': 'Person', name: 'Zenon Billings' },
     width: toQuantitativeValue(artwork.dimensions?.width, unit),
     height: toQuantitativeValue(artwork.dimensions?.height, unit),
     offers,

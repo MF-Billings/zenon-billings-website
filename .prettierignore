@@ -1,0 +1,10 @@
+# Prose documents. Prettier pads markdown tables into unreadable walls and
+# rewrites *emphasis* to _emphasis_, which churns these files on every run.
+AGENTS.md
+docs/
+.docs/
+
+# Working copies and build output
+node_modules/
+web/
+studio/

@@ -43,7 +43,7 @@ export default function GalleryBrowser({ artworks }: { artworks: Artwork[] }) {
               <label key={tag.slug} className="tag-chip">
                 <input
                   type="checkbox"
-                  className="visually-hidden"
+                  className="tag-chip__input"
                   checked={filter.tagSlugs.includes(tag.slug!)}
                   onChange={() => toggleTag(tag.slug!)}
                 />

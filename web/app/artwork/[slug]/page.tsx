@@ -85,6 +85,16 @@ export default async function ArtworkPage({ params }: ArtworkPageProps) {
         <h1>{artwork.title}</h1>
         <StudioLabel artwork={artwork} withFieldNames />
         {artwork.description && <p>{artwork.description}</p>}
+
+        {artwork.artistNote && (
+          <blockquote className="artwork-artist-note">
+            <p>{artwork.artistNote}</p>
+            <footer>
+              <cite>Zenon Billings</cite>
+            </footer>
+          </blockquote>
+        )}
+
         <p>
           <MediumChip medium={artwork.medium} />
         </p>

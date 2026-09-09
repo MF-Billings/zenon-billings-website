@@ -16,6 +16,16 @@ describe('GROQ queries', () => {
     expect(ALL_ARTWORKS_QUERY).toContain('tags[]->')
   })
 
+  it('carries the artist note alongside the description', () => {
+    expect(ALL_ARTWORKS_QUERY).toContain('artistNote')
+    expect(ARTWORK_BY_SLUG_QUERY).toContain('artistNote')
+  })
+
+  it('orders the gallery alphabetically by title regardless of year or case', () => {
+    expect(ALL_ARTWORKS_QUERY).toContain('order(lower(title) asc)')
+    expect(ALL_ARTWORKS_QUERY).not.toContain('yearCreated, 0) desc')
+  })
+
   it('looks artwork up by slug parameter', () => {
     expect(ARTWORK_BY_SLUG_QUERY).toContain('slug.current == $slug')
   })
