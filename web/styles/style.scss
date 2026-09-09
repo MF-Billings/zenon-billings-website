@@ -2,16 +2,20 @@
 
 // Project customizations live below this line. Never edit Pico's source.
 
-// Site name in the header. The first letter sits on a blue badge, echoing the
-// artist's business card. Pico tokens keep it in step with light/dark themes.
+:root {
+  // Blue from the artist's business card.
+  --brand-blue: #7aa1cd;
+}
+
+// Site name in the header. The first letter sits on a square blue badge,
+// echoing the artist's business card. Kept `inline` on purpose: vertical
+// padding on an inline element paints outside the line box, so the badge can
+// rise above the letter without changing the line height or the type size.
 .site-name__initial {
-  display: inline-block;
-  padding: 0 0.3em;
+  padding: 0.45em 0.3em 0.05em;
   margin-right: 0.2em;
-  line-height: 1.4;
-  background: var(--pico-primary-background);
+  background: var(--brand-blue);
   color: var(--pico-primary-inverse);
-  border-radius: var(--pico-border-radius);
 }
 
 .artwork-grid {
