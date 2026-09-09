@@ -11,10 +11,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <hgroup>
-        <h1>{settings?.artistName ?? 'Zenon Billings'}</h1>
-        {settings?.tagline && <p>{settings.tagline}</p>}
-      </hgroup>
+      {settings?.tagline && <p>{settings.tagline}</p>}
 
       <h2>Featured work</h2>
       <ArtworkGrid
