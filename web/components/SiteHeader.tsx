@@ -1,13 +1,23 @@
 import Link from 'next/link'
 
+const SITE_NAME = 'Zenon Billings'
+
 export default function SiteHeader() {
+  // The initial gets its own element so it can carry the business-card badge
+  // styling. No whitespace between the span and the rest of the name, so the
+  // accessible name stays a single unbroken string.
+  const [initial, ...rest] = SITE_NAME
+
   return (
     <header className="container">
       <nav>
         <ul>
           <li>
             <Link href="/">
-              <strong>Zenon Billings</strong>
+              <strong className="site-name">
+                <span className="site-name__initial">{initial}</span>
+                {rest.join('')}
+              </strong>
             </Link>
           </li>
         </ul>

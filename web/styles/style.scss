@@ -2,6 +2,18 @@
 
 // Project customizations live below this line. Never edit Pico's source.
 
+// Site name in the header. The first letter sits on a blue badge, echoing the
+// artist's business card. Pico tokens keep it in step with light/dark themes.
+.site-name__initial {
+  display: inline-block;
+  padding: 0 0.3em;
+  margin-right: 0.2em;
+  line-height: 1.4;
+  background: var(--pico-primary-background);
+  color: var(--pico-primary-inverse);
+  border-radius: var(--pico-border-radius);
+}
+
 .artwork-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
