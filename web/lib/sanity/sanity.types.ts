@@ -109,7 +109,15 @@ export type Artwork = {
   slug?: Slug
   description?: string
   artistNote?: string
-  medium?: 'watercolour' | 'drawing' | 'photography' | 'other'
+  medium?:
+    | 'watercolour'
+    | 'acrylic'
+    | 'oil'
+    | 'pastel'
+    | 'drawing'
+    | 'photography'
+    | 'mixed-media'
+    | 'other'
   image?: {
     asset?: SanityImageAssetReference
     media?: unknown
@@ -257,7 +265,16 @@ export type ALL_ARTWORKS_QUERY_RESULT = Array<{
   slug: string | null
   description: string | null
   artistNote: string | null
-  medium: 'drawing' | 'other' | 'photography' | 'watercolour' | null
+  medium:
+    | 'acrylic'
+    | 'drawing'
+    | 'mixed-media'
+    | 'oil'
+    | 'other'
+    | 'pastel'
+    | 'photography'
+    | 'watercolour'
+    | null
   image: {
     asset?: SanityImageAssetReference
     media?: unknown
@@ -291,7 +308,16 @@ export type FEATURED_ARTWORKS_QUERY_RESULT = Array<{
   slug: string | null
   description: string | null
   artistNote: string | null
-  medium: 'drawing' | 'other' | 'photography' | 'watercolour' | null
+  medium:
+    | 'acrylic'
+    | 'drawing'
+    | 'mixed-media'
+    | 'oil'
+    | 'other'
+    | 'pastel'
+    | 'photography'
+    | 'watercolour'
+    | null
   image: {
     asset?: SanityImageAssetReference
     media?: unknown
@@ -325,7 +351,16 @@ export type ARTWORK_BY_SLUG_QUERY_RESULT = {
   slug: string | null
   description: string | null
   artistNote: string | null
-  medium: 'drawing' | 'other' | 'photography' | 'watercolour' | null
+  medium:
+    | 'acrylic'
+    | 'drawing'
+    | 'mixed-media'
+    | 'oil'
+    | 'other'
+    | 'pastel'
+    | 'photography'
+    | 'watercolour'
+    | null
   image: {
     asset?: SanityImageAssetReference
     media?: unknown

@@ -45,6 +45,23 @@ describe('artwork schema', () => {
     expect(fieldNamed('artistNote')?.type).toBe('text')
   })
 
+  it('offers every medium the collection actually uses', () => {
+    const values = (
+      fieldNamed('medium')?.options?.list as {title: string; value: string}[] | undefined
+    )?.map((option) => option.value)
+
+    expect(values).toEqual([
+      'watercolour',
+      'acrylic',
+      'oil',
+      'pastel',
+      'drawing',
+      'photography',
+      'mixed-media',
+      'other',
+    ])
+  })
+
   it('enables hotspot on the image so crops stay art-directed', () => {
     expect(fieldNamed('image')?.options).toMatchObject({hotspot: true})
   })
