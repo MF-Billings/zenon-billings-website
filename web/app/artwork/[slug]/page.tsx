@@ -99,6 +99,15 @@ export default async function ArtworkPage({ params }: ArtworkPageProps) {
 
       {artwork.description && <p>{artwork.description}</p>}
 
+      {artwork.artistNote && (
+        <blockquote className="artwork-artist-note">
+          <p>{artwork.artistNote}</p>
+          <footer>
+            <cite>Zenon Billings</cite>
+          </footer>
+        </blockquote>
+      )}
+
       {artwork.tags && artwork.tags.length > 0 && (
         <p className="artwork-tags">
           {artwork.tags.map((tag) => (

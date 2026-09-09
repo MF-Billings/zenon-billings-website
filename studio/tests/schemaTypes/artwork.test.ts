@@ -27,6 +27,7 @@ describe('artwork schema', () => {
         'title',
         'slug',
         'description',
+        'artistNote',
         'medium',
         'image',
         'altText',
@@ -37,6 +38,11 @@ describe('artwork schema', () => {
         'tags',
       ]),
     )
+  })
+
+  it('separates the artist note from the catalogue description', () => {
+    expect(fieldNamed('description')?.type).toBe('text')
+    expect(fieldNamed('artistNote')?.type).toBe('text')
   })
 
   it('enables hotspot on the image so crops stay art-directed', () => {

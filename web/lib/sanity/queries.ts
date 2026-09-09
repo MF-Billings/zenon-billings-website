@@ -5,6 +5,7 @@ const ARTWORK_FIELDS = `
   title,
   "slug": slug.current,
   description,
+  artistNote,
   medium,
   image,
   altText,

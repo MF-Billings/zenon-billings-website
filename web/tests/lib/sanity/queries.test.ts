@@ -16,6 +16,11 @@ describe('GROQ queries', () => {
     expect(ALL_ARTWORKS_QUERY).toContain('tags[]->')
   })
 
+  it('carries the artist note alongside the description', () => {
+    expect(ALL_ARTWORKS_QUERY).toContain('artistNote')
+    expect(ARTWORK_BY_SLUG_QUERY).toContain('artistNote')
+  })
+
   it('looks artwork up by slug parameter', () => {
     expect(ARTWORK_BY_SLUG_QUERY).toContain('slug.current == $slug')
   })
