@@ -67,6 +67,97 @@ The script **hard-refuses** to run when `NEXT_PUBLIC_SANITY_DATASET` is `product
 stray `--clear` cannot destroy real content. Re-running is safe: artwork is matched by
 slug and patched rather than duplicated.
 
+## Importing the real artwork
+
+`production` holds the artist's own work, and the Met seeder refuses to touch it. Real
+artwork is imported from a hand-edited YAML file by `web/scripts/import-artwork.ts`:
+
+```bash
+npm run import:artwork -- --file <artwork.yaml> --images <directory> [--dry-run]
+```
+
+The file is a list, one entry per work, whose keys mirror `studio/schemaTypes/artwork.ts`:
+
+```yaml
+- title: Beaver Pond
+  slug: beaver-pond
+  medium: acrylic          # watercolour | acrylic | oil | pastel | drawing
+                           # photography | mixed-media | other
+  image: beaver-pond.jpg   # filename, resolved against --images
+  alt_text: A still pond ringed by black spruce
+  description:
+  artist_note: >-
+    Painted over three mornings from the far shore.
+  dimensions:
+    width: 183
+    height: 126
+    unit: cm               # cm or in — record what was measured, never convert
+  year_created:
+  price:
+  is_featured: false
+  tags:
+    - orientation/landscape
+    - subject/lake
+```
+
+`title`, `slug`, `medium`, `image`, and `alt_text` are required; a blank one aborts the
+run. Blank optionals are omitted rather than written as null, so an empty field in the
+file never overwrites something an editor filled in through the Studio.
+
+### Works that have no photograph yet
+
+Set `has_image: false` on a work the artist has catalogued but not photographed. The
+importer holds those entries back and names them, instead of failing the required-image
+check — otherwise a single unphotographed work blocks the whole run. Everything else in
+the entry can be filled in ahead of the photograph.
+
+The flag is read as truthy unless it explicitly says otherwise: `false`, `no`, `off`, `n`,
+`0`, and an empty string all hold the entry back, in any capitalisation. The string forms
+matter because the `yaml` package follows the YAML 1.2 core schema, where `no` and `off`
+are plain strings rather than booleans — not what most people writing YAML expect.
+
+An absent or empty flag counts as having an image, so a blank `image` with no flag is
+still reported as a missing required field rather than silently skipped. Drop the flag
+(or set it to `true`) once the image exists.
+
+### Tags are two levels, written `category/name`
+
+`category/name` becomes a `tag` document with `name: landscape`, `category: orientation`,
+and slug `orientation-landscape`. A bare `name` gets no category. The **slug carries the
+category** because the gallery filter keys on slug alone (`web/lib/gallery/filterArtworks.ts`) —
+without it, `landscape` under two categories would collapse into one checkbox. The
+checkbox still shows the bare name, so the compound slug costs nothing in the UI.
+
+Tag names are letters and hyphens only, matching the schema's own validation.
+
+### Why the importer validates before it writes
+
+**`@sanity/client` writes run no Studio validation whatsoever** — not `required`, not the
+tag name pattern, and not the slug uniqueness Sanity enforces by default in the Studio
+(`defaultIsUnique`, which queries for another document of the same type on that slug).
+An import is therefore the one path into the Content Lake with no schema check in front
+of it.
+
+So the importer does the checking itself, in two places:
+
+1. **Before any write.** Every entry is validated and every problem reported at once — a
+   half-applied import into a dataset holding real artwork is worse than a run that
+   refuses to start. Duplicate artwork slugs and colliding tag slugs both abort here.
+   `--dry-run` stops after this step and writes nothing.
+2. **After the import.** The run finishes by shelling out to
+   `npx sanity documents validate --dataset production`, which loads the real Studio
+   schema and checks what actually landed. Pass `--skip-validate` to suppress it, and run
+   it by hand any time:
+
+   ```bash
+   cd studio && npx sanity documents validate --workspace production --dataset production
+   ```
+
+Re-running is safe. Artwork is matched by slug and patched; tags are matched by slug and
+reused. An image is uploaded only when the document does not already have one, so a
+re-run does not orphan an asset. `is_featured` is set on create only — like the seeder,
+the import must never reset curation done in the Studio.
+
 ## The published contact address
 
 The site has no origin server, so there is nowhere to hide an email address at request
@@ -93,40 +184,24 @@ routing rule, create a new alias, update the field, and redeploy; the real inbox
 exposed and never has to change. That property is lost the moment a personal address goes
 into the field, which is why the field is named for what it is rather than "contact email".
 
-### Clearing the legacy `contactEmail` field
-
-`publicContactAlias` replaced a field called `contactEmail`, which held a personal address
-and was published on the contact page. The site no longer queries it, but the value
-survives in the Content Lake until it is unset:
-
-```bash
-npm run unset-contact-email            # dry run: report what would change
-npm run unset-contact-email -- --apply # unset the field
-```
-
-It covers both datasets and reads with `perspective: 'raw'` so drafts are not missed —
-Troubleshooting → _Studio: "Invalid property value"_ explains why a tokenless client would
-silently report zero affected documents. Publish any affected draft from the Studio
-afterwards.
-
 ## Commands
 
 Run these from `web/`, or from the repository root via the delegating scripts in the root
 `package.json` (`npm run dev`, `npm run build`, `npm test`, `npm run seed`,
-`npm run studio`, `npm run typegen`, `npm run unset-contact-email`).
+`npm run import:artwork`, `npm run studio`, `npm run typegen`).
 
-| Command                       | What it does                                                    |
-| ----------------------------- | --------------------------------------------------------------- |
-| `npm run dev`                 | Next dev server at http://localhost:3000                        |
-| `npm run build`               | Static export into `out/`                                       |
-| `npm test`                    | Vitest unit and component tests, once                           |
-| `npm run test:watch`          | Vitest in watch mode                                            |
-| `npm run test:coverage`       | Vitest with the 80% coverage floor enforced                     |
-| `npm run test:e2e`            | Playwright against the built `out/` (run `npm run build` first) |
-| `npm run lint`                | ESLint                                                          |
-| `npm run format`              | Prettier, writing changes                                       |
-| `npm run format:check`        | Prettier, check only                                            |
-| `npm run unset-contact-email` | Clear the legacy `contactEmail` field from Sanity (see above)   |
+| Command                 | What it does                                                    |
+| ----------------------- | --------------------------------------------------------------- |
+| `npm run dev`           | Next dev server at http://localhost:3000                        |
+| `npm run build`         | Static export into `out/`                                       |
+| `npm test`              | Vitest unit and component tests, once                           |
+| `npm run test:watch`    | Vitest in watch mode                                            |
+| `npm run test:coverage` | Vitest with the 80% coverage floor enforced                     |
+| `npm run test:e2e`      | Playwright against the built `out/` (run `npm run build` first) |
+| `npm run lint`          | ESLint                                                          |
+| `npm run format`        | Prettier, writing changes                                       |
+| `npm run format:check`  | Prettier, check only                                            |
+| `npm run import:artwork` | Import real artwork from YAML — see above                      |
 
 ### Studio commands (run from `studio/`)
 
