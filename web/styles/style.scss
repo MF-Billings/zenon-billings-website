@@ -7,7 +7,8 @@
 // padding on an inline element paints outside the line box, so the badge can
 // rise above the letter without changing the line height or the type size.
 .site-name__initial {
-  padding: 0.45em 0 0.05em;
+  // top right bottom left: more room on the right, where the E follows.
+  padding: 0.45em 0.25em 0.05em 0.15em;
   background: #7aa1cd;
   color: var(--pico-primary-inverse);
 }
