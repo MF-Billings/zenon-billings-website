@@ -1,7 +1,11 @@
 .hero {
   position: relative;
   isolation: isolate;
-  padding-block: clamp(2rem, 7vw, 5rem) var(--space-band);
+  // Pulled up by Pico's <main> block padding so the band starts at the header
+  // rule instead of leaving a strip of bare paper; the top padding below is
+  // increased by the same amount so the wordmark doesn't shift on screen.
+  margin-top: calc(var(--pico-block-spacing-vertical) * -1);
+  padding-block: calc(clamp(2rem, 7vw, 5rem) + var(--pico-block-spacing-vertical)) var(--space-band);
   overflow: hidden;
 }
 
