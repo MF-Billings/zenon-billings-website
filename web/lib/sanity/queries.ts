@@ -17,7 +17,7 @@ const ARTWORK_FIELDS = `
 
 export const ALL_ARTWORKS_QUERY = defineQuery(`
   *[_type == "artwork" && defined(slug.current)]
-    | order(coalesce(yearCreated, 0) desc, _createdAt desc) {${ARTWORK_FIELDS}}
+    | order(lower(title) asc) {${ARTWORK_FIELDS}}
 `)
 
 export const FEATURED_ARTWORKS_QUERY = defineQuery(`

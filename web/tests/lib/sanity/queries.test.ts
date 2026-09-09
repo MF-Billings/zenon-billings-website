@@ -16,6 +16,11 @@ describe('GROQ queries', () => {
     expect(ALL_ARTWORKS_QUERY).toContain('tags[]->')
   })
 
+  it('orders the gallery alphabetically by title regardless of year or case', () => {
+    expect(ALL_ARTWORKS_QUERY).toContain('order(lower(title) asc)')
+    expect(ALL_ARTWORKS_QUERY).not.toContain('yearCreated, 0) desc')
+  })
+
   it('looks artwork up by slug parameter', () => {
     expect(ARTWORK_BY_SLUG_QUERY).toContain('slug.current == $slug')
   })
