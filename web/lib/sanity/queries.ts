@@ -8,6 +8,8 @@ const ARTWORK_FIELDS = `
   artistNote,
   medium,
   image,
+  "imageWidth": image.asset->metadata.dimensions.width,
+  displayMaxWidth,
   altText,
   dimensions { width, height, unit },
   yearCreated,

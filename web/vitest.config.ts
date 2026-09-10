@@ -27,6 +27,9 @@ export default defineConfig({
         // scripts/metMuseum.ts; what remains is network and upload plumbing,
         // and mocking that would only test the mock. Verified by running it.
         'scripts/seed-gallery.ts',
+        // Same shape: the plan is covered by scripts/displayWidthBackfill.ts,
+        // what remains is fetch-and-commit plumbing.
+        'scripts/backfill-display-width.ts',
       ],
       thresholds: { lines: 80, functions: 80, branches: 80, statements: 80 },
     },

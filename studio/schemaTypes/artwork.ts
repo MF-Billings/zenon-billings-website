@@ -58,6 +58,15 @@ export default defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
+      name: 'displayMaxWidth',
+      title: 'Display max width',
+      type: 'number',
+      description:
+        'Widest this image should be shown on screen, in CSS pixels. Lower it for a weak ' +
+        'scan so the browser never stretches it. Leave empty to allow the native pixel width.',
+      validation: (rule) => rule.positive().integer(),
+    }),
+    defineField({
       name: 'dimensions',
       type: 'object',
       description: 'Physical size of the work.',

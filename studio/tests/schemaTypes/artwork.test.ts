@@ -9,6 +9,7 @@ type InspectableField = {
   options?: Record<string, unknown>
   of?: unknown
   fields?: InspectableField[]
+  validation?: unknown
 }
 const fields = artwork.fields as unknown as InspectableField[]
 
@@ -31,6 +32,7 @@ describe('artwork schema', () => {
         'medium',
         'image',
         'altText',
+        'displayMaxWidth',
         'dimensions',
         'yearCreated',
         'isFeatured',
@@ -64,6 +66,12 @@ describe('artwork schema', () => {
 
   it('enables hotspot on the image so crops stay art-directed', () => {
     expect(fieldNamed('image')?.options).toMatchObject({hotspot: true})
+  })
+
+  it('lets the editor cap how wide a weak scan is shown, in whole CSS pixels', () => {
+    const field = fieldNamed('displayMaxWidth')
+    expect(field?.type).toBe('number')
+    expect(field?.validation).toBeTypeOf('function')
   })
 
   it('derives the slug from the title', () => {

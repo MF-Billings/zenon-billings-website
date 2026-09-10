@@ -5,6 +5,7 @@ import SanityImage from '@/components/SanityImage'
 import StudioLabel from '@/components/StudioLabel'
 import WashBloom from '@/components/WashBloom'
 import { pigmentForMedium } from '@/lib/artwork/pigmentForMedium'
+import { resolveDisplayMaxWidth } from '@/lib/artwork/resolveDisplayMaxWidth'
 import { client } from '@/lib/sanity/client'
 import { urlFor } from '@/lib/sanity/imageUrl'
 import {
@@ -76,6 +77,7 @@ export default async function ArtworkPage({ params }: ArtworkPageProps) {
               sizes="(max-width: 1024px) 100vw, 60vw"
               priority
               className="artwork-detail__image"
+              maxWidth={resolveDisplayMaxWidth(artwork.displayMaxWidth, artwork.imageWidth)}
             />
           </div>
         )}

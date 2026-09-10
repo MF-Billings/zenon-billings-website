@@ -41,3 +41,36 @@ describe('SanityImage', () => {
     expect(screen.getByRole('img').getAttribute('src')).toContain('w=900')
   })
 })
+
+describe('SanityImage with a maxWidth cap', () => {
+  it('constrains the rendered width so a weak scan is never stretched, yet still shrinks on narrow screens', () => {
+    render(<SanityImage source={source} alt="Art" maxWidth={640} />)
+    expect(screen.getByRole('img').style.maxWidth).toBe('min(640px, 100%)')
+  })
+
+  it('drops srcset candidates wider than the cap and adds one at the cap', () => {
+    render(<SanityImage source={source} alt="Art" widths={[400, 800, 1200]} maxWidth={640} />)
+
+    const srcSet = screen.getByRole('img').getAttribute('srcset') ?? ''
+    expect(srcSet).toContain('400w')
+    expect(srcSet).toContain('640w')
+    expect(srcSet).not.toContain('800w')
+    expect(srcSet).not.toContain('1200w')
+  })
+
+  it('uses the cap as the src fallback width', () => {
+    render(<SanityImage source={source} alt="Art" widths={[400, 800, 1200]} maxWidth={640} />)
+    expect(screen.getByRole('img').getAttribute('src')).toContain('w=640')
+  })
+
+  it('does not duplicate a candidate that already sits at the cap', () => {
+    render(<SanityImage source={source} alt="Art" widths={[400, 800]} maxWidth={800} />)
+    const srcSet = screen.getByRole('img').getAttribute('srcset') ?? ''
+    expect(srcSet.match(/800w/g)).toHaveLength(1)
+  })
+
+  it('renders unconstrained when no cap is given', () => {
+    render(<SanityImage source={source} alt="Art" />)
+    expect(screen.getByRole('img').style.maxWidth).toBe('')
+  })
+})

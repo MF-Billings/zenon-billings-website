@@ -21,6 +21,13 @@ describe('GROQ queries', () => {
     expect(ARTWORK_BY_SLUG_QUERY).toContain('artistNote')
   })
 
+  it('carries the display width cap and the native pixel width so weak scans are never stretched', () => {
+    for (const query of [ALL_ARTWORKS_QUERY, FEATURED_ARTWORKS_QUERY, ARTWORK_BY_SLUG_QUERY]) {
+      expect(query).toContain('displayMaxWidth')
+      expect(query).toContain('"imageWidth": image.asset->metadata.dimensions.width')
+    }
+  })
+
   it('orders the gallery alphabetically by title regardless of year or case', () => {
     expect(ALL_ARTWORKS_QUERY).toContain('order(lower(title) asc)')
     expect(ALL_ARTWORKS_QUERY).not.toContain('yearCreated, 0) desc')

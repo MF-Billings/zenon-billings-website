@@ -213,6 +213,31 @@ reused. An image is uploaded only when the document does not already have one, s
 re-run does not orphan an asset. `is_featured` is set on create only — like the seeder,
 the import must never reset curation done in the Studio.
 
+## Capping how wide a weak scan is shown
+
+Some scans are lower quality than others, and the detail page stretches every image to
+the width of its mount. A low-resolution scan stretched past its own pixels looks worse
+than the same scan shown smaller. The Sanity CDN never upscales (`fit=max`), so the
+stretching happens in the browser, and the fix is to cap the rendered width.
+
+Each artwork has a **Display max width** field (`displayMaxWidth`, in CSS pixels). The
+detail page renders the image no wider than that value and offers the browser no `srcset`
+candidate wider than it. When the field is empty the cap falls back to the asset's native
+pixel width, so no image is ever shown larger than its source even before an editor
+touches it. An editor-set value is also clamped to the native width for the same reason.
+
+The field is meant to be tuned by eye, but the native width is a fair first guess, so a
+one-off script seeds it from the asset metadata:
+
+```bash
+npm run backfill:display-width -- --dry-run   # list what would change
+npm run backfill:display-width                # write it
+```
+
+Only artworks with an empty `displayMaxWidth` are touched, so re-running never undoes a
+value set in the Studio. Works whose asset has no pixel metadata are listed and skipped.
+The script needs `SANITY_WRITE_TOKEN` in `web/.env.local`, like the seeder.
+
 ## The published contact address
 
 The site has no origin server, so there is nowhere to hide an email address at request
@@ -257,6 +282,7 @@ Run these from `web/`, or from the repository root via the delegating scripts in
 | `npm run format`        | Prettier, writing changes                                       |
 | `npm run format:check`  | Prettier, check only                                            |
 | `npm run import:artwork` | Import real artwork from YAML — see above                      |
+| `npm run backfill:display-width` | Seed empty `displayMaxWidth` fields from native pixel width — see above |
 
 The Playwright e2e suite requires `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY` to be set to a non-empty value in `web/.env.local` **before** running `npm run build`, because the static export bakes the value in at build time. Any placeholder works locally — the tests intercept Web3Forms requests and do not send them.
 

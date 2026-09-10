@@ -126,6 +126,7 @@ export type Artwork = {
     _type: 'image'
   }
   altText?: string
+  displayMaxWidth?: number
   dimensions?: {
     width?: number
     height?: number
@@ -258,7 +259,7 @@ export type AllSanitySchemaTypes =
 
 // Source: ../web/lib/sanity/queries.ts
 // Variable: ALL_ARTWORKS_QUERY
-// Query: *[_type == "artwork" && defined(slug.current)]    | order(lower(title) asc) {  _id,  title,  "slug": slug.current,  description,  artistNote,  medium,  image,  altText,  dimensions { width, height, unit },  yearCreated,  isFeatured,  price,  "tags": tags[]->{ _id, name, "slug": slug.current, category }}
+// Query: *[_type == "artwork" && defined(slug.current)]    | order(lower(title) asc) {  _id,  title,  "slug": slug.current,  description,  artistNote,  medium,  image,  "imageWidth": image.asset->metadata.dimensions.width,  displayMaxWidth,  altText,  dimensions { width, height, unit },  yearCreated,  isFeatured,  price,  "tags": tags[]->{ _id, name, "slug": slug.current, category }}
 export type ALL_ARTWORKS_QUERY_RESULT = Array<{
   _id: string
   title: string | null
@@ -282,6 +283,8 @@ export type ALL_ARTWORKS_QUERY_RESULT = Array<{
     crop?: SanityImageCrop
     _type: 'image'
   } | null
+  imageWidth: number | null
+  displayMaxWidth: number | null
   altText: string | null
   dimensions: {
     width: number | null
@@ -301,7 +304,7 @@ export type ALL_ARTWORKS_QUERY_RESULT = Array<{
 
 // Source: ../web/lib/sanity/queries.ts
 // Variable: FEATURED_ARTWORKS_QUERY
-// Query: *[_type == "artwork" && isFeatured == true && defined(slug.current)]    | order(coalesce(yearCreated, 0) desc, _createdAt desc)[0...6] {  _id,  title,  "slug": slug.current,  description,  artistNote,  medium,  image,  altText,  dimensions { width, height, unit },  yearCreated,  isFeatured,  price,  "tags": tags[]->{ _id, name, "slug": slug.current, category }}
+// Query: *[_type == "artwork" && isFeatured == true && defined(slug.current)]    | order(coalesce(yearCreated, 0) desc, _createdAt desc)[0...6] {  _id,  title,  "slug": slug.current,  description,  artistNote,  medium,  image,  "imageWidth": image.asset->metadata.dimensions.width,  displayMaxWidth,  altText,  dimensions { width, height, unit },  yearCreated,  isFeatured,  price,  "tags": tags[]->{ _id, name, "slug": slug.current, category }}
 export type FEATURED_ARTWORKS_QUERY_RESULT = Array<{
   _id: string
   title: string | null
@@ -325,6 +328,8 @@ export type FEATURED_ARTWORKS_QUERY_RESULT = Array<{
     crop?: SanityImageCrop
     _type: 'image'
   } | null
+  imageWidth: number | null
+  displayMaxWidth: number | null
   altText: string | null
   dimensions: {
     width: number | null
@@ -344,7 +349,7 @@ export type FEATURED_ARTWORKS_QUERY_RESULT = Array<{
 
 // Source: ../web/lib/sanity/queries.ts
 // Variable: ARTWORK_BY_SLUG_QUERY
-// Query: *[_type == "artwork" && slug.current == $slug][0] {  _id,  title,  "slug": slug.current,  description,  artistNote,  medium,  image,  altText,  dimensions { width, height, unit },  yearCreated,  isFeatured,  price,  "tags": tags[]->{ _id, name, "slug": slug.current, category }}
+// Query: *[_type == "artwork" && slug.current == $slug][0] {  _id,  title,  "slug": slug.current,  description,  artistNote,  medium,  image,  "imageWidth": image.asset->metadata.dimensions.width,  displayMaxWidth,  altText,  dimensions { width, height, unit },  yearCreated,  isFeatured,  price,  "tags": tags[]->{ _id, name, "slug": slug.current, category }}
 export type ARTWORK_BY_SLUG_QUERY_RESULT = {
   _id: string
   title: string | null
@@ -368,6 +373,8 @@ export type ARTWORK_BY_SLUG_QUERY_RESULT = {
     crop?: SanityImageCrop
     _type: 'image'
   } | null
+  imageWidth: number | null
+  displayMaxWidth: number | null
   altText: string | null
   dimensions: {
     width: number | null
@@ -441,9 +448,9 @@ export type SITE_SETTINGS_QUERY_RESULT =
 import '@sanity/client'
 declare module '@sanity/client' {
   interface SanityQueries {
-    '\n  *[_type == "artwork" && defined(slug.current)]\n    | order(lower(title) asc) {\n  _id,\n  title,\n  "slug": slug.current,\n  description,\n  artistNote,\n  medium,\n  image,\n  altText,\n  dimensions { width, height, unit },\n  yearCreated,\n  isFeatured,\n  price,\n  "tags": tags[]->{ _id, name, "slug": slug.current, category }\n}\n': ALL_ARTWORKS_QUERY_RESULT
-    '\n  *[_type == "artwork" && isFeatured == true && defined(slug.current)]\n    | order(coalesce(yearCreated, 0) desc, _createdAt desc)[0...6] {\n  _id,\n  title,\n  "slug": slug.current,\n  description,\n  artistNote,\n  medium,\n  image,\n  altText,\n  dimensions { width, height, unit },\n  yearCreated,\n  isFeatured,\n  price,\n  "tags": tags[]->{ _id, name, "slug": slug.current, category }\n}\n': FEATURED_ARTWORKS_QUERY_RESULT
-    '\n  *[_type == "artwork" && slug.current == $slug][0] {\n  _id,\n  title,\n  "slug": slug.current,\n  description,\n  artistNote,\n  medium,\n  image,\n  altText,\n  dimensions { width, height, unit },\n  yearCreated,\n  isFeatured,\n  price,\n  "tags": tags[]->{ _id, name, "slug": slug.current, category }\n}\n': ARTWORK_BY_SLUG_QUERY_RESULT
+    '\n  *[_type == "artwork" && defined(slug.current)]\n    | order(lower(title) asc) {\n  _id,\n  title,\n  "slug": slug.current,\n  description,\n  artistNote,\n  medium,\n  image,\n  "imageWidth": image.asset->metadata.dimensions.width,\n  displayMaxWidth,\n  altText,\n  dimensions { width, height, unit },\n  yearCreated,\n  isFeatured,\n  price,\n  "tags": tags[]->{ _id, name, "slug": slug.current, category }\n}\n': ALL_ARTWORKS_QUERY_RESULT
+    '\n  *[_type == "artwork" && isFeatured == true && defined(slug.current)]\n    | order(coalesce(yearCreated, 0) desc, _createdAt desc)[0...6] {\n  _id,\n  title,\n  "slug": slug.current,\n  description,\n  artistNote,\n  medium,\n  image,\n  "imageWidth": image.asset->metadata.dimensions.width,\n  displayMaxWidth,\n  altText,\n  dimensions { width, height, unit },\n  yearCreated,\n  isFeatured,\n  price,\n  "tags": tags[]->{ _id, name, "slug": slug.current, category }\n}\n': FEATURED_ARTWORKS_QUERY_RESULT
+    '\n  *[_type == "artwork" && slug.current == $slug][0] {\n  _id,\n  title,\n  "slug": slug.current,\n  description,\n  artistNote,\n  medium,\n  image,\n  "imageWidth": image.asset->metadata.dimensions.width,\n  displayMaxWidth,\n  altText,\n  dimensions { width, height, unit },\n  yearCreated,\n  isFeatured,\n  price,\n  "tags": tags[]->{ _id, name, "slug": slug.current, category }\n}\n': ARTWORK_BY_SLUG_QUERY_RESULT
     '\n  *[_type == "artwork" && defined(slug.current)]{ "slug": slug.current }\n': ARTWORK_SLUGS_QUERY_RESULT
     '\n  *[_id == "siteSettings"][0] {\n    artistName, tagline, bio, profileImage, publicContactAlias, priceCurrency\n  }\n': SITE_SETTINGS_QUERY_RESULT
   }

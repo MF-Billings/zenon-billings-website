@@ -36,6 +36,22 @@ test.describe('artwork detail', () => {
     await expect(image).toHaveAttribute('loading', 'eager')
   })
 
+  test('never renders the image wider than its source pixels', async ({ page }) => {
+    await page.goto('/gallery/')
+    await page.locator('.artwork-card a').first().click()
+
+    const image = page.locator('article img').first()
+    await expect(image).toBeVisible()
+    await image.evaluate((img: HTMLImageElement) => img.decode())
+
+    const { rendered, natural } = await image.evaluate((img: HTMLImageElement) => ({
+      rendered: img.getBoundingClientRect().width,
+      natural: img.naturalWidth,
+    }))
+    expect(natural).toBeGreaterThan(0)
+    expect(rendered).toBeLessThanOrEqual(natural)
+  })
+
   test('titles the tab with the artwork name', async ({ page }) => {
     await page.goto('/artwork/seated-giant-334002/')
     await expect(page).toHaveTitle(/Seated Giant \| Zenon Billings/)

@@ -13,7 +13,8 @@
     "lint": "eslint --max-warnings 0",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "seed": "tsx --env-file=.env.local scripts/seed-gallery.ts"
+    "seed": "tsx --env-file=.env.local scripts/seed-gallery.ts",
+    "backfill:display-width": "tsx --env-file=.env.local scripts/backfill-display-width.ts"
   },
   "dependencies": {
     "@picocss/pico": "^2.1.1",
