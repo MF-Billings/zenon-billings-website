@@ -1,4 +1,4 @@
-import { buildSrcSet, urlFor } from '@/lib/sanity/imageUrl'
+import { buildSrcSet, imageUrl, urlFor } from '@/lib/sanity/imageUrl'
 
 const imageSource = {
   _type: 'image' as const,
@@ -15,6 +15,28 @@ describe('urlFor', () => {
   })
 })
 
+describe('imageUrl', () => {
+  it('scales to the requested width and keeps the source proportions by default', () => {
+    const url = imageUrl(imageSource, 400)
+
+    expect(url).toContain('w=400')
+    expect(url).not.toContain('h=')
+    expect(url).toContain('fit=max')
+  })
+
+  it('crops to a fixed aspect ratio when one is given, so thumbnails share a shape', () => {
+    const url = imageUrl(imageSource, 400, { aspectRatio: 4 / 3 })
+
+    expect(url).toContain('w=400')
+    expect(url).toContain('h=300')
+    expect(url).toContain('fit=crop')
+  })
+
+  it('rounds the derived height to whole pixels', () => {
+    expect(imageUrl(imageSource, 300, { aspectRatio: 16 / 9 })).toContain('h=169')
+  })
+})
+
 describe('buildSrcSet', () => {
   it('emits one candidate per width, each tagged with its pixel width', () => {
     const srcSet = buildSrcSet(imageSource, [400, 800])
@@ -27,5 +49,12 @@ describe('buildSrcSet', () => {
 
   it('requests auto format so the CDN can serve WebP or AVIF', () => {
     expect(buildSrcSet(imageSource, [400])).toContain('auto=format')
+  })
+
+  it('crops every candidate to the same aspect ratio when one is given', () => {
+    const candidates = buildSrcSet(imageSource, [300, 600], { aspectRatio: 1 }).split(', ')
+
+    expect(candidates[0]).toMatch(/h=300.*fit=crop/)
+    expect(candidates[1]).toMatch(/h=600.*fit=crop/)
   })
 })

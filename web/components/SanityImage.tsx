@@ -1,5 +1,5 @@
 import type { SanityImageSource } from '@sanity/image-url'
-import { buildSrcSet, urlFor } from '@/lib/sanity/imageUrl'
+import { buildSrcSet, heightFor, imageUrl } from '@/lib/sanity/imageUrl'
 
 const DEFAULT_WIDTHS = [400, 800, 1200, 1600]
 
@@ -8,6 +8,8 @@ type SanityImageProps = {
   alt: string
   widths?: number[]
   sizes?: string
+  /** Width divided by height. Crops around the editor's hotspot when set. */
+  aspectRatio?: number
   priority?: boolean
   className?: string
   /** Widest the image may render, in CSS pixels. Also caps the srcset so nothing wider is fetched. */
@@ -27,21 +29,25 @@ export default function SanityImage({
   alt,
   widths = DEFAULT_WIDTHS,
   sizes = '(max-width: 768px) 100vw, 50vw',
+  aspectRatio,
   priority = false,
   className,
   maxWidth = null,
 }: SanityImageProps) {
   const candidateWidths = maxWidth ? capWidths(widths, maxWidth) : widths
   const fallbackWidth = candidateWidths[candidateWidths.length - 1]
+  const fixedShape = aspectRatio !== undefined
 
   return (
     // next/image needs a server to optimize; this site is a static export and
     // Sanity's CDN does the resizing via the srcset above.
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src={urlFor(source).width(fallbackWidth).url()}
-      srcSet={buildSrcSet(source, candidateWidths)}
+      src={imageUrl(source, fallbackWidth, { aspectRatio })}
+      srcSet={buildSrcSet(source, candidateWidths, { aspectRatio })}
       sizes={sizes}
+      width={fixedShape ? fallbackWidth : undefined}
+      height={fixedShape ? heightFor(fallbackWidth, aspectRatio) : undefined}
       alt={alt}
       loading={priority ? 'eager' : 'lazy'}
       decoding="async"

@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import ArtworkCard from '@/components/ArtworkCard'
+import { CARD_ASPECT_RATIO } from '@/lib/artwork/cardAspectRatio'
 import type { Artwork } from '@/lib/sanity/types'
 
 const artwork = {
@@ -49,6 +50,16 @@ describe('ArtworkCard', () => {
   it('mats the image so every card is the same shape regardless of the artwork', () => {
     const { container } = render(<ArtworkCard artwork={artwork} />)
     expect(container.querySelector('.artwork-card__mat')).toBeInTheDocument()
+  })
+
+  it('crops every thumbnail to the mat ratio so the image fills its mat regardless of source shape', () => {
+    render(<ArtworkCard artwork={artwork} />)
+
+    const img = screen.getByRole('img')
+    expect(img.getAttribute('src')).toMatch(/fit=crop/)
+    const width = Number(img.getAttribute('width'))
+    const height = Number(img.getAttribute('height'))
+    expect(width / height).toBeCloseTo(CARD_ASPECT_RATIO, 2)
   })
 
   it('shows the full studio label, not just the year', () => {

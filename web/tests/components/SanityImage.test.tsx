@@ -74,3 +74,42 @@ describe('SanityImage with a maxWidth cap', () => {
     expect(screen.getByRole('img').style.maxWidth).toBe('')
   })
 })
+
+describe('SanityImage with a fixed aspect ratio', () => {
+  it('asks the CDN to crop src and every srcset candidate to that ratio', () => {
+    render(<SanityImage source={source} alt="Art" widths={[400, 800]} aspectRatio={1} />)
+
+    const img = screen.getByRole('img')
+    expect(img.getAttribute('src')).toMatch(/w=800.*h=800.*fit=crop/)
+    for (const candidate of img.getAttribute('srcset')!.split(', ')) {
+      expect(candidate).toMatch(/fit=crop/)
+    }
+  })
+
+  it('declares intrinsic width and height so the layout is stable before the image loads', () => {
+    render(<SanityImage source={source} alt="Art" widths={[400, 800]} aspectRatio={4 / 3} />)
+
+    const img = screen.getByRole('img')
+    expect(img).toHaveAttribute('width', '800')
+    expect(img).toHaveAttribute('height', '600')
+  })
+
+  it('leaves the source proportions alone when no ratio is given', () => {
+    render(<SanityImage source={source} alt="Art" />)
+
+    const img = screen.getByRole('img')
+    expect(img.getAttribute('src')).not.toContain('fit=crop')
+    expect(img).not.toHaveAttribute('height')
+  })
+
+  it('crops the capped fallback width when both a cap and a ratio are given', () => {
+    render(
+      <SanityImage source={source} alt="Art" widths={[400, 800]} maxWidth={600} aspectRatio={1} />,
+    )
+
+    const img = screen.getByRole('img')
+    expect(img.getAttribute('src')).toMatch(/w=600.*h=600.*fit=crop/)
+    expect(img).toHaveAttribute('width', '600')
+    expect(img).toHaveAttribute('height', '600')
+  })
+})

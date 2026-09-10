@@ -42,10 +42,13 @@ check these two rules first.
 
 | Change                                        | File                          |
 | --------------------------------------------- | ----------------------------- |
-| A colour, spacing value, or the mat ratio     | `web/styles/_tokens.scss`     |
+| A colour, spacing value, or the mat ratio[^1] | `web/styles/_tokens.scss`     |
 | Type scale or the studio label                | `web/styles/_typography.scss` |
 | Paper texture, blooms, ink rules, deckle edge | `web/styles/_materials.scss`  |
 | Anything specific to one page                 | `web/styles/_<area>.scss`     |
+
+[^1]: Also update `CARD_ASPECT_RATIO` in `web/lib/artwork/cardAspectRatio.ts`; the CDN crops
+    thumbnails to it. A unit test fails if it no longer matches the token.
 
 ### Palette
 
@@ -328,6 +331,22 @@ written as a bare template string. Generated result types are named
 
 `web/lib/sanity/sanity.types.ts` is generated — never hand-edit it. `studio/` is a separate
 npm package and is excluded from the root ESLint and Prettier runs.
+
+### How images are sized
+
+The site is a static export, so Sanity's image CDN does all resizing and cropping through
+URL parameters. `web/lib/sanity/imageUrl.ts` wraps `@sanity/image-url`; `SanityImage` turns
+that into an `<img>` with a `srcset`.
+
+- **Detail pages** request a width only (`fit=max`), so the whole artwork is shown at its
+  own proportions.
+- **Gallery and featured thumbnails** pass an `aspectRatio` to `SanityImage`, which adds a
+  matching height and `fit=crop`. The ratio is the card mat's `--card-ratio` token, so the
+  cropped image fills its mat edge to edge whatever shape the source is. The CDN centres
+  the crop on the **hotspot** the editor set in the Studio image field, so if a thumbnail
+  cuts off the wrong part of a piece, fix it by moving the hotspot rather than
+  re-uploading. `web/lib/artwork/cardAspectRatio.ts` mirrors the token for build-time URL
+  generation; a test fails if the two drift apart.
 
 ### What the coverage floor measures
 
