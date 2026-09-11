@@ -41,8 +41,12 @@
   // The square marker is a deliberate design choice, kept as an owned rule on
   // the li itself rather than relying on inheritance from Pico so it survives
   // any future change to which Pico modules are enabled.
+  //
+  // `inside` keeps the marker within the item's own box: with the list's
+  // padding zeroed, an outside marker hangs into the container gutter and
+  // slips off screen once the nav wraps below the wordmark on a phone.
   li {
-    list-style: square;
+    list-style: square inside;
   }
 
   a {

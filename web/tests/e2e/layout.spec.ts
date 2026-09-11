@@ -42,3 +42,21 @@ for (const path of PAGES) {
     })
   }
 }
+
+// The nav markers are list bullets, which have no DOM box of their own. When
+// the nav wraps below the wordmark on a phone the list starts flush with the
+// container's edge, and a marker drawn outside the item is pushed off screen.
+test('the first nav marker stays inside the viewport on mobile', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 640 })
+  await page.goto('/gallery/')
+  await page.evaluate(() => document.fonts.ready)
+
+  const item = page.locator('.site-header__links li').first()
+  const itemBox = await item.boundingBox()
+  const linkBox = await item.getByRole('link').boundingBox()
+
+  expect(itemBox!.x).toBeGreaterThanOrEqual(0)
+  // The marker occupies width inside the item; if the link starts at the item's
+  // own left edge, the marker has been drawn outside it.
+  expect(linkBox!.x).toBeGreaterThan(itemBox!.x)
+})
