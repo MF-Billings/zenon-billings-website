@@ -1,5 +1,6 @@
-import { render, screen } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { vi } from 'vitest'
 import GalleryBrowser from '@/components/GalleryBrowser'
 import type { Artwork } from '@/lib/sanity/types'
 
@@ -84,5 +85,47 @@ describe('GalleryBrowser', () => {
     expect(tag).not.toBeChecked()
     await userEvent.click(tag)
     expect(tag).toBeChecked()
+  })
+
+  describe('back to top', () => {
+    type Callback = (entries: Pick<IntersectionObserverEntry, 'isIntersecting'>[]) => void
+    const observer = { callback: null as Callback | null, observed: [] as Element[] }
+
+    beforeEach(() => {
+      observer.callback = null
+      observer.observed = []
+      vi.stubGlobal(
+        'IntersectionObserver',
+        class {
+          constructor(callback: Callback) {
+            observer.callback = callback
+          }
+          observe(element: Element) {
+            observer.observed.push(element)
+          }
+          disconnect() {}
+        },
+      )
+    })
+
+    afterEach(() => vi.unstubAllGlobals())
+
+    it('keeps the button hidden while the search input is on screen', () => {
+      render(<GalleryBrowser artworks={artworks} />)
+      expect(screen.getByLabelText(/back to top/i)).not.toBeVisible()
+    })
+
+    it('watches the search input, not some other element', () => {
+      render(<GalleryBrowser artworks={artworks} />)
+      expect(observer.observed).toEqual([screen.getByRole('searchbox', { name: /search/i })])
+    })
+
+    it('shows the button once the search input has scrolled out of view', () => {
+      render(<GalleryBrowser artworks={artworks} />)
+
+      act(() => observer.callback!([{ isIntersecting: false }]))
+
+      expect(screen.getByRole('button', { name: /back to top/i })).toBeVisible()
+    })
   })
 })

@@ -1,0 +1,46 @@
+// Pinned to the corner of the viewport so it is reachable from anywhere on a
+// long page. Pico styles every button as a full-width pigment block, so each
+// of those defaults is reset here rather than fought at the point of use.
+.back-to-top {
+  position: fixed;
+  right: var(--space-sheet);
+  bottom: var(--space-sheet);
+  // Above the header (z-index 1) and the artwork cards, below nothing that
+  // needs to win: the site has no modals or menus that overlay the page.
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--pico-border-radius);
+  background: var(--pigment-indigo);
+  color: var(--paper-cold-press);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--shadow-ink) 25%, transparent);
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--pigment-payne-grey);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--pigment-indigo);
+    outline-offset: 2px;
+  }
+}
+
+.back-to-top__arrow {
+  width: 1.25rem;
+  height: 1.25rem;
+  // The arrow lifts on hover so the control hints at the motion it triggers.
+  transition: transform 150ms ease-out;
+
+  .back-to-top:hover &,
+  .back-to-top:focus-visible & {
+    transform: translateY(-2px);
+  }
+}

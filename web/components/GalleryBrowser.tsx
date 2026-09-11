@@ -1,12 +1,19 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import ArtworkGrid from '@/components/ArtworkGrid'
+import BackToTopButton from '@/components/BackToTopButton'
 import { collectTags, EMPTY_FILTER, filterArtworks } from '@/lib/gallery/filterArtworks'
 import type { Artwork } from '@/lib/sanity/types'
+import { useOutOfView } from '@/lib/viewport/useOutOfView'
 
 export default function GalleryBrowser({ artworks }: { artworks: Artwork[] }) {
   const [filter, setFilter] = useState(EMPTY_FILTER)
+
+  // The search field marks the top of the browsing experience: once it has
+  // scrolled away, the visitor is deep enough in the grid to want a way back.
+  const searchInput = useRef<HTMLInputElement>(null)
+  const searchOutOfView = useOutOfView(searchInput)
 
   const tags = useMemo(() => collectTags(artworks), [artworks])
   const visible = useMemo(() => filterArtworks(artworks, filter), [artworks, filter])
@@ -26,6 +33,7 @@ export default function GalleryBrowser({ artworks }: { artworks: Artwork[] }) {
           Search artwork
         </label>
         <input
+          ref={searchInput}
           id="artwork-search"
           type="search"
           className="field-ruled"
@@ -59,6 +67,7 @@ export default function GalleryBrowser({ artworks }: { artworks: Artwork[] }) {
       </search>
 
       <ArtworkGrid artworks={visible} emptyMessage="No artwork matches that search." />
+      <BackToTopButton visible={searchOutOfView} />
     </>
   )
 }
