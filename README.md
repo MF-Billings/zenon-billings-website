@@ -43,12 +43,19 @@ check these two rules first.
 | Change                                        | File                          |
 | --------------------------------------------- | ----------------------------- |
 | A colour, spacing value, or the mat ratio[^1] | `web/styles/_tokens.scss`     |
+| How big a gallery card can grow[^2]           | `web/styles/_tokens.scss`     |
 | Type scale or the studio label                | `web/styles/_typography.scss` |
 | Paper texture, blooms, ink rules, deckle edge | `web/styles/_materials.scss`  |
 | Anything specific to one page                 | `web/styles/_<area>.scss`     |
 
 [^1]: Also update `CARD_ASPECT_RATIO` in `web/lib/artwork/cardAspectRatio.ts`; the CDN crops
     thumbnails to it. A unit test fails if it no longer matches the token.
+
+[^2]: `--card-width-min` is the narrowest grid track (so it decides how many columns fit)
+    and `--card-width-max` caps the card inside it, so a wide viewport shows more cards
+    rather than bigger ones. Also update `CARD_MAX_WIDTH_REM` in
+    `web/lib/artwork/cardMaxWidth.ts`; it feeds the thumbnail's `sizes` attribute. A unit
+    test fails if it no longer matches the token.
 
 ### Palette
 
@@ -229,6 +236,10 @@ candidate wider than it. When the field is empty the cap falls back to the asset
 pixel width, so no image is ever shown larger than its source even before an editor
 touches it. An editor-set value is also clamped to the native width for the same reason.
 
+Gallery and featured thumbnails honour the same cap, but only for the renditions they
+offer: no `srcset` candidate is wider than the resolved cap, while the card itself keeps
+the mat's size and shape so the grid never goes ragged.
+
 The field is meant to be tuned by eye, but the native width is a fair first guess, so a
 one-off script seeds it from the asset metadata:
 
@@ -346,7 +357,10 @@ that into an `<img>` with a `srcset`.
   the crop on the **hotspot** the editor set in the Studio image field, so if a thumbnail
   cuts off the wrong part of a piece, fix it by moving the hotspot rather than
   re-uploading. `web/lib/artwork/cardAspectRatio.ts` mirrors the token for build-time URL
-  generation; a test fails if the two drift apart.
+  generation; a test fails if the two drift apart. Thumbnail renditions are offered at
+  roughly 1×, 2× and 3× the `--card-width-max` token, and the `sizes` attribute is that
+  token (mirrored by `web/lib/artwork/cardMaxWidth.ts`), so the browser never fetches a
+  rendition sized for a wider card than the grid will draw.
 
 ### What the coverage floor measures
 

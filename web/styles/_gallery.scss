@@ -1,8 +1,14 @@
+// A sheet pinned to the wall stays the same size however wide the wall is, so a
+// wide viewport shows more sheets, not bigger ones. The track's min decides how
+// many columns fit (min(100%, …) lets one shrink on a narrow phone); the card
+// itself carries the max (see .artwork-card), because a definite max in
+// minmax() would make auto-fill count columns by the max and fit fewer of them.
 .artwork-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--card-width-min)), 1fr));
   gap: var(--space-sheet);
   align-items: start;
+  justify-items: center;
 }
 
 // Sheets pinned to a wall are never perfectly square to each other. The cycle is

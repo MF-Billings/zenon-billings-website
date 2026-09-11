@@ -1,5 +1,7 @@
 .artwork-card {
   margin: 0;
+  width: 100%;
+  max-width: var(--card-width-max);
   transform: rotate(var(--tilt, 0deg));
   transition:
     transform 320ms cubic-bezier(0.22, 0.61, 0.36, 1),

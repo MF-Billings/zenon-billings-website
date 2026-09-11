@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import ArtworkCard from '@/components/ArtworkCard'
 import { CARD_ASPECT_RATIO } from '@/lib/artwork/cardAspectRatio'
+import { CARD_MAX_WIDTH_REM } from '@/lib/artwork/cardMaxWidth'
 import type { Artwork } from '@/lib/sanity/types'
 
 const artwork = {
@@ -60,6 +61,34 @@ describe('ArtworkCard', () => {
     const width = Number(img.getAttribute('width'))
     const height = Number(img.getAttribute('height'))
     expect(width / height).toBeCloseTo(CARD_ASPECT_RATIO, 2)
+  })
+
+  it('tells the browser a thumbnail is never wider than the card token, so it picks a small rendition', () => {
+    render(<ArtworkCard artwork={artwork} />)
+    expect(screen.getByRole('img')).toHaveAttribute('sizes', `${CARD_MAX_WIDTH_REM}rem`)
+  })
+
+  it('offers no srcset candidate wider than the editor-set display max width', () => {
+    render(
+      <ArtworkCard artwork={{ ...artwork, displayMaxWidth: 490, imageWidth: 3026 } as Artwork} />,
+    )
+
+    const img = screen.getByRole('img')
+    // Crop URLs carry `rect=x,y,w,h`, so split on the descriptor rather than the comma.
+    const candidateWidths = [...(img.getAttribute('srcset') ?? '').matchAll(/ (\d+)w/g)].map(
+      ([, width]) => Number(width),
+    )
+    expect(candidateWidths).toContain(490)
+    expect(Math.max(...candidateWidths)).toBe(490)
+    expect(img.getAttribute('src')).toContain('w=490')
+  })
+
+  it('leaves the srcset alone when no display max width is set', () => {
+    render(
+      <ArtworkCard artwork={{ ...artwork, displayMaxWidth: null, imageWidth: null } as Artwork} />,
+    )
+    const srcSet = screen.getByRole('img').getAttribute('srcset') ?? ''
+    expect(srcSet.match(/ \d+w/g)?.length).toBeGreaterThan(1)
   })
 
   it('shows the full studio label, not just the year', () => {
