@@ -24,4 +24,19 @@ describe('SiteHeader', () => {
     const { container } = render(<SiteHeader />)
     expect(container.querySelector('.ink-rule')).toBeInTheDocument()
   })
+
+  describe('wordmark initial', () => {
+    it('links home under the full, unbroken name', () => {
+      render(<SiteHeader />)
+      // The initial is wrapped for styling; that must not split the accessible name.
+      expect(screen.getByRole('link', { name: 'Zenon Billings' })).toHaveAttribute('href', '/')
+    })
+
+    it('wraps only the first letter in the styled initial', () => {
+      const { container } = render(<SiteHeader />)
+      const initial = container.querySelector('.site-header__initial')
+      expect(initial).toHaveTextContent(/^Z$/)
+      expect(initial?.parentElement).toHaveClass('site-header__wordmark')
+    })
+  })
 })
