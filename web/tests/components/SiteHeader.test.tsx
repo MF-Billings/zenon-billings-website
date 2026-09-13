@@ -34,7 +34,7 @@ describe('SiteHeader', () => {
 
     it('wraps only the first letter in the styled initial', () => {
       const { container } = render(<SiteHeader />)
-      const initial = container.querySelector('.site-header__initial')
+      const initial = container.querySelector('.initial-badge')
       expect(initial).toHaveTextContent(/^Z$/)
       expect(initial?.parentElement).toHaveClass('site-header__wordmark')
     })

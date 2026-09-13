@@ -40,13 +40,13 @@ check these two rules first.
 
 ### Where to change what
 
-| Change                                        | File                          |
-| --------------------------------------------- | ----------------------------- |
-| A colour, spacing value, or the mat ratio[^1] | `web/styles/_tokens.scss`     |
-| How big a gallery card can grow[^2]           | `web/styles/_tokens.scss`     |
-| Type scale or the studio label                | `web/styles/_typography.scss` |
-| Paper texture, blooms, ink rules, deckle edge | `web/styles/_materials.scss`  |
-| Anything specific to one page                 | `web/styles/_<area>.scss`     |
+| Change                                          | File                          |
+| ----------------------------------------------- | ----------------------------- |
+| A colour, spacing value, or the mat ratio[^1]   | `web/styles/_tokens.scss`     |
+| How big a gallery card can grow[^2]             | `web/styles/_tokens.scss`     |
+| Type scale, the studio label, or the name badge | `web/styles/_typography.scss` |
+| Paper texture, blooms, ink rules, deckle edge   | `web/styles/_materials.scss`  |
+| Anything specific to one page                   | `web/styles/_<area>.scss`     |
 
 [^1]: Also update `CARD_ASPECT_RATIO` in `web/lib/artwork/cardAspectRatio.ts`; the CDN crops
     thumbnails to it. A unit test fails if it no longer matches the token.
@@ -87,6 +87,10 @@ Archivo Expanded (`wdth` 125) for display, Inter for everything else, both self-
 `next/font`. Lowercase is applied through the `.lowercase-chrome` class and covers site chrome
 only — the wordmark, navigation, and headings the code controls. **Artwork titles render
 exactly as the artist entered them in Sanity.**
+
+The first letter of the artist's name sits on a square blue badge, echoing the business card.
+The header writes it as literal markup; the home hero, whose name comes from Sanity, goes through
+the `InitialBadge` component. Both share the `.initial-badge` rule.
 
 ## Setup
 

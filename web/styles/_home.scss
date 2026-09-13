@@ -30,10 +30,11 @@
 }
 
 .hero__wordmark {
-  font-size: clamp(3rem, 9vw, 7rem);
+  font-size: clamp(2.4rem, 7.2vw, 5.6rem);
   font-weight: 600;
   line-height: 0.95;
-  letter-spacing: -0.02em;
+  // Matches the badge's right padding so every letter gap in the name is even.
+  letter-spacing: 0.15em;
   margin: 0;
   max-width: 14ch;
 }
@@ -45,8 +46,10 @@
   max-width: 40ch;
 }
 
+// No top padding: the hero's bottom band already provides the gap, and adding
+// another --space-band here doubled it.
 .home-featured {
-  padding-block: var(--space-band) 0;
+  padding-block: 0;
 }
 
 .home-featured__rule {

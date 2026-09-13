@@ -167,7 +167,7 @@ metric matching so there is no layout shift. No runtime font requests.
 
 | Role | Face | Size |
 |---|---|---|
-| Wordmark / hero | Archivo Expanded 600 | `clamp(3rem, 9vw, 7rem)`, leading 0.95, tracking −0.02em |
+| Wordmark / hero | Archivo Expanded 600 | `clamp(2.4rem, 7.2vw, 5.6rem)`, leading 0.95, tracking 0.15em |
 | Page title | Archivo Expanded 600 | `clamp(2.25rem, 5vw, 3.5rem)` |
 | Section heading | Archivo Expanded 500 | `clamp(1.5rem, 3vw, 2rem)` |
 | Card title | Archivo Expanded 500, `wdth: 110` | 1.125rem |
@@ -223,7 +223,7 @@ pages change structurally.
 labels, `InkRule` beneath. Not sticky — on a site this short it costs vertical space and buys
 nothing.
 
-**Home.** Asymmetric hero: wordmark at `clamp(3rem, 9vw, 7rem)` on the left, tagline below in
+**Home.** Asymmetric hero: wordmark at `clamp(2.4rem, 7.2vw, 5.6rem)` on the left, tagline below in
 Inter, a `WashBloom` bleeding in from the top-right behind it and past the container edge. The
 band closes on a deckle edge. Then `featured work` as a section heading with an ink rule, the
 three-up grid, and the existing `role="button"` gallery link restyled as a pigment-filled

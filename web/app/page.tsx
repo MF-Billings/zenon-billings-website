@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import ArtworkGrid from '@/components/ArtworkGrid'
+import InitialBadge from '@/components/InitialBadge'
 import InkRule from '@/components/InkRule'
 import WashBloom from '@/components/WashBloom'
 import { client } from '@/lib/sanity/client'
@@ -17,7 +18,7 @@ export default async function HomePage() {
         <WashBloom pigment="watercolour" className="hero__bloom" />
         <hgroup>
           <h1 className="hero__wordmark lowercase-chrome">
-            {settings?.artistName ?? 'Zenon Billings'}
+            <InitialBadge text={settings?.artistName ?? 'Zenon Billings'} />
           </h1>
           {settings?.tagline && <p className="hero__tagline">{settings.tagline}</p>}
         </hgroup>

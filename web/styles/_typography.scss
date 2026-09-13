@@ -46,6 +46,24 @@ h4 {
   text-transform: lowercase;
 }
 
+// The first letter of the artist's name sits on a square blue badge, echoing
+// the business card. The blue belongs to the lettering of the name alone, so
+// it is not a pigment token. Kept `inline` on purpose: vertical padding on an
+// inline element paints outside the line box, so the badge can rise above the
+// letter without changing the line height or the type size. Sized in em so it
+// scales with whatever the name is set in, header wordmark or hero. No colour
+// of its own: the letter stays the same ink as the rest of the name.
+//
+// The right padding doubles as the gap to the next letter, so the name is
+// tracked at the same 0.15em (see the wordmark rules) and the badge drops its
+// own tracking; otherwise the Z would carry both and sit too far from the E.
+.initial-badge {
+  // top right bottom left
+  padding: 0.45em 0.15em 0.05em 0.05em;
+  letter-spacing: 0;
+  background: #7aa1cd;
+}
+
 p {
   max-width: 68ch;
 }

@@ -19,7 +19,8 @@
   font-variation-settings: 'wdth' 125;
   font-size: 1.25rem;
   font-weight: 600;
-  letter-spacing: -0.01em;
+  // Matches the badge's right padding so every letter gap in the name is even.
+  letter-spacing: 0.15em;
   text-decoration: none;
   color: var(--ink-primary);
 
@@ -29,18 +30,6 @@
   &:focus-visible {
     color: var(--pigment-indigo);
   }
-}
-
-// The first letter of the wordmark sits on a square blue badge, echoing the
-// artist's business card. The blue belongs to the lettering of the name alone,
-// so it is not a pigment token. Kept `inline` on purpose: vertical padding on
-// an inline element paints outside the line box, so the badge can rise above
-// the letter without changing the line height or the type size.
-.site-header__initial {
-  // top right bottom left: more room on the right, where the E follows.
-  padding: 0.45em 0.25em 0.05em 0.15em;
-  background: #7aa1cd;
-  color: var(--paper-cold-press);
 }
 
 .site-header__links {
