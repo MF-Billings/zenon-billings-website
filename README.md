@@ -136,6 +136,29 @@ The script **hard-refuses** to run when `NEXT_PUBLIC_SANITY_DATASET` is `product
 stray `--clear` cannot destroy real content. Re-running is safe: artwork is matched by
 slug and patched rather than duplicated.
 
+### Sample life events
+
+`web/scripts/seed-life-events.ts` writes a fictional set of `lifeEvent` documents (see
+[Key dates on the about page](#key-dates-on-the-about-page)) so the timeline can be seen
+with every shape it handles: all three date precisions, overlapping multi-year ranges,
+years with several events, and events sharing one date. The events are invented and live in
+`web/scripts/lifeEventSeed.ts`; they are not the artist's biography.
+
+| Command                                | What it does                                                  |
+| -------------------------------------- | ------------------------------------------------------------- |
+| `npm run seed:life-events`             | Create or update the sample events, matched by title          |
+| `npm run seed:life-events -- --clear`  | Delete every `lifeEvent` document first, then seed            |
+
+Events flagged for a picture borrow an image asset the gallery seed already uploaded, so
+run `npm run seed` first if you want the illustrated sheets. The same production guard
+applies. If `web/.env.local` points at `production`, run it against the sample dataset
+explicitly:
+
+```bash
+NEXT_PUBLIC_SANITY_DATASET=development npm run seed:life-events
+NEXT_PUBLIC_SANITY_DATASET=development npm run dev   # then open /about
+```
+
 ## Importing the real artwork
 
 `production` holds the artist's own work, and the Met seeder refuses to touch it. Real
@@ -321,6 +344,7 @@ Run these from `web/`, or from the repository root via the delegating scripts in
 | `npm run format`        | Prettier, writing changes                                       |
 | `npm run format:check`  | Prettier, check only                                            |
 | `npm run import:artwork` | Import real artwork from YAML — see above                      |
+| `npm run seed:life-events` | Write the fictional sample life events into the `development` dataset — see above |
 | `npm run backfill:display-width` | Seed empty `displayMaxWidth` fields from native pixel width — see above |
 
 The Playwright e2e suite requires `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY` to be set to a non-empty value in `web/.env.local` **before** running `npm run build`, because the static export bakes the value in at build time. Any placeholder works locally — the tests intercept Web3Forms requests and do not send them.
@@ -400,6 +424,8 @@ than strict:
 - `scripts/seed-gallery.ts` — dev-only CLI; its pure logic lives in `scripts/metMuseum.ts`
   and is fully covered there, leaving only network and upload plumbing that a mock could
   not meaningfully test
+- `scripts/seed-life-events.ts` — the same shape; its sample data and document mapping are
+  covered in `scripts/lifeEventSeed.ts`
 
 Everything else counts. Do not widen this list to make a failing run pass.
 

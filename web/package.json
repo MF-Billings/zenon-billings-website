@@ -14,6 +14,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "seed": "tsx --env-file=.env.local scripts/seed-gallery.ts",
+    "seed:life-events": "tsx --env-file=.env.local scripts/seed-life-events.ts",
     "backfill:display-width": "tsx --env-file=.env.local scripts/backfill-display-width.ts"
   },
   "dependencies": {

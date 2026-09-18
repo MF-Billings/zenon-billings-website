@@ -27,6 +27,9 @@ export default defineConfig({
         // scripts/metMuseum.ts; what remains is network and upload plumbing,
         // and mocking that would only test the mock. Verified by running it.
         'scripts/seed-gallery.ts',
+        // Same shape: the sample data and document mapping are covered by
+        // scripts/lifeEventSeed.ts, what remains is fetch-and-write plumbing.
+        'scripts/seed-life-events.ts',
         // Same shape: the plan is covered by scripts/displayWidthBackfill.ts,
         // what remains is fetch-and-commit plumbing.
         'scripts/backfill-display-width.ts',

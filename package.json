@@ -9,6 +9,7 @@
     "lint": "npm --prefix web run lint",
     "format": "npm --prefix web run format",
     "seed": "npm --prefix web run seed",
+    "seed:life-events": "npm --prefix web run seed:life-events",
     "backfill:display-width": "npm --prefix web run backfill:display-width",
     "typegen": "npm --prefix studio run typegen",
     "studio": "npm --prefix studio run dev"
