@@ -75,6 +75,28 @@ export type SanityImageHotspot = {
   width?: number
 }
 
+export type LifeEvent = {
+  _id: string
+  _type: 'lifeEvent'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title?: string
+  date?: string
+  datePrecision?: 'day' | 'month' | 'year'
+  endDate?: string
+  summary?: string
+  image?: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+  }
+  altText?: string
+  sortOrder?: number
+}
+
 export type Tag = {
   _id: string
   _type: 'tag'
@@ -244,6 +266,7 @@ export type AllSanitySchemaTypes =
   | SiteSettings
   | SanityImageCrop
   | SanityImageHotspot
+  | LifeEvent
   | Tag
   | Slug
   | TagReference
@@ -444,6 +467,26 @@ export type SITE_SETTINGS_QUERY_RESULT =
     }
   | null
 
+// Source: ../web/lib/sanity/queries.ts
+// Variable: LIFE_EVENTS_QUERY
+// Query: *[_type == "lifeEvent" && defined(date)]    | order(date asc, coalesce(sortOrder, 0) asc, _createdAt asc) {    _id, title, date, datePrecision, endDate, summary, image, altText  }
+export type LIFE_EVENTS_QUERY_RESULT = Array<{
+  _id: string
+  title: string | null
+  date: string
+  datePrecision: 'day' | 'month' | 'year' | null
+  endDate: string | null
+  summary: string | null
+  image: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+  } | null
+  altText: string | null
+}>
+
 // Query TypeMap
 import '@sanity/client'
 declare module '@sanity/client' {
@@ -453,5 +496,6 @@ declare module '@sanity/client' {
     '\n  *[_type == "artwork" && slug.current == $slug][0] {\n  _id,\n  title,\n  "slug": slug.current,\n  description,\n  artistNote,\n  medium,\n  image,\n  "imageWidth": image.asset->metadata.dimensions.width,\n  displayMaxWidth,\n  altText,\n  dimensions { width, height, unit },\n  yearCreated,\n  isFeatured,\n  price,\n  "tags": tags[]->{ _id, name, "slug": slug.current, category }\n}\n': ARTWORK_BY_SLUG_QUERY_RESULT
     '\n  *[_type == "artwork" && defined(slug.current)]{ "slug": slug.current }\n': ARTWORK_SLUGS_QUERY_RESULT
     '\n  *[_id == "siteSettings"][0] {\n    artistName, tagline, bio, profileImage, publicContactAlias, priceCurrency\n  }\n': SITE_SETTINGS_QUERY_RESULT
+    '\n  *[_type == "lifeEvent" && defined(date)]\n    | order(date asc, coalesce(sortOrder, 0) asc, _createdAt asc) {\n    _id, title, date, datePrecision, endDate, summary, image, altText\n  }\n': LIFE_EVENTS_QUERY_RESULT
   }
 }

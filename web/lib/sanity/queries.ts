@@ -41,3 +41,13 @@ export const SITE_SETTINGS_QUERY = defineQuery(`
     artistName, tagline, bio, profileImage, publicContactAlias, priceCurrency
   }
 `)
+
+// sortOrder only breaks ties between events on the same date, so it is used in
+// the ordering and not projected; _createdAt is the last resort so the order is
+// stable when the editor has not set one.
+export const LIFE_EVENTS_QUERY = defineQuery(`
+  *[_type == "lifeEvent" && defined(date)]
+    | order(date asc, coalesce(sortOrder, 0) asc, _createdAt asc) {
+    _id, title, date, datePrecision, endDate, summary, image, altText
+  }
+`)

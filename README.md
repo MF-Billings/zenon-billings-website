@@ -282,6 +282,27 @@ routing rule, create a new alias, update the field, and redeploy; the real inbox
 exposed and never has to change. That property is lost the moment a personal address goes
 into the field, which is why the field is named for what it is rather than "contact email".
 
+## Key dates on the about page
+
+The about page ends with a timeline of the artist's life, read from `lifeEvent` documents
+(Studio → **Life events**). The section is omitted entirely when there are none, so a fresh
+dataset renders the page exactly as before.
+
+| Field            | What it does                                                                                             |
+| ---------------- | -------------------------------------------------------------------------------------------------------- |
+| `title`          | The event, e.g. "First solo exhibition"                                                                  |
+| `date`           | Always a full calendar date; pick any day when only the month or year is known                           |
+| `datePrecision`  | How much of the date is shown: `day` → "August 18, 1970", `month` → "August 1970", `year` → "1970"       |
+| `endDate`        | Optional. Turns the event into a range at the same precision: "1997–2001", "March–August 2015"           |
+| `summary`        | Optional short text under the title                                                                      |
+| `image`, `altText` | Optional picture, shown small beside the text. Alt text is required whenever an image is set           |
+| `sortOrder`      | Optional. Only orders events that fall on the same date; lower comes first                               |
+
+Events are ordered by `date`, then `sortOrder`, then creation time. Events that share a date
+(and end date) share one date cell on the page and stack their sheets beneath it.
+`web/lib/timeline/formatEventDate.ts` does the formatting; the design and the two rejected
+layouts are in `docs/superpowers/specs/2026-09-17-life-timeline-design.md`.
+
 ## Commands
 
 Run these from `web/`, or from the repository root via the delegating scripts in the root

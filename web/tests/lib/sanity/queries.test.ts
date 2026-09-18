@@ -3,6 +3,7 @@ import {
   ARTWORK_BY_SLUG_QUERY,
   ARTWORK_SLUGS_QUERY,
   FEATURED_ARTWORKS_QUERY,
+  LIFE_EVENTS_QUERY,
   SITE_SETTINGS_QUERY,
 } from '@/lib/sanity/queries'
 
@@ -53,5 +54,29 @@ describe('GROQ queries', () => {
   it('publishes only the disposable contact alias, never a personal inbox field', () => {
     expect(SITE_SETTINGS_QUERY).toContain('publicContactAlias')
     expect(SITE_SETTINGS_QUERY).not.toContain('contactEmail')
+  })
+
+  it('selects dated life events in chronological order, then by editor sort order', () => {
+    expect(LIFE_EVENTS_QUERY).toContain('_type == "lifeEvent"')
+    expect(LIFE_EVENTS_QUERY).toContain('defined(date)')
+    expect(LIFE_EVENTS_QUERY).toContain(
+      'order(date asc, coalesce(sortOrder, 0) asc, _createdAt asc)',
+    )
+  })
+
+  it('carries everything the timeline renders and nothing it does not', () => {
+    for (const field of [
+      'title',
+      'date',
+      'datePrecision',
+      'endDate',
+      'summary',
+      'image',
+      'altText',
+    ]) {
+      expect(LIFE_EVENTS_QUERY).toContain(field)
+    }
+    const projection = LIFE_EVENTS_QUERY.slice(LIFE_EVENTS_QUERY.lastIndexOf('{'))
+    expect(projection).not.toContain('sortOrder')
   })
 })

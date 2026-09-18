@@ -1,8 +1,9 @@
 import type { Metadata } from 'next'
 import { PortableText } from 'next-sanity'
+import LifeTimeline from '@/components/LifeTimeline'
 import SanityImage from '@/components/SanityImage'
 import { client } from '@/lib/sanity/client'
-import { SITE_SETTINGS_QUERY } from '@/lib/sanity/queries'
+import { LIFE_EVENTS_QUERY, SITE_SETTINGS_QUERY } from '@/lib/sanity/queries'
 
 export const metadata: Metadata = {
   title: 'About',
@@ -10,7 +11,10 @@ export const metadata: Metadata = {
 }
 
 export default async function AboutPage() {
-  const settings = await client.fetch(SITE_SETTINGS_QUERY)
+  const [settings, lifeEvents] = await Promise.all([
+    client.fetch(SITE_SETTINGS_QUERY),
+    client.fetch(LIFE_EVENTS_QUERY),
+  ])
 
   return (
     <div className="about">
@@ -33,6 +37,8 @@ export default async function AboutPage() {
           {settings?.bio ? <PortableText value={settings.bio} /> : <p>Biography coming soon.</p>}
         </div>
       </div>
+
+      <LifeTimeline events={lifeEvents} />
     </div>
   )
 }

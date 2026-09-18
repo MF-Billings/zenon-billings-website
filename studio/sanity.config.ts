@@ -29,6 +29,7 @@ function workspaceForDataset(dataset: string, title: string): WorkspaceOptions {
               S.divider(),
               S.documentTypeListItem('artwork').title('Artwork'),
               S.documentTypeListItem('tag').title('Tags'),
+              S.documentTypeListItem('lifeEvent').title('Life events'),
             ]),
       }),
       visionTool({defaultDataset: dataset}),

@@ -12,6 +12,11 @@
   --ink-primary: #2a3138;
   --ink-muted: #6e6a63;
 
+  // The square blue behind the wordmark's initial, echoing the business card.
+  // Not a pigment: it never appears in the work, only in the site's own marks
+  // (the initial badge and the timeline's rail nodes).
+  --badge-blue: #7aa1cd;
+
   --medium-watercolour: var(--pigment-indigo);
   --medium-drawing: var(--pigment-payne-grey);
   --medium-photography: var(--pigment-burnt-sienna);
