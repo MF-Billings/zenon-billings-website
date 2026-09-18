@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { PortableText } from 'next-sanity'
+import BackToTopSentinel from '@/components/BackToTopSentinel'
 import LifeTimeline from '@/components/LifeTimeline'
 import SanityImage from '@/components/SanityImage'
 import { client } from '@/lib/sanity/client'
@@ -19,6 +20,7 @@ export default async function AboutPage() {
   return (
     <div className="about">
       <h1 className="lowercase-chrome">About {settings?.artistName ?? 'the artist'}</h1>
+      <BackToTopSentinel />
 
       <div className="about__spread">
         {settings?.profileImage && (

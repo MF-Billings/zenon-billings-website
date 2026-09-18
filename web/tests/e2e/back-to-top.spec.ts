@@ -15,6 +15,17 @@ test.describe('back to top', () => {
     await expect(button).toBeVisible()
   })
 
+  test('appears on the about page once the heading has scrolled out of view', async ({ page }) => {
+    await page.goto('/about/')
+    await page.evaluate(() => document.fonts.ready)
+
+    const button = page.getByRole('button', { name: /back to top/i })
+    await expect(button).toBeHidden()
+
+    await page.locator('.site-footer').scrollIntoViewIfNeeded()
+    await expect(button).toBeVisible()
+  })
+
   test('glides up through intermediate positions and then hides again', async ({ page }) => {
     await page.goto('/gallery/')
     await page.evaluate(() => document.fonts.ready)
