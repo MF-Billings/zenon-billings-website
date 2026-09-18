@@ -89,8 +89,14 @@ only — the wordmark, navigation, and headings the code controls. **Artwork tit
 exactly as the artist entered them in Sanity.**
 
 The first letter of the artist's name sits on a square blue badge, echoing the business card.
-The header writes it as literal markup; the home hero, whose name comes from Sanity, goes through
-the `InitialBadge` component. Both share the `.initial-badge` rule.
+The header writes it as literal markup; the home hero (`HomeHero`), whose name comes from Sanity,
+goes through the `InitialBadge` component. Both share the `.initial-badge` rule.
+
+The name appears once per screen. The hero heading carries `data-site-wordmark`, and a CSS rule in
+`_header.scss` hides the header's own wordmark on any page containing that attribute. The wordmark
+stays in layout (`visibility: hidden`, not `display: none`) so the nav row, and the rule beneath it,
+sit at the same height on every page. Every other page keeps the full wordmark as its link home. The
+header never checks the route; it only reacts to the page's markup.
 
 ## Setup
 

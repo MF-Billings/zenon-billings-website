@@ -68,3 +68,17 @@
 .site-header__rule {
   margin-top: 1rem;
 }
+
+// A page that already sets the site name large (the home hero) marks that
+// element with data-site-wordmark, and the header's own wordmark stands down
+// so the name is not read twice within one screen. The header only knows
+// "this page carries the wordmark", never which page that is.
+//
+// `visibility: hidden`, not `display: none`: the wordmark's line box is what
+// sets the nav row's height, so it has to stay in layout or the rule beneath
+// the header rises on this page and jumps as the visitor moves between pages.
+// Unlike opacity, visibility also drops the link from the tab order and the
+// accessibility tree, so nothing invisible is left to focus or announce.
+body:has([data-site-wordmark]) .site-header__wordmark {
+  visibility: hidden;
+}

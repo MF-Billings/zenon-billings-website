@@ -1,8 +1,7 @@
 import Link from 'next/link'
 import ArtworkGrid from '@/components/ArtworkGrid'
-import InitialBadge from '@/components/InitialBadge'
+import HomeHero from '@/components/HomeHero'
 import InkRule from '@/components/InkRule'
-import WashBloom from '@/components/WashBloom'
 import { client } from '@/lib/sanity/client'
 import { FEATURED_ARTWORKS_QUERY, SITE_SETTINGS_QUERY } from '@/lib/sanity/queries'
 
@@ -14,15 +13,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <section className="hero">
-        <WashBloom pigment="watercolour" className="hero__bloom" />
-        <hgroup>
-          <h1 className="hero__wordmark lowercase-chrome">
-            <InitialBadge text={settings?.artistName ?? 'Zenon Billings'} />
-          </h1>
-          {settings?.tagline && <p className="hero__tagline">{settings.tagline}</p>}
-        </hgroup>
-      </section>
+      <HomeHero artistName={settings?.artistName ?? 'Zenon Billings'} tagline={settings?.tagline} />
 
       <section className="home-featured">
         <h2 className="lowercase-chrome">Featured work</h2>
