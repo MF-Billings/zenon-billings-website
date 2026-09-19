@@ -5,12 +5,18 @@ export default function SiteHeader() {
   return (
     <header className="site-header container">
       <nav className="site-header__nav">
-        {/* No whitespace after the span, so the accessible name stays unbroken. */}
-        <Link href="/" className="site-header__wordmark lowercase-chrome">
+        {/* No whitespace after the span, so the text stays unbroken. Plain text,
+            not a link: "Home" in the list below is the one way back. */}
+        <p className="site-header__wordmark lowercase-chrome">
           <span className="initial-badge">Z</span>enon Billings
-        </Link>
+        </p>
         {/* Kept deliberately so list semantics don't depend on the marker styling */}
         <ul className="site-header__links" role="list">
+          <li>
+            <Link href="/" className="lowercase-chrome">
+              Home
+            </Link>
+          </li>
           <li>
             <Link href="/gallery" className="lowercase-chrome">
               Gallery

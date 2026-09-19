@@ -21,15 +21,9 @@
   font-weight: 600;
   // Matches the badge's right padding so every letter gap in the name is even.
   letter-spacing: 0.15em;
-  text-decoration: none;
   color: var(--ink-primary);
-
-  // Shares --ink-primary with body text, so hover/focus are the only cues
-  // that this is a link rather than a heading.
-  &:hover,
-  &:focus-visible {
-    color: var(--pigment-indigo);
-  }
+  // A <p>, so drop Pico's paragraph spacing; the nav's flex gap handles layout.
+  margin: 0;
 }
 
 .site-header__links {
