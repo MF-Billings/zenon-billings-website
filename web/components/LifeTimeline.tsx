@@ -1,3 +1,4 @@
+import { PortableText } from 'next-sanity'
 import InkRule from '@/components/InkRule'
 import SanityImage from '@/components/SanityImage'
 import type { LifeEvent } from '@/lib/sanity/types'
@@ -22,7 +23,7 @@ function EventSheet({ event }: { event: LifeEvent }) {
     <article className={sheetClass}>
       <div>
         <h3>{event.title}</h3>
-        {event.summary && <p>{event.summary}</p>}
+        {event.summary && <PortableText value={event.summary} />}
       </div>
       {illustrated && (
         <figure className="life-timeline__picture">

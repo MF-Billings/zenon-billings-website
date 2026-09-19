@@ -10,6 +10,15 @@ type InspectableField = {
   description?: string
   initialValue?: unknown
   options?: {list?: Array<{value: string} | string>}
+  of?: Array<{
+    type: string
+    styles?: Array<{value: string}>
+    lists?: unknown[]
+    marks?: {
+      decorators?: Array<{value: string}>
+      annotations?: Array<{name: string; fields: Array<{name: string; type: string}>}>
+    }
+  }>
 }
 const fields = lifeEvent.fields as unknown as InspectableField[]
 const fieldNamed = (name: string) => fields.find((field) => field.name === name)
@@ -47,6 +56,25 @@ describe('lifeEvent schema', () => {
 
     expect(values).toEqual(['day', 'month', 'year'])
     expect(precision?.initialValue).toBe('day')
+  })
+
+  describe('summary', () => {
+    const summaryBlock = () => fieldNamed('summary')?.of?.[0]
+
+    it('is rich text so words can be hyperlinked', () => {
+      expect(fieldNamed('summary')?.type).toBe('array')
+      expect(summaryBlock()?.type).toBe('block')
+    })
+
+    it('offers a link annotation that stores a URL', () => {
+      const link = summaryBlock()?.marks?.annotations?.find((mark) => mark.name === 'link')
+      expect(link?.fields).toContainEqual(expect.objectContaining({name: 'href', type: 'url'}))
+    })
+
+    it('stays a short blurb: paragraphs only, no headings or lists', () => {
+      expect(summaryBlock()?.styles?.map((style) => style.value)).toEqual(['normal'])
+      expect(summaryBlock()?.lists).toEqual([])
+    })
   })
 
   it('tells the editor what the precision and sort order are for', () => {

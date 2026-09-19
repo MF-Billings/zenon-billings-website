@@ -85,7 +85,24 @@ export type LifeEvent = {
   date?: string
   datePrecision?: 'day' | 'month' | 'year'
   endDate?: string
-  summary?: string
+  summary?: Array<{
+    children?: Array<{
+      marks?: Array<string>
+      text?: string
+      _type: 'span'
+      _key: string
+    }>
+    style?: 'normal'
+    listItem?: never
+    markDefs?: Array<{
+      href?: string
+      _type: 'link'
+      _key: string
+    }>
+    level?: number
+    _type: 'block'
+    _key: string
+  }>
   image?: {
     asset?: SanityImageAssetReference
     media?: unknown
@@ -476,7 +493,24 @@ export type LIFE_EVENTS_QUERY_RESULT = Array<{
   date: string
   datePrecision: 'day' | 'month' | 'year' | null
   endDate: string | null
-  summary: string | null
+  summary: Array<{
+    children?: Array<{
+      marks?: Array<string>
+      text?: string
+      _type: 'span'
+      _key: string
+    }>
+    style?: 'normal'
+    listItem?: never
+    markDefs?: Array<{
+      href?: string
+      _type: 'link'
+      _key: string
+    }>
+    level?: number
+    _type: 'block'
+    _key: string
+  }> | null
   image: {
     asset?: SanityImageAssetReference
     media?: unknown

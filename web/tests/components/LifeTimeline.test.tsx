@@ -14,6 +14,16 @@ const event = (overrides: Partial<LifeEvent> & { _id: string }): LifeEvent =>
     ...overrides,
   }) as LifeEvent
 
+const paragraph = (text: string): LifeEvent['summary'] => [
+  {
+    _type: 'block',
+    _key: 'b1',
+    style: 'normal',
+    markDefs: [],
+    children: [{ _type: 'span', _key: 's1', text, marks: [] }],
+  },
+]
+
 const image = { _type: 'image', asset: { _ref: 'image-abc-1200x900-jpg', _type: 'reference' } }
 
 describe('LifeTimeline', () => {
@@ -73,9 +83,30 @@ describe('LifeTimeline', () => {
     expect(within(entries[0]).getAllByRole('heading', { level: 3 })).toHaveLength(2)
   })
 
-  it('renders the summary when there is one', () => {
-    render(<LifeTimeline events={[event({ _id: 'a', summary: 'Thirty-one watercolours.' })]} />)
-    expect(screen.getByText('Thirty-one watercolours.')).toBeInTheDocument()
+  it('renders the summary as a paragraph when there is one', () => {
+    render(
+      <LifeTimeline
+        events={[event({ _id: 'a', summary: paragraph('Thirty-one watercolours.') })]}
+      />,
+    )
+    expect(screen.getByText('Thirty-one watercolours.').tagName).toBe('P')
+  })
+
+  it('renders a linked span in the summary as a hyperlink', () => {
+    const summary: LifeEvent['summary'] = [
+      {
+        _type: 'block',
+        _key: 'b1',
+        style: 'normal',
+        markDefs: [{ _type: 'link', _key: 'l1', href: 'https://nscad.ca' }],
+        children: [
+          { _type: 'span', _key: 's1', text: 'Enrols at ', marks: [] },
+          { _type: 'span', _key: 's2', text: 'NSCAD', marks: ['l1'] },
+        ],
+      },
+    ]
+    render(<LifeTimeline events={[event({ _id: 'a', summary })]} />)
+    expect(screen.getByRole('link', { name: 'NSCAD' })).toHaveAttribute('href', 'https://nscad.ca')
   })
 
   it('renders the picture with its alt text and marks the sheet as illustrated', () => {

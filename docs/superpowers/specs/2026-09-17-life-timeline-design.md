@@ -31,7 +31,7 @@ New document type `lifeEvent`:
 | `date`          | date     | required. Stored as a full `YYYY-MM-DD`; precision below says how much of it is shown |
 | `datePrecision` | string   | `day` \| `month` \| `year`; default `day`                               |
 | `endDate`       | date     | optional; makes the event a range. Must not be before `date`            |
-| `summary`       | text     | optional short text                                                     |
+| `summary`       | array of `block` | optional short rich text; paragraphs only, with a `link` annotation (was `text` until 2026-09-19) |
 | `image`         | image    | optional, hotspot on                                                    |
 | `altText`       | string   | required when `image` is set                                            |
 | `sortOrder`     | number   | optional integer; orders events that share a date                       |

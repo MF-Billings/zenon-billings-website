@@ -47,6 +47,13 @@ describe('SAMPLE_LIFE_EVENTS', () => {
     expect(new Set(titles).size).toBe(titles.length)
   })
 
+  it('links a word in at least one summary, to exercise the hyperlink mark', () => {
+    const linked = SAMPLE_LIFE_EVENTS.some((event) =>
+      event.summary?.some((segment) => typeof segment !== 'string' && segment.href),
+    )
+    expect(linked).toBe(true)
+  })
+
   it('marks at least one event as wanting a picture', () => {
     expect(SAMPLE_LIFE_EVENTS.some((event) => event.withPicture)).toBe(true)
   })
@@ -61,6 +68,45 @@ describe('toLifeEventDocument', () => {
     expect(doc.title).toBe(sample.title)
     expect(doc.date).toBe(sample.date)
     expect(doc.datePrecision).toBe(sample.datePrecision)
+  })
+
+  it('writes the summary as a single keyed Portable Text paragraph', () => {
+    const doc = toLifeEventDocument(
+      { title: 'T', date: '2000-01-01', datePrecision: 'year', summary: ['Plain words.'] },
+      null,
+    )
+    expect(doc.summary).toEqual([
+      {
+        _type: 'block',
+        _key: expect.any(String),
+        style: 'normal',
+        markDefs: [],
+        children: [{ _type: 'span', _key: expect.any(String), text: 'Plain words.', marks: [] }],
+      },
+    ])
+  })
+
+  it('turns a linked segment into a span whose mark points at a link definition', () => {
+    const doc = toLifeEventDocument(
+      {
+        title: 'T',
+        date: '2000-01-01',
+        datePrecision: 'year',
+        summary: ['Enrols at ', { text: 'NSCAD', href: 'https://nscad.ca' }, '.'],
+      },
+      null,
+    )
+    const [block] = doc.summary!
+    const [linkDef] = block.markDefs
+    expect(linkDef).toEqual({ _type: 'link', _key: expect.any(String), href: 'https://nscad.ca' })
+    expect(block.children.map((span) => span.text)).toEqual(['Enrols at ', 'NSCAD', '.'])
+    expect(block.children[1].marks).toEqual([linkDef._key])
+    expect(block.children[0].marks).toEqual([])
+  })
+
+  it('leaves summary out entirely when the sample has none', () => {
+    const doc = toLifeEventDocument({ title: 'T', date: '2000-01-01', datePrecision: 'year' }, null)
+    expect(doc).not.toHaveProperty('summary')
   })
 
   it('attaches the given image asset with alt text when one is supplied', () => {

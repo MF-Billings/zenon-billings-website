@@ -323,7 +323,7 @@ dataset renders the page exactly as before.
 | `date`           | Always a full calendar date; pick any day when only the month or year is known                           |
 | `datePrecision`  | How much of the date is shown: `day` → "August 18, 1970", `month` → "August 1970", `year` → "1970"       |
 | `endDate`        | Optional. Turns the event into a range at the same precision: "1997–2001", "March–August 2015"           |
-| `summary`        | Optional short text under the title                                                                      |
+| `summary`        | Optional short rich text under the title. Select words in the Studio to hyperlink them                   |
 | `image`, `altText` | Optional picture, shown small beside the text. Alt text is required whenever an image is set           |
 | `sortOrder`      | Optional. Only orders events that fall on the same date; lower comes first                               |
 
@@ -331,6 +331,17 @@ Events are ordered by `date`, then `sortOrder`, then creation time. Events that 
 (and end date) share one date cell on the page and stack their sheets beneath it.
 `web/lib/timeline/formatEventDate.ts` does the formatting; the design and the two rejected
 layouts are in `docs/superpowers/specs/2026-09-17-life-timeline-design.md`.
+
+`summary` was a plain `text` field until 2026-09-19. Events saved before then hold a string
+the rich-text editor cannot open; convert them once per dataset with the
+`life-event-summary-to-portable-text` migration (dry run first, then `--no-dry-run`):
+
+```bash
+cd studio
+npx sanity migration run life-event-summary-to-portable-text --project nlwxmhc1 --dataset production
+```
+
+Re-running the migration is safe: it only touches summaries that are still strings.
 
 ## Commands
 
@@ -367,6 +378,8 @@ The suite runs against whichever dataset the build used. Tests that need a parti
 | `npm run typegen`                                           | Regenerate `web/lib/sanity/sanity.types.ts` from the schema and GROQ queries |
 | `npx sanity deploy`                                         | Deploy the Studio to its hosted `*.sanity.studio` URL                        |
 | `npx sanity dataset list`                                   | List datasets                                                                |
+| `npx sanity migration list`                                 | List content migrations in `studio/migrations/`                              |
+| `npx sanity migration run <id> --project <id> --dataset <ds>` | Dry-run a migration; add `--no-dry-run` to apply it                        |
 
 ### Viewing your content
 

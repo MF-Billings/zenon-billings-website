@@ -21,6 +21,7 @@ zenon-billings/
 │   ├── tests/        # Mirrors app/components structure
 │   └── package.json
 ├── studio/           # Sanity Studio (its own package)
+│   ├── migrations/   # Content migrations (`npx sanity migration run <id>`), one folder each
 │   ├── schemaTypes/
 │   ├── sanity.config.ts
 │   ├── sanity.cli.ts

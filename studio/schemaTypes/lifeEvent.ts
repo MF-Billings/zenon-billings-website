@@ -1,4 +1,4 @@
-import {defineField, defineType} from 'sanity'
+import {defineArrayMember, defineField, defineType} from 'sanity'
 
 export default defineType({
   name: 'lifeEvent',
@@ -19,8 +19,7 @@ export default defineType({
       name: 'datePrecision',
       title: 'Date precision',
       type: 'string',
-      description:
-        'How much of the date is shown: "August 18, 1970", "August 1970" or "1970".',
+      description: 'How much of the date is shown: "August 18, 1970", "August 1970" or "1970".',
       options: {
         list: [
           {title: 'Day', value: 'day'},
@@ -42,7 +41,40 @@ export default defineType({
       validation: (rule) =>
         rule.min(rule.valueOfField('date')).error('The end date cannot be before the start date.'),
     }),
-    defineField({name: 'summary', type: 'text', rows: 3}),
+    defineField({
+      name: 'summary',
+      type: 'array',
+      description: 'A short blurb under the title. Select words to link them to a page elsewhere.',
+      of: [
+        defineArrayMember({
+          type: 'block',
+          // A timeline blurb is a paragraph or two; headings and lists would fight the sheet.
+          styles: [{title: 'Normal', value: 'normal'}],
+          lists: [],
+          marks: {
+            decorators: [
+              {title: 'Strong', value: 'strong'},
+              {title: 'Emphasis', value: 'em'},
+            ],
+            annotations: [
+              {
+                name: 'link',
+                type: 'object',
+                title: 'Link',
+                fields: [
+                  {
+                    name: 'href',
+                    type: 'url',
+                    title: 'URL',
+                    validation: (rule) => rule.required(),
+                  },
+                ],
+              },
+            ],
+          },
+        }),
+      ],
+    }),
     defineField({name: 'image', type: 'image', options: {hotspot: true}}),
     defineField({
       name: 'altText',
@@ -57,8 +89,7 @@ export default defineType({
       name: 'sortOrder',
       title: 'Sort order',
       type: 'number',
-      description:
-        'Only matters for events that share the same date: lower numbers come first.',
+      description: 'Only matters for events that share the same date: lower numbers come first.',
       validation: (rule) => rule.integer(),
     }),
   ],
