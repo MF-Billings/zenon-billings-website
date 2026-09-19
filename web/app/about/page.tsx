@@ -19,7 +19,7 @@ export default async function AboutPage() {
 
   return (
     <div className="about">
-      <h1 className="lowercase-chrome">About {settings?.artistName ?? 'the artist'}</h1>
+      <h1 className="lowercase-chrome">About</h1>
       <BackToTopSentinel />
 
       <div className="about__spread">
