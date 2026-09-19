@@ -60,3 +60,24 @@ test('the first nav marker stays inside the viewport on mobile', async ({ page }
   // own left edge, the marker has been drawn outside it.
   expect(linkBox!.x).toBeGreaterThan(itemBox!.x)
 })
+
+// Every section page opens with its name as a heading. Moving between the
+// sections should never make that heading jump, so it sits the same distance
+// below the header rule on each of them.
+const SECTION_PAGES = ['/gallery/', '/about/', '/contact/']
+
+test('section headings sit the same distance below the header rule', async ({ page }) => {
+  const offsets: number[] = []
+
+  for (const path of SECTION_PAGES) {
+    await page.goto(path)
+    await page.evaluate(() => document.fonts.ready)
+
+    const rule = await page.locator('.site-header__rule').boundingBox()
+    const heading = await page.getByRole('heading', { level: 1 }).boundingBox()
+
+    offsets.push(Math.round(heading!.y - (rule!.y + rule!.height)))
+  }
+
+  expect(new Set(offsets).size).toBe(1)
+})

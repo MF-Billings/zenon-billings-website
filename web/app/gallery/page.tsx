@@ -12,9 +12,9 @@ export default async function GalleryPage() {
   const artworks = await client.fetch(ALL_ARTWORKS_QUERY)
 
   return (
-    <>
+    <div className="page">
       <h1 className="lowercase-chrome">Gallery</h1>
       <GalleryBrowser artworks={artworks} />
-    </>
+    </div>
   )
 }

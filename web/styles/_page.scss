@@ -1,0 +1,6 @@
+// Every section page opens with its name as a heading and sits the same
+// distance below the header rule, so the heading never jumps as the visitor
+// moves between sections. The bottom padding keeps the last block off the footer.
+.page {
+  padding-block: var(--space-sheet) var(--space-band);
+}

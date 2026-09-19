@@ -18,7 +18,7 @@ export default async function AboutPage() {
   ])
 
   return (
-    <div className="about">
+    <div className="page about">
       <h1 className="lowercase-chrome">About</h1>
       <BackToTopSentinel />
 

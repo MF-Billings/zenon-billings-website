@@ -13,7 +13,7 @@ export default async function ContactPage() {
   const settings = await client.fetch(SITE_SETTINGS_QUERY)
 
   return (
-    <div className="contact">
+    <div className="page contact">
       <h1 className="lowercase-chrome">Contact</h1>
 
       <div className="paper-sheet contact__sheet">
