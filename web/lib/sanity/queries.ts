@@ -18,14 +18,27 @@ const ARTWORK_FIELDS = `
   "tags": tags[]->{ _id, name, "slug": slug.current, category }
 `
 
+// The one place the gallery sequence is decided. Every query that walks artwork in
+// display order must reuse it so prev/next on the detail page match the grid.
+export const ARTWORK_ORDER = 'order(lower(title) asc)'
+
 export const ALL_ARTWORKS_QUERY = defineQuery(`
   *[_type == "artwork" && defined(slug.current)]
-    | order(lower(title) asc) {${ARTWORK_FIELDS}}
+    | ${ARTWORK_ORDER} {${ARTWORK_FIELDS}}
 `)
 
 export const FEATURED_ARTWORKS_QUERY = defineQuery(`
   *[_type == "artwork" && isFeatured == true && defined(slug.current)]
     | order(coalesce(yearCreated, 0) desc, _createdAt desc)[0...6] {${ARTWORK_FIELDS}}
+`)
+
+export const ARTWORK_NAVIGATION_QUERY = defineQuery(`
+  *[_type == "artwork" && defined(slug.current)]
+    | ${ARTWORK_ORDER} {
+      title,
+      "slug": slug.current,
+      "tags": tags[]->{ name, "slug": slug.current }
+    }
 `)
 
 export const ARTWORK_BY_SLUG_QUERY = defineQuery(`

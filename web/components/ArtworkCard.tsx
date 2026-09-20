@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import SanityImage, { capWidths } from '@/components/SanityImage'
 import StudioLabel from '@/components/StudioLabel'
+import { artworkPath } from '@/lib/artwork/artworkPath'
 import { CARD_ASPECT_RATIO } from '@/lib/artwork/cardAspectRatio'
 import { CARD_MAX_WIDTH_REM } from '@/lib/artwork/cardMaxWidth'
 import { resolveDisplayMaxWidth } from '@/lib/artwork/resolveDisplayMaxWidth'
@@ -12,10 +13,15 @@ const THUMBNAIL_WIDTHS = [240, 480, 720]
 
 type ArtworkCardProps = {
   artwork: Artwork
+  href?: string
   priority?: boolean
 }
 
-export default function ArtworkCard({ artwork, priority = false }: ArtworkCardProps) {
+export default function ArtworkCard({
+  artwork,
+  href = artworkPath(artwork.slug),
+  priority = false,
+}: ArtworkCardProps) {
   // A weak scan is capped by the editor in the Studio; the cap applies to the
   // renditions offered, not to the layout, so the card keeps its mat's shape.
   const sourceCap = resolveDisplayMaxWidth(artwork.displayMaxWidth, artwork.imageWidth)
@@ -23,7 +29,7 @@ export default function ArtworkCard({ artwork, priority = false }: ArtworkCardPr
 
   return (
     <article className="artwork-card">
-      <Link href={`/artwork/${artwork.slug}`} className="artwork-card__link">
+      <Link href={href} className="artwork-card__link">
         <span className="artwork-card__mat">
           {artwork.image && (
             <SanityImage

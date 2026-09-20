@@ -82,6 +82,96 @@
   display: block;
 }
 
+// Prev/next flank the sheet at mid-height, the lightbox convention: the eye
+// stays on the picture and the hand never travels below it. Each button is
+// centred on the sheet's edge. The mat is at least --space-sheet (1.5rem) deep,
+// so a button no wider than 2.75rem intrudes at most 1.375rem and never reaches
+// the image; the plate's side padding seats the outer half. A missing neighbour
+// is not rendered, so "next" keeps its right-hand seat via auto margin rather
+// than by a placeholder.
+.artwork-nav {
+  --nav-button-size: 2rem;
+
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.artwork-detail__plate {
+  // Half a phone-sized button, so it sits flush with the page edge.
+  padding-inline: 1rem;
+  // The placard column can be taller than the sheet; without this the plate
+  // stretches with it and "mid-height" drifts off the picture.
+  align-self: start;
+}
+
+@media (min-width: 900px) {
+  .artwork-nav {
+    --nav-button-size: 2.75rem;
+  }
+
+  .artwork-detail__plate {
+    padding-inline: 1.5rem;
+  }
+}
+
+// Pico styles every button as a full-width pigment block, and its
+// `a[role=button]` selector outranks a lone class, so the reset is scoped under
+// the nav to win. Same round control as the back-to-top button so the two read
+// as one family.
+.artwork-nav .artwork-nav__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--nav-button-size);
+  height: var(--nav-button-size);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  line-height: 0;
+  pointer-events: auto;
+  background: var(--pigment-indigo);
+  color: var(--paper-cold-press);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--shadow-ink) 25%, transparent);
+
+  &:hover,
+  &:focus-visible {
+    background: var(--pigment-payne-grey);
+    color: var(--paper-cold-press);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--pigment-indigo);
+    outline-offset: 2px;
+  }
+}
+
+.artwork-nav .artwork-nav__button--next {
+  margin-left: auto;
+}
+
+.artwork-nav__arrow {
+  // A little over half the disc, so the arrow reads as the control's purpose
+  // rather than a mark in the middle of one.
+  width: calc(var(--nav-button-size) * 0.55);
+  height: calc(var(--nav-button-size) * 0.55);
+  transition: transform 150ms ease-out;
+
+  .artwork-nav__button--previous:hover &,
+  .artwork-nav__button--previous:focus-visible & {
+    transform: translateX(-2px);
+  }
+
+  .artwork-nav__button--next:hover &,
+  .artwork-nav__button--next:focus-visible & {
+    transform: translateX(2px);
+  }
+}
+
 .artwork-detail__placard {
   h1 {
     margin-bottom: 0.5rem;

@@ -22,6 +22,36 @@ const artworks = [
 ]
 
 describe('GalleryBrowser', () => {
+  it('starts with the tags the caller preselects', () => {
+    render(<GalleryBrowser artworks={artworks} initialTagSlugs={['portrait']} />)
+
+    expect(screen.getByRole('checkbox', { name: 'portrait' })).toBeChecked()
+    expect(screen.queryByText('River in Winter')).not.toBeInTheDocument()
+  })
+
+  it('reports the full tag selection each time it changes', async () => {
+    const onTagSlugsChange = vi.fn()
+    render(<GalleryBrowser artworks={artworks} onTagSlugsChange={onTagSlugsChange} />)
+
+    await userEvent.click(screen.getByRole('checkbox', { name: 'portrait' }))
+    await userEvent.click(screen.getByRole('checkbox', { name: 'landscape' }))
+    await userEvent.click(screen.getByRole('checkbox', { name: 'portrait' }))
+
+    expect(onTagSlugsChange.mock.calls).toEqual([
+      [['portrait']],
+      [['portrait', 'landscape']],
+      [['landscape']],
+    ])
+  })
+
+  it('carries the selected tags on every artwork link', async () => {
+    render(<GalleryBrowser artworks={artworks} />)
+
+    await userEvent.click(screen.getByRole('checkbox', { name: 'portrait' }))
+
+    expect(screen.getByRole('link')).toHaveAttribute('href', '/artwork/portrait?tags=portrait')
+  })
+
   it('shows every artwork before any filtering', () => {
     render(<GalleryBrowser artworks={artworks} />)
     expect(screen.getByText('River in Winter')).toBeInTheDocument()

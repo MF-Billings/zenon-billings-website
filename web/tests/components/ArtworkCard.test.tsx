@@ -25,6 +25,14 @@ describe('ArtworkCard', () => {
     expect(screen.getByRole('link')).toHaveAttribute('href', '/artwork/autumn-landscape')
   })
 
+  it('links wherever the caller points it when given an href', () => {
+    render(<ArtworkCard artwork={artwork} href="/artwork/autumn-landscape?tags=landscape" />)
+    expect(screen.getByRole('link')).toHaveAttribute(
+      'href',
+      '/artwork/autumn-landscape?tags=landscape',
+    )
+  })
+
   it('shows the title and the year', () => {
     render(<ArtworkCard artwork={artwork} />)
     expect(screen.getByText('Autumn Landscape')).toBeInTheDocument()

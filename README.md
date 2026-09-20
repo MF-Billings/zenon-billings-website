@@ -284,6 +284,26 @@ npm run backfill:display-width                # write it
 Only artworks with an empty `displayMaxWidth` are touched, so re-running never undoes a
 value set in the Studio. Works whose asset has no pixel metadata are listed and skipped.
 The script needs `SANITY_WRITE_TOKEN` in `web/.env.local`, like the seeder.
+## Gallery order and prev/next navigation
+
+The gallery's display order is decided in exactly one place: the `ARTWORK_ORDER` clause in
+`web/lib/sanity/queries.ts`. Every query that walks artwork in display order reuses it, so
+changing the sort changes the grid and the detail page's prev/next buttons together.
+
+Each artwork page carries a lightweight list of the whole collection (slug, title, tags)
+and renders ← / → buttons to its neighbours. The first artwork has no ← and the last has
+no →; a button that would lead nowhere is not rendered rather than disabled.
+
+Selecting tags in the gallery writes them to the URL as `?tags=a,b`, and every card link
+carries that query onto the artwork page. There, the buttons walk only the artwork that
+matches those tags, in gallery order, and forward the query on each hop, so the visitor
+stays inside the set they chose. Without the query the buttons walk the full collection.
+The search box is deliberately not mirrored into the URL.
+
+Reading the URL bails a component out of prerendering, so both pages wrap the URL-aware
+component (`UrlSyncedGalleryBrowser`, `UrlSyncedArtworkNav`) in `Suspense` with the plain
+component as the fallback. The static HTML therefore still contains the full gallery and
+the unfiltered prev/next buttons; the tag filter is applied after hydration.
 
 ## The published contact address
 
@@ -367,6 +387,8 @@ Run these from `web/`, or from the repository root via the delegating scripts in
 The Playwright e2e suite requires `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY` to be set to a non-empty value in `web/.env.local` **before** running `npm run build`, because the static export bakes the value in at build time. Any placeholder works locally — the tests intercept Web3Forms requests and do not send them.
 
 The suite runs against whichever dataset the build used. Tests that need a particular artwork or search term read it from the built `out/` directory or from the page itself rather than hardcoding a slug, so neither dataset is required.
+
+One test cannot read its expectation from the page: whether a contact address is published depends on `siteSettings.publicContactAlias` in the dataset. If the build's dataset has an alias set, run `PUBLIC_CONTACT_ALIAS=<alias> npm run test:e2e`; unset, the test asserts that no `mailto:` link is published at all.
 
 ### Studio commands (run from `studio/`)
 

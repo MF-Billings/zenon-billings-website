@@ -1,6 +1,8 @@
 import {
   ALL_ARTWORKS_QUERY,
   ARTWORK_BY_SLUG_QUERY,
+  ARTWORK_NAVIGATION_QUERY,
+  ARTWORK_ORDER,
   ARTWORK_SLUGS_QUERY,
   FEATURED_ARTWORKS_QUERY,
   LIFE_EVENTS_QUERY,
@@ -41,6 +43,18 @@ describe('GROQ queries', () => {
   it('returns only slugs for generateStaticParams', () => {
     expect(ARTWORK_SLUGS_QUERY).toContain('slug.current')
     expect(ARTWORK_SLUGS_QUERY).not.toContain('image')
+  })
+
+  it('walks artwork in exactly the gallery order, so prev/next never disagree with the grid', () => {
+    expect(ARTWORK_NAVIGATION_QUERY).toContain(ARTWORK_ORDER)
+    expect(ALL_ARTWORKS_QUERY).toContain(ARTWORK_ORDER)
+  })
+
+  it('keeps the navigation list light: slugs and tags only, no image or prose', () => {
+    expect(ARTWORK_NAVIGATION_QUERY).toContain('"slug": slug.current')
+    expect(ARTWORK_NAVIGATION_QUERY).toContain('tags[]->')
+    expect(ARTWORK_NAVIGATION_QUERY).not.toContain('image')
+    expect(ARTWORK_NAVIGATION_QUERY).not.toContain('description')
   })
 
   it('restricts featured artwork to the flagged documents', () => {

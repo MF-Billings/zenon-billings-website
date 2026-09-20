@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
+import { Suspense } from 'react'
 import GalleryBrowser from '@/components/GalleryBrowser'
+import UrlSyncedGalleryBrowser from '@/components/UrlSyncedGalleryBrowser'
 import { client } from '@/lib/sanity/client'
 import { ALL_ARTWORKS_QUERY } from '@/lib/sanity/queries'
 
@@ -14,7 +16,10 @@ export default async function GalleryPage() {
   return (
     <div className="page">
       <h1 className="lowercase-chrome">Gallery</h1>
-      <GalleryBrowser artworks={artworks} />
+      {/* Reading the URL bails out of prerendering, so the static HTML carries the unfiltered grid. */}
+      <Suspense fallback={<GalleryBrowser artworks={artworks} />}>
+        <UrlSyncedGalleryBrowser artworks={artworks} />
+      </Suspense>
     </div>
   )
 }

@@ -2,13 +2,28 @@
 
 import { useMemo, useRef, useState } from 'react'
 import ArtworkGrid from '@/components/ArtworkGrid'
+import { artworkPath } from '@/lib/artwork/artworkPath'
 import BackToTopButton from '@/components/BackToTopButton'
 import { collectTags, EMPTY_FILTER, filterArtworks } from '@/lib/gallery/filterArtworks'
+import { withTagSlugs } from '@/lib/gallery/filterQuery'
 import type { Artwork } from '@/lib/sanity/types'
 import { useOutOfView } from '@/lib/viewport/useOutOfView'
 
-export default function GalleryBrowser({ artworks }: { artworks: Artwork[] }) {
-  const [filter, setFilter] = useState(EMPTY_FILTER)
+export type GalleryBrowserProps = {
+  artworks: Artwork[]
+  initialTagSlugs?: string[]
+  onTagSlugsChange?: (tagSlugs: string[]) => void
+}
+
+const toggle = (slugs: string[], slug: string) =>
+  slugs.includes(slug) ? slugs.filter((selected) => selected !== slug) : [...slugs, slug]
+
+export default function GalleryBrowser({
+  artworks,
+  initialTagSlugs = [],
+  onTagSlugsChange,
+}: GalleryBrowserProps) {
+  const [filter, setFilter] = useState({ ...EMPTY_FILTER, tagSlugs: initialTagSlugs })
 
   // The search field marks the top of the browsing experience: once it has
   // scrolled away, the visitor is deep enough in the grid to want a way back.
@@ -18,13 +33,11 @@ export default function GalleryBrowser({ artworks }: { artworks: Artwork[] }) {
   const tags = useMemo(() => collectTags(artworks), [artworks])
   const visible = useMemo(() => filterArtworks(artworks, filter), [artworks, filter])
 
-  const toggleTag = (slug: string) =>
-    setFilter((current) => ({
-      ...current,
-      tagSlugs: current.tagSlugs.includes(slug)
-        ? current.tagSlugs.filter((selected) => selected !== slug)
-        : [...current.tagSlugs, slug],
-    }))
+  const toggleTag = (slug: string) => {
+    const tagSlugs = toggle(filter.tagSlugs, slug)
+    setFilter((current) => ({ ...current, tagSlugs }))
+    onTagSlugsChange?.(tagSlugs)
+  }
 
   return (
     <>
@@ -66,7 +79,11 @@ export default function GalleryBrowser({ artworks }: { artworks: Artwork[] }) {
         </p>
       </search>
 
-      <ArtworkGrid artworks={visible} emptyMessage="No artwork matches that search." />
+      <ArtworkGrid
+        artworks={visible}
+        emptyMessage="No artwork matches that search."
+        hrefFor={(artwork) => withTagSlugs(artworkPath(artwork.slug), filter.tagSlugs)}
+      />
       <BackToTopButton visible={searchOutOfView} />
     </>
   )

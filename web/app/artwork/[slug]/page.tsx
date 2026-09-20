@@ -1,8 +1,11 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import { Suspense } from 'react'
+import ArtworkNav from '@/components/ArtworkNav'
 import MediumChip from '@/components/MediumChip'
 import SanityImage from '@/components/SanityImage'
 import StudioLabel from '@/components/StudioLabel'
+import UrlSyncedArtworkNav from '@/components/UrlSyncedArtworkNav'
 import WashBloom from '@/components/WashBloom'
 import { pigmentForMedium } from '@/lib/artwork/pigmentForMedium'
 import { resolveDisplayMaxWidth } from '@/lib/artwork/resolveDisplayMaxWidth'
@@ -10,6 +13,7 @@ import { client } from '@/lib/sanity/client'
 import { urlFor } from '@/lib/sanity/imageUrl'
 import {
   ARTWORK_BY_SLUG_QUERY,
+  ARTWORK_NAVIGATION_QUERY,
   ARTWORK_SLUGS_QUERY,
   SITE_SETTINGS_QUERY,
 } from '@/lib/sanity/queries'
@@ -51,9 +55,10 @@ export async function generateMetadata({ params }: ArtworkPageProps): Promise<Me
 
 export default async function ArtworkPage({ params }: ArtworkPageProps) {
   const { slug } = await params
-  const [artwork, settings] = await Promise.all([
+  const [artwork, settings, collection] = await Promise.all([
     client.fetch(ARTWORK_BY_SLUG_QUERY, { slug }),
     client.fetch(SITE_SETTINGS_QUERY),
+    client.fetch(ARTWORK_NAVIGATION_QUERY),
   ])
 
   if (!artwork) notFound()
@@ -81,6 +86,11 @@ export default async function ArtworkPage({ params }: ArtworkPageProps) {
             />
           </div>
         )}
+
+        {/* Reading the URL bails out of prerendering, so the static HTML walks the full collection. */}
+        <Suspense fallback={<ArtworkNav artworks={collection} currentSlug={slug} tagSlugs={[]} />}>
+          <UrlSyncedArtworkNav artworks={collection} currentSlug={slug} />
+        </Suspense>
       </div>
 
       <div className="artwork-detail__placard">

@@ -20,6 +20,16 @@ describe('ArtworkGrid', () => {
     expect(screen.getAllByRole('link')).toHaveLength(2)
   })
 
+  it('lets the caller decide where each card links', () => {
+    render(
+      <ArtworkGrid
+        artworks={[makeArtwork('One', 'one')]}
+        hrefFor={(artwork) => `/artwork/${artwork.slug}?tags=landscape`}
+      />,
+    )
+    expect(screen.getByRole('link')).toHaveAttribute('href', '/artwork/one?tags=landscape')
+  })
+
   it('tells the visitor when there is nothing to show', () => {
     render(<ArtworkGrid artworks={[]} />)
     expect(screen.getByText(/no artwork/i)).toBeInTheDocument()
