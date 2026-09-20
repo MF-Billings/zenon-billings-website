@@ -56,3 +56,24 @@ test.describe('contact form', () => {
     }
   })
 })
+
+// Next's router ignores a click on a hash link whose URL is already the current
+// one, so the second visit to the contact section used to do nothing. Only a
+// real browser has the router, the history entry and the scroll to prove it.
+test.describe('contact nav link', () => {
+  test('reaches the section again after returning to the top', async ({ page }) => {
+    await page.goto('/')
+    await page.evaluate(() => document.fonts.ready)
+    const contact = page.getByRole('link', { name: 'Contact' })
+    const section = page.locator('#contact')
+
+    await contact.click()
+    await expect(section).toBeInViewport()
+
+    await page.getByRole('button', { name: /back to top/i }).click()
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0)
+
+    await contact.click()
+    await expect(section).toBeInViewport()
+  })
+})

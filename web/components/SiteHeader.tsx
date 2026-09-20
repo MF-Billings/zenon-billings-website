@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import HashLink from '@/components/HashLink'
 import InkRule from '@/components/InkRule'
 
 export default function SiteHeader() {
@@ -28,9 +29,9 @@ export default function SiteHeader() {
             </Link>
           </li>
           <li>
-            <Link href="/#contact" className="lowercase-chrome">
+            <HashLink href="/#contact" className="lowercase-chrome">
               Contact
-            </Link>
+            </HashLink>
           </li>
         </ul>
       </nav>
