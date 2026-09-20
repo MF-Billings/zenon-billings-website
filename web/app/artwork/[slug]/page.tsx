@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 import ArtworkNav from '@/components/ArtworkNav'
+import ArtworkTags from '@/components/ArtworkTags'
 import MediumChip from '@/components/MediumChip'
 import SanityImage from '@/components/SanityImage'
 import StudioLabel from '@/components/StudioLabel'
@@ -110,13 +111,7 @@ export default async function ArtworkPage({ params }: ArtworkPageProps) {
         <p>
           <MediumChip medium={artwork.medium} />
         </p>
-        {artwork.tags && artwork.tags.length > 0 && (
-          <p className="artwork-tags">
-            {artwork.tags.map((tag) => (
-              <mark key={tag._id}>{tag.name}</mark>
-            ))}
-          </p>
-        )}
+        <ArtworkTags tags={artwork.tags} />
       </div>
     </article>
   )

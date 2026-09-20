@@ -12,6 +12,20 @@ const measuredArtworkPath = () => {
   return null
 }
 
+// The row of tags is the one thing on the placard that is not running prose,
+// so it is where an unbreakable run of text would first show. The artwork with
+// the most tags is the fixture that stresses it hardest.
+const mostTaggedArtworkPath = () => {
+  let best: { path: string; count: number } | null = null
+  for (const slug of readdirSync('out/artwork').sort()) {
+    const html = readFileSync(`out/artwork/${slug}/index.html`, 'utf8')
+    const row = html.match(/class="artwork-tags"[^>]*>([\s\S]*?)<\/(?:p|ul)>/)
+    const count = row ? (row[1].match(/<(?:mark|li)\b/g) ?? []).length : 0
+    if (count > 0 && (!best || count > best.count)) best = { path: `/artwork/${slug}/`, count }
+  }
+  return best?.path ?? null
+}
+
 test.describe('artwork detail', () => {
   test('opens from the gallery and carries valid JSON-LD', async ({ page }) => {
     await page.goto('/gallery/')
@@ -64,6 +78,26 @@ test.describe('artwork detail', () => {
     }))
     expect(natural).toBeGreaterThan(0)
     expect(rendered).toBeLessThanOrEqual(natural)
+  })
+
+  // A long row of tags widened the whole artwork column on a phone, carrying the
+  // image and the artist's note off the right edge of the screen with it. The
+  // tags have to wrap within the column instead.
+  test('wraps a long row of tags within the column on a phone', async ({ page }) => {
+    const path = mostTaggedArtworkPath()
+    test.skip(path === null, 'no artwork in this build carries tags')
+    await page.setViewportSize({ width: 320, height: 640 })
+    await page.goto(path!)
+    await page.evaluate(() => document.fonts.ready)
+
+    const viewportWidth = await page.evaluate(() => document.documentElement.clientWidth)
+    const placard = await page.locator('.artwork-detail__placard').boundingBox()
+    expect(placard!.x + placard!.width).toBeLessThanOrEqual(viewportWidth)
+
+    for (const tag of await page.locator('.artwork-tags > *').all()) {
+      const box = await tag.boundingBox()
+      expect(box!.x + box!.width).toBeLessThanOrEqual(viewportWidth)
+    }
   })
 
   test('titles the tab with the artwork name', async ({ page }) => {

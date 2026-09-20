@@ -240,8 +240,25 @@
   }
 }
 
-.artwork-tags mark {
-  margin-right: 0.25rem;
-  background: color-mix(in srgb, var(--pigment-raw-umber) 18%, transparent);
-  color: var(--ink-primary);
+// Each tag is a flex item so the row wraps at the column's edge. As adjacent
+// inline elements with no whitespace between them the tags were one unbreakable
+// run of text, and a long row widened the whole artwork column on a phone.
+.artwork-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+
+  // Pico puts its square marker and a bottom margin on the `li` itself, so the
+  // reset has to sit there too; on the list alone it loses that fight.
+  li {
+    margin: 0;
+    list-style: none;
+  }
+
+  mark {
+    background: color-mix(in srgb, var(--pigment-raw-umber) 18%, transparent);
+    color: var(--ink-primary);
+  }
 }
