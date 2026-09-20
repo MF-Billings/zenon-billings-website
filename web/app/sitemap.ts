@@ -15,7 +15,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: siteUrl, priority: 1.0 },
     { url: `${siteUrl}/gallery`, priority: 0.9 },
     { url: `${siteUrl}/about`, priority: 0.6 },
-    { url: `${siteUrl}/contact`, priority: 0.6 },
   ]
 
   const artworkPages = slugs.map(({ slug }) => ({

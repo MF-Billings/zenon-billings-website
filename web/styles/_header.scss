@@ -28,7 +28,11 @@
 
 .site-header__links {
   display: flex;
-  gap: 1.5rem;
+  // Wrap whole items onto a second row rather than shrinking them: on a phone
+  // the four links do not fit in one row, and a shrunken item breaks its
+  // inside marker onto a line of its own above the word.
+  flex-wrap: wrap;
+  gap: 0.25rem 1.5rem;
   margin: 0;
   padding: 0;
   list-style: none;

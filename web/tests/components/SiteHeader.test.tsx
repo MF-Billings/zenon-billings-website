@@ -8,7 +8,11 @@ describe('SiteHeader', () => {
     expect(screen.getByRole('link', { name: /home/i })).toHaveAttribute('href', '/')
     expect(screen.getByRole('link', { name: /gallery/i })).toHaveAttribute('href', '/gallery')
     expect(screen.getByRole('link', { name: /about/i })).toHaveAttribute('href', '/about')
-    expect(screen.getByRole('link', { name: /contact/i })).toHaveAttribute('href', '/contact')
+  })
+
+  it('points contact at its section on the home page', () => {
+    render(<SiteHeader />)
+    expect(screen.getByRole('link', { name: /contact/i })).toHaveAttribute('href', '/#contact')
   })
 
   it('lists home first, alongside the other sections', () => {

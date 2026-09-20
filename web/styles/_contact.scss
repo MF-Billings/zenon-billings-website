@@ -1,3 +1,12 @@
+// A section of the home page, reached by the nav's anchor from any page. The
+// top padding keeps it a band away from the gallery button above; the scroll
+// margin stops the anchor jump from landing the heading hard against the
+// viewport's top edge.
+.contact {
+  padding-top: var(--space-band);
+  scroll-margin-top: var(--space-sheet);
+}
+
 .contact__sheet {
   max-width: 34rem;
   margin-top: var(--space-sheet);

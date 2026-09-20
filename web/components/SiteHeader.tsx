@@ -28,7 +28,7 @@ export default function SiteHeader() {
             </Link>
           </li>
           <li>
-            <Link href="/contact" className="lowercase-chrome">
+            <Link href="/#contact" className="lowercase-chrome">
               Contact
             </Link>
           </li>

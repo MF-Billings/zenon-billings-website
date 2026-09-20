@@ -21,6 +21,11 @@
 .life-timeline__entry {
   position: relative;
   display: grid;
+  // minmax(0, 1fr), not the implicit auto track: an auto track refuses to
+  // shrink below its content, and an illustrated sheet's picture reports its
+  // intrinsic width until it loads, which pushed every entry past a phone's
+  // viewport and gave the about page a horizontal scrollbar.
+  grid-template-columns: minmax(0, 1fr);
   gap: 0.75rem 2rem;
   padding-left: var(--rail-inset);
   // Rail geometry shared by the line and the node below. Zero column width on
@@ -120,7 +125,7 @@
 
 @media (max-width: 520px) {
   .life-timeline__sheet--illustrated {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 

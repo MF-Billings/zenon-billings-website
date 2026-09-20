@@ -1,5 +1,17 @@
 import { expect, test } from '@playwright/test'
 
+// The titles come from Sanity and differ between datasets, so the search term
+// is taken from the page: a word that appears in some titles but not all, so
+// that searching for it must narrow the gallery without emptying it.
+const narrowingTerm = (titles: string[]) => {
+  const lowered = titles.map((title) => title.toLowerCase())
+  const words = lowered.flatMap((title) => title.match(/[a-z]{4,}/g) ?? [])
+  return words.find((word) => {
+    const matching = lowered.filter((title) => title.includes(word)).length
+    return matching > 0 && matching < titles.length
+  })
+}
+
 test.describe('gallery', () => {
   test('lists artwork and narrows it in the browser', async ({ page }) => {
     await page.goto('/gallery/')
@@ -8,17 +20,19 @@ test.describe('gallery', () => {
     const initialCount = await cards.count()
     expect(initialCount).toBeGreaterThan(1)
 
-    // The Met has many works titled "Landscape", so assert that every remaining
-    // card matches the term rather than that exactly one survives.
-    const term = 'aqueduct'
-    await page.getByRole('searchbox', { name: /search/i }).fill(term)
+    const term = narrowingTerm(await cards.locator('h3').allInnerTexts())
+    test.skip(term === undefined, 'no title word narrows this dataset')
+
+    // Several works may share the term, so assert that every remaining card
+    // matches it rather than that exactly one survives.
+    await page.getByRole('searchbox', { name: /search/i }).fill(term!)
 
     const remaining = await cards.count()
     expect(remaining).toBeGreaterThan(0)
     expect(remaining).toBeLessThan(initialCount)
 
     for (const title of await cards.locator('h3').allInnerTexts()) {
-      expect(title.toLowerCase()).toContain(term)
+      expect(title.toLowerCase()).toContain(term!)
     }
   })
 

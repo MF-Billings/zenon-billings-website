@@ -16,7 +16,7 @@ const firstArtworkPath = () => {
 // Blooms deliberately bleed past their containers and cards are rotated. Both
 // are exactly what produces an accidental horizontal scrollbar, and neither is
 // visible in a jsdom unit test.
-const PAGES = ['/', '/gallery/', '/about/', '/contact/', ...firstArtworkPath()]
+const PAGES = ['/', '/gallery/', '/about/', ...firstArtworkPath()]
 
 const VIEWPORTS = [
   { name: 'mobile', width: 320, height: 640 },
@@ -64,7 +64,7 @@ test('the first nav marker stays inside the viewport on mobile', async ({ page }
 // Every section page opens with its name as a heading. Moving between the
 // sections should never make that heading jump, so it sits the same distance
 // below the header rule on each of them.
-const SECTION_PAGES = ['/gallery/', '/about/', '/contact/']
+const SECTION_PAGES = ['/gallery/', '/about/']
 
 test('section headings sit the same distance below the header rule', async ({ page }) => {
   const offsets: number[] = []

@@ -1,5 +1,7 @@
 import Link from 'next/link'
 import ArtworkGrid from '@/components/ArtworkGrid'
+import BackToTopSentinel from '@/components/BackToTopSentinel'
+import ContactSection from '@/components/ContactSection'
 import HomeHero from '@/components/HomeHero'
 import InkRule from '@/components/InkRule'
 import { client } from '@/lib/sanity/client'
@@ -14,6 +16,8 @@ export default async function HomePage() {
   return (
     <>
       <HomeHero artistName={settings?.artistName ?? 'Zenon Billings'} tagline={settings?.tagline} />
+      {/* Below the hero, so the button appears once the name has scrolled away. */}
+      <BackToTopSentinel />
 
       <section className="home-featured">
         <h2 className="lowercase-chrome">Featured work</h2>
@@ -29,6 +33,8 @@ export default async function HomePage() {
           View the full gallery
         </Link>
       </p>
+
+      <ContactSection alias={settings?.publicContactAlias} />
     </>
   )
 }

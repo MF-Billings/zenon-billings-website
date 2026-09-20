@@ -8,7 +8,7 @@ test.describe('contact form', () => {
       await route.fulfill({ json: { success: true } })
     })
 
-    await page.goto('/contact/')
+    await page.goto('/#contact')
     await page.getByRole('button', { name: /send/i }).click()
 
     await expect(page.locator('form [role="alert"]')).toContainText(/please enter your name/i)
@@ -20,7 +20,7 @@ test.describe('contact form', () => {
       route.fulfill({ json: { success: true } }),
     )
 
-    await page.goto('/contact/')
+    await page.goto('/#contact')
     await page.getByLabel('Name').fill('Ada')
     await page.getByLabel('Email').fill('ada@example.com')
     await page.getByLabel('Message').fill('I love the river piece.')
@@ -34,7 +34,7 @@ test.describe('contact form', () => {
       route.fulfill({ status: 400, json: { success: false, message: 'Invalid access key' } }),
     )
 
-    await page.goto('/contact/')
+    await page.goto('/#contact')
     await page.getByLabel('Name').fill('Ada')
     await page.getByLabel('Email').fill('ada@example.com')
     await page.getByLabel('Message').fill('Hello')
@@ -46,7 +46,7 @@ test.describe('contact form', () => {
   test('exposes no address unless a public alias is configured', async ({ page }) => {
     // ContactAliasLink is unit-tested in both states. What matters end to end is that
     // an unset alias publishes no address at all, rather than falling back to one.
-    await page.goto('/contact/')
+    await page.goto('/#contact')
 
     const alias = process.env.PUBLIC_CONTACT_ALIAS
     if (alias) {

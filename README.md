@@ -95,8 +95,8 @@ goes through the `InitialBadge` component. Both share the `.initial-badge` rule.
 The name appears once per screen. The hero heading carries `data-site-wordmark`, and a CSS rule in
 `_header.scss` hides the header's own wordmark on any page containing that attribute. The wordmark
 stays in layout (`visibility: hidden`, not `display: none`) so the nav row, and the rule beneath it,
-sit at the same height on every page. Every other page keeps the full wordmark as its link home. The
-header never checks the route; it only reacts to the page's markup.
+sit at the same height on every page. Every other page shows the full wordmark as plain text; the
+nav's Home link is the way back. The header never checks the route; it only reacts to the page's markup.
 
 ## Setup
 
@@ -288,8 +288,8 @@ The script needs `SANITY_WRITE_TOKEN` in `web/.env.local`, like the seeder.
 ## The published contact address
 
 The site has no origin server, so there is nowhere to hide an email address at request
-time: whatever the contact page renders is baked into `out/contact/index.html` and served
-to every scraper that asks. The address is therefore treated as public by design.
+time: whatever the contact section of the home page renders is baked into `out/index.html`
+and served to every scraper that asks. The address is therefore treated as public by design.
 
 Two separate channels reach the artist, and neither one publishes a personal inbox:
 
@@ -354,6 +354,8 @@ Run these from `web/`, or from the repository root via the delegating scripts in
 | `npm run backfill:display-width` | Seed empty `displayMaxWidth` fields from native pixel width — see above |
 
 The Playwright e2e suite requires `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY` to be set to a non-empty value in `web/.env.local` **before** running `npm run build`, because the static export bakes the value in at build time. Any placeholder works locally — the tests intercept Web3Forms requests and do not send them.
+
+The suite runs against whichever dataset the build used. Tests that need a particular artwork or search term read it from the built `out/` directory or from the page itself rather than hardcoding a slug, so neither dataset is required.
 
 ### Studio commands (run from `studio/`)
 

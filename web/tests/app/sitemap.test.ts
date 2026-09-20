@@ -15,9 +15,13 @@ describe('sitemap', () => {
         'http://localhost:3000',
         'http://localhost:3000/gallery',
         'http://localhost:3000/about',
-        'http://localhost:3000/contact',
       ]),
     )
+  })
+
+  it('lists no page for contact, which is a section of the home page', async () => {
+    const urls = (await sitemap()).map((entry) => entry.url)
+    expect(urls).not.toContain('http://localhost:3000/contact')
   })
 
   it('lists every artwork detail page', async () => {

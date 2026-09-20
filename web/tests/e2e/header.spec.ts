@@ -24,12 +24,14 @@ test.describe('header wordmark', () => {
     expect(links!.x + links!.width).toBeCloseTo(nav!.x + nav!.width, 0)
   })
 
-  test('still links home from every page without the hero', async ({ page }) => {
-    for (const path of ['/gallery/', '/about/', '/contact/']) {
+  test('shows the wordmark as plain text on every page without the hero', async ({ page }) => {
+    for (const path of ['/gallery/', '/about/']) {
       await page.goto(path)
-      const wordmark = page.getByRole('link', { name: 'Zenon Billings' })
+      const wordmark = page.locator('.site-header__wordmark')
       await expect(wordmark).toBeVisible()
-      await expect(wordmark).toHaveAttribute('href', '/')
+      await expect(wordmark).toHaveText('Zenon Billings')
+      await expect(page.getByRole('link', { name: 'Zenon Billings' })).toHaveCount(0)
+      await expect(page.getByRole('link', { name: 'Home' })).toHaveAttribute('href', '/')
     }
   })
 

@@ -10,8 +10,11 @@ test.describe('site', () => {
     await page.getByRole('link', { name: /about/i }).click()
     await expect(page.getByRole('heading', { level: 1 })).toContainText('About')
 
+    // Contact is a section of the home page, so from any other page the nav
+    // link has to carry the visitor back home and down to it.
     await page.getByRole('link', { name: /contact/i }).click()
-    await expect(page.getByRole('heading', { level: 1, name: 'Contact' })).toBeVisible()
+    await expect(page).toHaveURL(/\/#contact$/)
+    await expect(page.getByRole('heading', { level: 2, name: 'Contact' })).toBeInViewport()
   })
 
   test('renders the artist bio from the CMS', async ({ page }) => {
