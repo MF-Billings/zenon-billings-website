@@ -28,7 +28,26 @@ body::before {
   background-repeat: repeat;
 }
 
+// Wash blooms bleed past their containers onto the page margin by design. The
+// document, not each container, is where that bleed has to end: clipping at the
+// container cuts the wash in a hard vertical line wherever the viewport is wider
+// than the container. `body` is the right clip box because it is always exactly
+// the viewport wide, scrollbar excluded, and `clip` (never `hidden`) because it
+// clips paint without making body a scroll container.
+//
+// The catch is propagation: overflow set on <html> is handed to the viewport,
+// and so is <body>'s whenever <html>'s is `visible` on both axes. Handed to the
+// viewport, `clip` degrades to `hidden` — the scrollbar disappears but the
+// overhang still counts as scrollable width (measured: 27/71/140px at
+// 320/768/1280). Declaring the root's own vertical overflow, which is what the
+// viewport does by default anyway, ends the hand-off so the body rule stays on
+// the body.
+html {
+  overflow-y: auto;
+}
+
 body {
+  overflow-x: clip;
   background-color: var(--paper-cold-press);
   // Gives `body::before` its own local stacking context, exactly like `.hero`
   // and `.artwork-detail__plate` do for their own WashBloom children below.
