@@ -189,6 +189,12 @@
     position: sticky;
     top: 2rem;
     align-self: start;
+
+    // The global h1 scale opens a section; beside the painting the title is a
+    // placard and would otherwise outweigh the work it names.
+    h1 {
+      font-size: 2.9rem;
+    }
   }
 }
 

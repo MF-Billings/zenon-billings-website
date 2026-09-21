@@ -169,12 +169,13 @@ metric matching so there is no layout shift. No runtime font requests.
 |---|---|---|
 | Wordmark / hero | Archivo Expanded 600 | `clamp(2.4rem, 7.2vw, 5.6rem)`, leading 0.95, tracking 0.15em |
 | Page title | Archivo Expanded 600 | `clamp(2.25rem, 5vw, 3.5rem)` |
+| Artwork title | Archivo Expanded 600 | page title scale below 900px; fixed 2.9rem from 900px up, where it sits as a placard beside the work |
 | Section heading | Archivo Expanded 500 | `clamp(1.5rem, 3vw, 2rem)` |
 | Card title | Archivo Expanded 500, `wdth: 110` | 1.125rem |
 | Body | Inter 400 | 1.0625rem / 1.7, measure capped at 68ch |
 | Studio label | Inter 500 | 0.75rem, tracking 0.08em, `--ink-muted` |
 
-Fluid sizing via `clamp()` throughout — no breakpoint jumps.
+Fluid sizing via `clamp()` throughout — no breakpoint jumps, except the artwork title above.
 
 ### Lowercase
 
