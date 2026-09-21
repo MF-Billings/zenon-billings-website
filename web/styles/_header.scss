@@ -26,12 +26,121 @@
   margin: 0;
 }
 
+// Below this width the four links no longer fit on one line. Measured with the
+// real fonts: the list needs 349px, plus the container's 32px of padding. Rather
+// than wrap the items onto a second row, the list folds behind the menu toggle.
+// An em query reads the browser default, not Pico's stepped root size, so the
+// breakpoint sits at the same pixel width whatever Pico does to the root font.
+$menu-breakpoint: 24em;
+
+// Holds the toggle and the list, and is what the open panel hangs from: the
+// panel is positioned against this box, so its right edge lands exactly under
+// the toggle's.
+.site-header__menu {
+  position: relative;
+
+  @media (max-width: $menu-breakpoint) {
+    align-self: center;
+  }
+}
+
+.site-header__menu-toggle {
+  // Pico styles every button as a full-width pigment block; reset each of those
+  // defaults here rather than fight them at the point of use.
+  display: none;
+  width: 2.5rem;
+  height: 2.5rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--pico-border-radius);
+  background: transparent;
+  color: var(--ink-primary);
+  cursor: pointer;
+  // The sheet appears in one frame; its tab has to change with it, not fade
+  // across Pico's button transition and read as a separate thing meanwhile.
+  transition: none;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--pigment-indigo);
+  }
+
+  // Pico draws a rounded box-shadow ring on every focused button, mouse or
+  // keyboard. That ring showed on the pressed tab and read as a rough outline.
+  // Keyboard focus keeps a ring, drawn as an outline below.
+  &:focus {
+    box-shadow: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--pigment-indigo);
+    outline-offset: 2px;
+  }
+
+  @media (max-width: $menu-breakpoint) {
+    // `flex`, not `inline-flex`: an inline box would leave a line-box gap
+    // beneath it in the wrapper, and the sheet hangs from the wrapper's bottom.
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  // Pressed, the toggle becomes the tab of the sheet it opened: the sheet's own
+  // surface, stacked above the sheet so the two paint as one shape. No
+  // outline on either; the sheet is paper lifted off the page, not a box.
+  &[aria-expanded='true'] {
+    position: relative;
+    z-index: 2;
+    background: var(--paper-sheet-surface);
+  }
+}
+
+// The open sheet, hung from the toggle and laid over the page rather than
+// pushing the rule and the content beneath it down. It only exists on a phone;
+// wider than that the list inside it sits in the header row as usual.
+.site-header__sheet {
+  @media (max-width: $menu-breakpoint) {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: 1;
+    box-shadow: var(--shadow-sheet);
+
+    &:has([data-open]) {
+      display: block;
+      animation: sheet-drop-in 160ms ease-out;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      &:has([data-open]) {
+        animation: none;
+      }
+    }
+  }
+}
+
+// The sheet settles into place from a few pixels above, so it is seen to
+// arrive from the toggle rather than appear.
+@keyframes sheet-drop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+.site-header__menu-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
 .site-header__links {
   display: flex;
-  // Wrap whole items onto a second row rather than shrinking them: on a phone
-  // the four links do not fit in one row, and a shrunken item breaks its
-  // inside marker onto a line of its own above the word.
-  flex-wrap: wrap;
+  // Items keep their size: a shrunken item breaks its inside marker onto a
+  // line of its own above the word. Anything narrower than the row folds
+  // behind the menu toggle instead (see $menu-breakpoint).
+  flex-wrap: nowrap;
   gap: 0.25rem 1.5rem;
   margin: 0;
   padding: 0;
@@ -43,7 +152,7 @@
   //
   // `inside` keeps the marker within the item's own box: with the list's
   // padding zeroed, an outside marker hangs into the container gutter and
-  // slips off screen once the nav wraps below the wordmark on a phone.
+  // slips off screen once the list sits below the wordmark on a phone.
   li {
     list-style: square inside;
   }
@@ -59,6 +168,39 @@
     &:hover,
     &:focus-visible {
       color: var(--pigment-indigo);
+    }
+  }
+
+  @media (max-width: $menu-breakpoint) {
+    flex-direction: column;
+    gap: 0;
+    width: 11rem;
+    background: var(--paper-sheet-surface);
+    // Torn along the bottom like the site's other sheets.
+    mask-image: var(--deckle-edge);
+    mask-size: 100% 100%;
+    mask-repeat: no-repeat;
+    // Room for the tear: the deckle eats into the last few pixels, and the
+    // final link must not be what it eats.
+    padding-bottom: 0.5rem;
+
+    // One link per row; the square markers belong to the horizontal row and
+    // would only crowd the sheet here.
+    li {
+      list-style: none;
+    }
+
+    // Set like the wordmark, in the display face, so the sheet reads as part
+    // of the site's chrome rather than a default dropdown.
+    a {
+      display: block;
+      padding: 0.875rem 1.25rem;
+      font-family: var(--font-display), system-ui, sans-serif;
+      font-variation-settings: 'wdth' 125;
+      font-size: 1.125rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      color: var(--ink-primary);
     }
   }
 }

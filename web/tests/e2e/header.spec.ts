@@ -50,3 +50,197 @@ test.describe('header wordmark', () => {
     expect(await ruleTop('/')).toBeCloseTo(await ruleTop('/gallery/'), 0)
   })
 })
+
+// Below this width the four links no longer fit on one line, so the list folds
+// behind a menu toggle instead of wrapping. Measured with the real fonts: the
+// list needs 349px plus the container's 32px of padding.
+const MENU_BREAKPOINT = 384
+
+test.describe('header menu on a narrow screen', () => {
+  test('hides the links behind a toggle until it is pressed', async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 640 })
+    await page.goto('/gallery/')
+    await page.evaluate(() => document.fonts.ready)
+
+    const toggle = page.getByRole('button', { name: /menu/i })
+    const links = page.locator('.site-header__links')
+
+    await expect(toggle).toBeVisible()
+    await expect(links).toBeHidden()
+
+    await toggle.click()
+    await expect(links).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Gallery' })).toBeVisible()
+  })
+
+  test('keeps every link on one row as soon as they fit, with no toggle', async ({ page }) => {
+    await page.setViewportSize({ width: MENU_BREAKPOINT + 1, height: 640 })
+    await page.goto('/gallery/')
+    await page.evaluate(() => document.fonts.ready)
+
+    await expect(page.getByRole('button', { name: /menu/i })).toBeHidden()
+    await expect(page.locator('.site-header__links')).toBeVisible()
+
+    const rowTops = await page
+      .locator('.site-header__links li')
+      .evaluateAll((items) => new Set(items.map((item) => item.getBoundingClientRect().top)).size)
+    expect(rowTops).toBe(1)
+  })
+
+  test('shows the toggle at the widest width where the links would wrap', async ({ page }) => {
+    await page.setViewportSize({ width: MENU_BREAKPOINT, height: 640 })
+    await page.goto('/gallery/')
+    await page.evaluate(() => document.fonts.ready)
+
+    await expect(page.getByRole('button', { name: /menu/i })).toBeVisible()
+  })
+
+  test('lays the open menu over the page instead of pushing it down', async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 640 })
+    await page.goto('/gallery/')
+    await page.evaluate(() => document.fonts.ready)
+
+    const rule = page.locator('.site-header__rule')
+    const heading = page.getByRole('heading', { level: 1 })
+    const ruleTopBefore = (await rule.boundingBox())!.y
+    const headingTopBefore = (await heading.boundingBox())!.y
+
+    await page.getByRole('button', { name: /menu/i }).click()
+    await expect(page.locator('.site-header__links')).toBeVisible()
+
+    expect((await rule.boundingBox())!.y).toBe(ruleTopBefore)
+    expect((await heading.boundingBox())!.y).toBe(headingTopBefore)
+  })
+
+  test('hangs the open menu from the toggle, flush with its right edge', async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 640 })
+    await page.goto('/gallery/')
+    await page.evaluate(() => document.fonts.ready)
+
+    const toggle = page.getByRole('button', { name: /menu/i })
+    await toggle.click()
+
+    const toggleBox = (await toggle.boundingBox())!
+    const panel = (await page.locator('.site-header__links').boundingBox())!
+
+    expect(panel.x + panel.width).toBeCloseTo(toggleBox.x + toggleBox.width, 0)
+    // The sheet meets the toggle's bottom edge: the toggle is its tab.
+    expect(panel.y).toBeLessThanOrEqual(toggleBox.y + toggleBox.height)
+    expect(panel.y).toBeGreaterThan(toggleBox.y)
+    expect(panel.x).toBeGreaterThanOrEqual(0)
+    expect(panel.x + panel.width).toBeLessThanOrEqual(320)
+  })
+
+  // Pressed, the toggle takes on the sheet's own surface so the two read as
+  // one shape: a tab on the corner of the sheet it opened. Neither has an
+  // outline; the sheet is a piece of paper lifted off the page, not a box.
+  test('gives the pressed toggle the same surface as the open sheet, with no outline on either', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 320, height: 640 })
+    await page.goto('/gallery/')
+    await page.evaluate(() => document.fonts.ready)
+
+    const toggle = page.getByRole('button', { name: /menu/i })
+    const sheet = page.locator('.site-header__links')
+    const surface = (locator: typeof toggle) =>
+      locator.evaluate((element) => {
+        const style = getComputedStyle(element)
+        return { background: style.backgroundColor, outline: style.borderTopWidth }
+      })
+
+    const restingToggle = await surface(toggle)
+    await toggle.click()
+    const pressedToggle = await surface(toggle)
+    const openSheet = await surface(sheet)
+
+    expect(pressedToggle.background).toBe(openSheet.background)
+    expect(restingToggle.background).not.toBe(openSheet.background)
+    expect(pressedToggle.outline).toBe('0px')
+    expect(openSheet.outline).toBe('0px')
+  })
+
+  test('lifts the open sheet off the page with a shadow and tears its bottom edge', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 320, height: 640 })
+    await page.goto('/gallery/')
+    await page.evaluate(() => document.fonts.ready)
+    await page.getByRole('button', { name: /menu/i }).click()
+
+    const sheet = page.locator('.site-header__links')
+    const torn = await sheet.evaluate((element) => getComputedStyle(element).maskImage)
+    expect(torn).not.toBe('none')
+
+    // The shadow cannot sit on the masked element, where the mask would clip
+    // it, so it is cast by whichever ancestor carries the sheet.
+    const lifted = await sheet.evaluate((element) => {
+      for (let node = element.parentElement; node; node = node.parentElement) {
+        if (getComputedStyle(node).boxShadow !== 'none') return true
+      }
+      return false
+    })
+    expect(lifted).toBe(true)
+  })
+
+  test('keeps the rows unruled inside the open sheet', async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 640 })
+    await page.goto('/gallery/')
+    await page.getByRole('button', { name: /menu/i }).click()
+
+    await expect(page.locator('.site-header__links .ink-rule')).toHaveCount(0)
+    const rowEdge = await page
+      .locator('.site-header__links li')
+      .nth(1)
+      .evaluate((row) => getComputedStyle(row).borderTopWidth)
+    expect(rowEdge).toBe('0px')
+  })
+
+  // The sheet drops in over a few frames rather than snapping into place; a
+  // visitor who has asked for reduced motion gets it in one frame instead.
+  test('drops the sheet in with a short motion unless motion is reduced', async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 640 })
+    const sheetMotion = () =>
+      page.locator('.site-header__sheet').evaluate((sheet) => {
+        const style = getComputedStyle(sheet)
+        return { name: style.animationName, duration: style.animationDuration }
+      })
+
+    await page.goto('/gallery/')
+    await page.getByRole('button', { name: /menu/i }).click()
+    const motion = await sheetMotion()
+    expect(motion.name).not.toBe('none')
+    expect(parseFloat(motion.duration)).toBeGreaterThan(0)
+    expect(parseFloat(motion.duration)).toBeLessThanOrEqual(0.25)
+
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+    await page.goto('/gallery/')
+    await page.getByRole('button', { name: /menu/i }).click()
+    expect((await sheetMotion()).name).toBe('none')
+  })
+
+  test('sets the links in the display face inside the open sheet, not in the row', async ({
+    page,
+  }) => {
+    const link = page.getByRole('link', { name: 'Gallery' })
+    const widthAxis = () =>
+      link.evaluate((element) => getComputedStyle(element).fontVariationSettings)
+
+    await page.setViewportSize({ width: 1280, height: 800 })
+    await page.goto('/gallery/')
+    await page.evaluate(() => document.fonts.ready)
+    expect(await widthAxis()).not.toContain('125')
+
+    await page.setViewportSize({ width: 320, height: 640 })
+    await page.getByRole('button', { name: /menu/i }).click()
+    expect(await widthAxis()).toContain('125')
+  })
+
+  test('never shows the toggle on a desktop screen', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 })
+    await page.goto('/gallery/')
+
+    await expect(page.getByRole('button', { name: /menu/i })).toBeHidden()
+    await expect(page.locator('.site-header__links')).toBeVisible()
+  })
+})

@@ -98,6 +98,22 @@ stays in layout (`visibility: hidden`, not `display: none`) so the nav row, and 
 sit at the same height on every page. Every other page shows the full wordmark as plain text; the
 nav's Home link is the way back. The header never checks the route; it only reacts to the page's markup.
 
+### Navigation
+
+The section links live in `SiteNavigation`, a client component the header renders next to the
+wordmark. On screens narrower than 384px the four links no longer fit on one line, so instead of
+wrapping they fold behind a hamburger toggle (`aria-expanded`, `aria-controls`) and open as a
+sheet of paper hung from the toggle, laid over the page rather than pushing the header rule and
+content down. The sheet has no outline: it is lifted by the shared `--shadow-sheet` and torn along
+the bottom by the shared `--deckle-edge` mask (the shadow sits on a wrapper, since a mask clips
+everything its own element paints). Rows are set in the display face, and the sheet drops in over
+160ms, or in one frame under `prefers-reduced-motion`. The pressed toggle takes the sheet's surface,
+so it reads as a tab on the sheet's corner. The breakpoint is `$menu-breakpoint` in
+`_header.scss`, measured with the real fonts: the list needs 349px plus the container's 32px of
+padding. The component only reports the open state in markup (`data-open` on the list); whether the
+toggle shows, and how the list hides and is laid out, is decided by the stylesheet alone. The menu
+closes on choosing a link, on Escape, and on a press anywhere outside it.
+
 ## Setup
 
 ```bash

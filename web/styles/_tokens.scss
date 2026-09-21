@@ -30,6 +30,14 @@
   --card-width-min: 11rem;
   --card-width-max: 14rem;
   --shadow-ink: var(--ink-primary);
+  // The lift of a sheet of paper resting on the page: shared by every surface
+  // that sits on top of the ground, so they all cast the same shadow.
+  --shadow-sheet:
+    0 1px 2px color-mix(in srgb, var(--shadow-ink) 6%, transparent),
+    0 8px 24px color-mix(in srgb, var(--shadow-ink) 8%, transparent);
+  // The torn bottom edge of a sheet of paper, as a mask: opaque everywhere
+  // but a shallow wave along the bottom.
+  --deckle-edge: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='1200' preserveAspectRatio='none'%3E%3Cpath d='M0 0h1200v1188c-120 10-180-6-300 2s-180 12-300 4-180-14-300-6-180 10-300 2z' fill='%23fff'/%3E%3C/svg%3E");
 }
 
 // The single seam with Pico. When Pico renames a variable, this block is the
