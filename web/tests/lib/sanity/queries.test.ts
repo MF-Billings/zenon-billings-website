@@ -50,10 +50,22 @@ describe('GROQ queries', () => {
     expect(ALL_ARTWORKS_QUERY).toContain(ARTWORK_ORDER)
   })
 
-  it('keeps the navigation list light: slugs and tags only, no image or prose', () => {
-    expect(ARTWORK_NAVIGATION_QUERY).toContain('"slug": slug.current')
-    expect(ARTWORK_NAVIGATION_QUERY).toContain('tags[]->')
-    expect(ARTWORK_NAVIGATION_QUERY).not.toContain('image')
+  it('carries what a lightbox slide needs and no prose', () => {
+    for (const field of [
+      '"slug": slug.current',
+      'tags[]->',
+      'image,',
+      'altText',
+      'displayMaxWidth',
+    ]) {
+      expect(ARTWORK_NAVIGATION_QUERY).toContain(field)
+    }
+    expect(ARTWORK_NAVIGATION_QUERY).toContain(
+      '"imageWidth": image.asset->metadata.dimensions.width',
+    )
+    expect(ARTWORK_NAVIGATION_QUERY).toContain(
+      '"imageHeight": image.asset->metadata.dimensions.height',
+    )
     expect(ARTWORK_NAVIGATION_QUERY).not.toContain('description')
   })
 

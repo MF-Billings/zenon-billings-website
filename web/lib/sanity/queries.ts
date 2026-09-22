@@ -37,6 +37,11 @@ export const ARTWORK_NAVIGATION_QUERY = defineQuery(`
     | ${ARTWORK_ORDER} {
       title,
       "slug": slug.current,
+      image,
+      "imageWidth": image.asset->metadata.dimensions.width,
+      "imageHeight": image.asset->metadata.dimensions.height,
+      altText,
+      displayMaxWidth,
       "tags": tags[]->{ name, "slug": slug.current }
     }
 `)

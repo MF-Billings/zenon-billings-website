@@ -1,5 +1,9 @@
 import {defineField, defineType} from 'sanity'
 
+// A phone fits an image to its screen, about 430 CSS pixels at a 3x pixel ratio,
+// so a display cap below this many pixels starts to soften the image on phones too.
+export const SHARP_ON_A_PHONE_WIDTH = 1300
+
 export default defineType({
   name: 'artwork',
   title: 'Artwork',
@@ -63,8 +67,18 @@ export default defineType({
       type: 'number',
       description:
         'Widest this image should be shown on screen, in CSS pixels. Lower it for a weak ' +
-        'scan so the browser never stretches it. Leave empty to allow the native pixel width.',
-      validation: (rule) => rule.positive().integer(),
+        'scan so the browser never stretches it. Leave empty to allow the native pixel width. ' +
+        `Phones fit the image to the screen whatever the cap says, so values of ${SHARP_ON_A_PHONE_WIDTH} ` +
+        'or more only shrink the desktop.',
+      validation: (rule) => [
+        rule.positive().integer(),
+        rule
+          .min(SHARP_ON_A_PHONE_WIDTH)
+          .warning(
+            `Below ${SHARP_ON_A_PHONE_WIDTH} a phone is sent fewer pixels than its screen shows ` +
+              '(about 430 CSS pixels at a 3x pixel ratio), so the image goes soft there too.',
+          ),
+      ],
     }),
     defineField({
       name: 'dimensions',

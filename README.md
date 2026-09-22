@@ -7,6 +7,7 @@ only runtime network call is the contact form posting to a third-party endpoint.
 - **Content:** [Sanity](https://sanity.io) project `nlwxmhc1` (no application database)
 - **Rendering:** Next.js App Router in `output: 'export'` mode
 - **Styling:** [Pico.css](https://picocss.com) via SCSS
+- **Lightbox:** [PhotoSwipe](https://photoswipe.com) on artwork pages
 - **Hosting:** Cloudflare Pages
 
 See `AGENTS.md` for project rules and `docs/execution_plan.md` for the architecture rationale.
@@ -287,7 +288,18 @@ touches it. An editor-set value is also clamped to the native width for the same
 
 Gallery and featured thumbnails honour the same cap, but only for the renditions they
 offer: no `srcset` candidate is wider than the resolved cap, while the card itself keeps
-the mat's size and shape so the grid never goes ragged.
+the mat's size and shape so the grid never goes ragged. The lightbox honours it too: a
+slide is fetched no wider than the cap, and PhotoSwipe never enlarges a slide past its own
+pixels, so the cap is the largest a work is ever shown anywhere on the site. When the cap
+is empty or equals the native width, the lightbox shows the scan at full size on a desktop,
+which is where a weak scan is most visible; lower the cap for those works in the Studio.
+
+The cap is in CSS pixels, so it limits the *physical* size a work is shown at, and a phone
+never reaches it: the lightbox fits the image to a 390 to 430 pixel screen whatever the cap
+says. The cap only reaches a phone if it drops below the phone's device pixels, about 1300
+(screen width times a 3x pixel ratio), because then the phone is sent fewer image pixels
+than it can display. Keep the cap at or above 1300 and only the desktop shrinks; the Studio
+warns, without blocking, below that.
 
 The field is meant to be tuned by eye, but the native width is a fair first guess, so a
 one-off script seeds it from the asset metadata:
@@ -300,26 +312,38 @@ npm run backfill:display-width                # write it
 Only artworks with an empty `displayMaxWidth` are touched, so re-running never undoes a
 value set in the Studio. Works whose asset has no pixel metadata are listed and skipped.
 The script needs `SANITY_WRITE_TOKEN` in `web/.env.local`, like the seeder.
-## Gallery order and prev/next navigation
+## Gallery order, prev/next, and the artwork lightbox
 
 The gallery's display order is decided in exactly one place: the `ARTWORK_ORDER` clause in
 `web/lib/sanity/queries.ts`. Every query that walks artwork in display order reuses it, so
-changing the sort changes the grid and the detail page's prev/next buttons together.
+changing the sort changes the grid and the lightbox together.
 
-Each artwork page carries a lightweight list of the whole collection (slug, title, tags)
-and renders ← / → buttons to its neighbours. The first artwork has no ← and the last has
-no →; a button that would lead nowhere is not rendered rather than disabled.
+An artwork page offers two ways through the collection, both in gallery order. Arrow
+buttons flank the sheet at mid-height and step to the neighbouring artwork *pages*, so the
+visitor gets each work's title, placard and artist note along the way; the first work has
+no previous button and the last no next. Clicking the painting itself opens it in
+[PhotoSwipe](https://photoswipe.com), a fullscreen lightbox with its own arrows, swipe,
+pinch-zoom and keyboard handling, for looking at the pictures alone. Both read the same
+`ARTWORK_NAVIGATION_QUERY`. The lightbox slides are the whole collection, starting at the
+current work, built by
+`web/lib/artwork/lightboxSlides.ts` from `ARTWORK_NAVIGATION_QUERY` (slug, title, image,
+native pixel size, alt text, display cap). A slide is offered no wider than the same
+`displayMaxWidth` cap the page applies, so a weak scan is never blown up past it. Artwork
+without an image or a measured size is left out of the slide set.
 
 Selecting tags in the gallery writes them to the URL as `?tags=a,b`, and every card link
-carries that query onto the artwork page. There, the buttons walk only the artwork that
-matches those tags, in gallery order, and forward the query on each hop, so the visitor
-stays inside the set they chose. Without the query the buttons walk the full collection.
-The search box is deliberately not mirrored into the URL.
+carries that query onto the artwork page. There, both the arrow buttons and the lightbox
+walk only the artwork that matches those tags, in gallery order, and the buttons forward
+the query on each hop. If the visitor closes the lightbox on a different painting,
+the page follows them there with the same query, so the placard always describes the
+painting on screen and Back returns to where they started. Without the query the lightbox
+both walk the full collection. The search box is deliberately not mirrored into the URL.
 
-Reading the URL bails a component out of prerendering, so both pages wrap the URL-aware
-component (`UrlSyncedGalleryBrowser`, `UrlSyncedArtworkNav`) in `Suspense` with the plain
-component as the fallback. The static HTML therefore still contains the full gallery and
-the unfiltered prev/next buttons; the tag filter is applied after hydration.
+Without JavaScript the painting is a plain link to its full-size image and the buttons are
+plain links to the neighbouring pages. Reading the URL bails a component out of
+prerendering, so the page wraps `UrlSyncedArtworkLightbox` and `UrlSyncedArtworkNav` in
+`Suspense` with `ArtworkLightbox` and `ArtworkNav` over the full collection as fallbacks;
+PhotoSwipe itself is fetched on the first click, never before.
 
 ## The published contact address
 

@@ -1,13 +1,16 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
+import ArtworkLightbox from '@/components/ArtworkLightbox'
 import ArtworkNav from '@/components/ArtworkNav'
 import ArtworkTags from '@/components/ArtworkTags'
 import MediumChip from '@/components/MediumChip'
 import SanityImage from '@/components/SanityImage'
 import StudioLabel from '@/components/StudioLabel'
+import UrlSyncedArtworkLightbox from '@/components/UrlSyncedArtworkLightbox'
 import UrlSyncedArtworkNav from '@/components/UrlSyncedArtworkNav'
 import WashBloom from '@/components/WashBloom'
+import { lightboxSlides } from '@/lib/artwork/lightboxSlides'
 import { pigmentForMedium } from '@/lib/artwork/pigmentForMedium'
 import { resolveDisplayMaxWidth } from '@/lib/artwork/resolveDisplayMaxWidth'
 import { client } from '@/lib/sanity/client'
@@ -64,6 +67,17 @@ export default async function ArtworkPage({ params }: ArtworkPageProps) {
 
   if (!artwork) notFound()
 
+  const picture = artwork.image && (
+    <SanityImage
+      source={artwork.image}
+      alt={artwork.altText ?? artwork.title ?? ''}
+      sizes="(max-width: 1024px) 100vw, 60vw"
+      priority
+      className="artwork-detail__image"
+      maxWidth={resolveDisplayMaxWidth(artwork.displayMaxWidth, artwork.imageWidth)}
+    />
+  )
+
   return (
     <article className="artwork-detail">
       <script
@@ -77,18 +91,23 @@ export default async function ArtworkPage({ params }: ArtworkPageProps) {
         <WashBloom pigment={pigmentForMedium(artwork.medium)} className="artwork-detail__bloom" />
         {artwork.image && (
           <div className="paper-sheet artwork-detail__mount">
-            <SanityImage
-              source={artwork.image}
-              alt={artwork.altText ?? artwork.title ?? ''}
-              sizes="(max-width: 1024px) 100vw, 60vw"
-              priority
-              className="artwork-detail__image"
-              maxWidth={resolveDisplayMaxWidth(artwork.displayMaxWidth, artwork.imageWidth)}
-            />
+            {/* Reading the URL bails out of prerendering, so the static HTML gets the
+                lightbox over the full collection and the tag filter applies after hydration. */}
+            <Suspense
+              fallback={
+                <ArtworkLightbox {...lightboxSlides(collection, slug, [])}>
+                  {picture}
+                </ArtworkLightbox>
+              }
+            >
+              <UrlSyncedArtworkLightbox collection={collection} currentSlug={slug}>
+                {picture}
+              </UrlSyncedArtworkLightbox>
+            </Suspense>
           </div>
         )}
 
-        {/* Reading the URL bails out of prerendering, so the static HTML walks the full collection. */}
+        {/* Same URL rule as the lightbox: the static HTML walks the full collection. */}
         <Suspense fallback={<ArtworkNav artworks={collection} currentSlug={slug} tagSlugs={[]} />}>
           <UrlSyncedArtworkNav artworks={collection} currentSlug={slug} />
         </Suspense>

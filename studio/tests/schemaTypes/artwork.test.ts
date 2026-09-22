@@ -1,5 +1,5 @@
 import {describe, expect, it} from 'vitest'
-import artwork from '../../schemaTypes/artwork'
+import artwork, {SHARP_ON_A_PHONE_WIDTH} from '../../schemaTypes/artwork'
 
 // defineType returns a per-field discriminated union. These tests inspect the
 // definitions structurally, so they read them through a plain shape instead.
@@ -72,6 +72,27 @@ describe('artwork schema', () => {
     const field = fieldNamed('displayMaxWidth')
     expect(field?.type).toBe('number')
     expect(field?.validation).toBeTypeOf('function')
+  })
+
+  it('warns, without blocking, when the cap would send a phone fewer pixels than it shows', () => {
+    // A stand-in for Sanity's fluent rule: every call returns a new recorder with
+    // the call appended, so each chain the field builds can be read back.
+    type Recorder = {ops: string[]} & Record<string, (...args: unknown[]) => Recorder>
+    const recorder = (ops: string[] = []): Recorder =>
+      new Proxy({ops} as Recorder, {
+        get: (target, name) =>
+          name === 'ops'
+            ? target.ops
+            : (...args: unknown[]) =>
+                recorder([...target.ops, `${String(name)}(${args.join(', ')})`]),
+      })
+
+    const build = fieldNamed('displayMaxWidth')?.validation as (rule: Recorder) => Recorder[]
+    const chains = build(recorder()).map((chain) => chain.ops)
+
+    expect(chains).toContainEqual(['positive()', 'integer()'])
+    const floor = chains.find((ops) => ops[0] === `min(${SHARP_ON_A_PHONE_WIDTH})`)
+    expect(floor?.[1]).toMatch(/^warning\(.+phone.+\)$/)
   })
 
   it('derives the slug from the title', () => {

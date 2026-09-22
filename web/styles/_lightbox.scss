@@ -1,0 +1,19 @@
+// The picture is the way into the lightbox; the cursor says so before the click.
+// The trigger fills the mount's cell and centres the picture itself, so the
+// image's percentage max-width still resolves against the mount and a narrow
+// painting sits where it did before the link was wrapped around it.
+.artwork-lightbox__trigger {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  cursor: zoom-in;
+}
+
+// PhotoSwipe ships its own stylesheet (imported by ArtworkLightbox) and exposes
+// these variables; the backdrop takes the site's ink rather than PhotoSwipe's
+// default black so the overlay belongs to the same palette as the page.
+.pswp {
+  --pswp-bg: var(--ink-primary);
+  --pswp-icon-color: var(--paper-cold-press);
+  --pswp-icon-color-secondary: var(--ink-primary);
+}
