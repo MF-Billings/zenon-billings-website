@@ -1,9 +1,5 @@
 .site-header {
   padding-block: 1.5rem 0;
-  // Stacked above the hero (which follows in DOM order and now bleeds upward
-  // beneath the rule) so the drawn line stays legible on top of the wash.
-  position: relative;
-  z-index: 1;
 }
 
 .site-header__nav {

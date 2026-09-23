@@ -33,8 +33,9 @@ as the work — paper, water, pigment. The full rationale and the rejected alter
 ### Two rules
 
 1. **Discipline in the type, handmade in the surfaces.** Personality belongs to the
-   background plane — paper, washes, drawn rules. No handwriting faces. No rotated text.
-2. **At most one wash bloom visible per viewport.** They accumulate faster than they should.
+   background plane — paper, drawn rules. No handwriting faces. No rotated text.
+2. **Texture, not decoration.** The paper grain and the ink rules are the whole surface
+   vocabulary. There are no wash blooms; the spec's one-per-viewport rule is now zero.
 
 The failure mode is scrapbook, and it arrives by accumulation. If the design starts drifting,
 check these two rules first.
@@ -46,7 +47,7 @@ check these two rules first.
 | A colour, spacing value, or the mat ratio[^1]   | `web/styles/_tokens.scss`     |
 | How big a gallery card can grow[^2]             | `web/styles/_tokens.scss`     |
 | Type scale, the studio label, or the name badge | `web/styles/_typography.scss` |
-| Paper texture, blooms, ink rules, deckle edge   | `web/styles/_materials.scss`  |
+| Paper texture, ink rules, deckle edge          | `web/styles/_materials.scss`  |
 | Anything specific to one page                   | `web/styles/_<area>.scss`     |
 
 [^1]: Also update `CARD_ASPECT_RATIO` in `web/lib/artwork/cardAspectRatio.ts`; the CDN crops

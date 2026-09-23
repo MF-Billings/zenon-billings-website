@@ -5,8 +5,8 @@
   position: fixed;
   right: var(--space-sheet);
   bottom: var(--space-sheet);
-  // Above the header (z-index 1) and the artwork cards, below nothing that
-  // needs to win: the site has no modals or menus that overlay the page.
+  // Above the artwork cards, below nothing that needs to win: the site has no
+  // modals or menus that overlay the page.
   z-index: 2;
   display: inline-flex;
   align-items: center;

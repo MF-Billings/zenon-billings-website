@@ -58,19 +58,6 @@
   }
 }
 
-.artwork-detail__plate {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-}
-
-.artwork-detail__bloom {
-  top: -10%;
-  left: -12%;
-  width: 70%;
-  height: 120%;
-}
-
 .artwork-detail__mount {
   display: grid;
   place-items: center;
@@ -101,6 +88,7 @@
 }
 
 .artwork-detail__plate {
+  position: relative;
   // Half a phone-sized button, so it sits flush with the page edge.
   padding-inline: 1rem;
   // The placard column can be taller than the sheet; without this the plate

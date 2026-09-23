@@ -24,4 +24,10 @@ describe('HomeHero', () => {
     const { container } = render(<HomeHero artistName="Zenon Billings" />)
     expect(container.querySelector('.hero__tagline')).toBeNull()
   })
+
+  it('carries no decoration besides the heading group', () => {
+    const { container } = render(<HomeHero artistName="Zenon Billings" />)
+    const hero = container.querySelector('.hero')!
+    expect(Array.from(hero.children).map((child) => child.tagName)).toEqual(['HGROUP'])
+  })
 })

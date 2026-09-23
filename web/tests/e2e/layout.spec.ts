@@ -1,9 +1,9 @@
 import { readdirSync } from 'node:fs'
 import { test, expect } from '@playwright/test'
 
-// Artwork pages carry a bloom at negative offsets, so at least one belongs in
-// this guard. The slug comes from Sanity and changes with the content, so it is
-// read from the build rather than hardcoded.
+// Artwork pages lay the plate and placard out side by side, so at least one
+// belongs in this guard. The slug comes from Sanity and changes with the
+// content, so it is read from the build rather than hardcoded.
 const firstArtworkPath = () => {
   const slugs = readdirSync('out/artwork', { withFileTypes: true })
     .filter((entry) => entry.isDirectory())
@@ -13,9 +13,8 @@ const firstArtworkPath = () => {
   return slugs.length > 0 ? [`/artwork/${slugs[0]}/`] : []
 }
 
-// Blooms deliberately bleed past their containers and cards are rotated. Both
-// are exactly what produces an accidental horizontal scrollbar, and neither is
-// visible in a jsdom unit test.
+// Cards are rotated, which is exactly what produces an accidental horizontal
+// scrollbar, and it is not visible in a jsdom unit test.
 const PAGES = ['/', '/gallery/', '/about/', ...firstArtworkPath()]
 
 const VIEWPORTS = [

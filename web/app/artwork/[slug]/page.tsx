@@ -9,9 +9,7 @@ import SanityImage from '@/components/SanityImage'
 import StudioLabel from '@/components/StudioLabel'
 import UrlSyncedArtworkLightbox from '@/components/UrlSyncedArtworkLightbox'
 import UrlSyncedArtworkNav from '@/components/UrlSyncedArtworkNav'
-import WashBloom from '@/components/WashBloom'
 import { lightboxSlides } from '@/lib/artwork/lightboxSlides'
-import { pigmentForMedium } from '@/lib/artwork/pigmentForMedium'
 import { resolveDisplayMaxWidth } from '@/lib/artwork/resolveDisplayMaxWidth'
 import { client } from '@/lib/sanity/client'
 import { urlFor } from '@/lib/sanity/imageUrl'
@@ -88,7 +86,6 @@ export default async function ArtworkPage({ params }: ArtworkPageProps) {
       />
 
       <div className="artwork-detail__plate">
-        <WashBloom pigment={pigmentForMedium(artwork.medium)} className="artwork-detail__bloom" />
         {artwork.image && (
           <div className="paper-sheet artwork-detail__mount">
             {/* Reading the URL bails out of prerendering, so the static HTML gets the

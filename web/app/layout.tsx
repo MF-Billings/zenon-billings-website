@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { Archivo, Inter } from 'next/font/google'
-import PaperDefs from '@/components/PaperDefs'
 import SiteHeader from '@/components/SiteHeader'
 import SiteFooter from '@/components/SiteFooter'
 import '@/styles/style.scss'
@@ -41,7 +40,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     // so the light scheme is pinned rather than following the OS.
     <html lang="en" data-theme="light" className={`${archivo.variable} ${inter.variable}`}>
       <body>
-        <PaperDefs />
         <SiteHeader />
         <main className="container">{children}</main>
         <SiteFooter />
