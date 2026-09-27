@@ -65,7 +65,7 @@ export default function LifeTimeline({ events }: LifeTimelineProps) {
   return (
     <section className="life-timeline" aria-labelledby="life-timeline-heading">
       <h2 id="life-timeline-heading" className="lowercase-chrome">
-        Key dates
+        CV (up to 2012)
       </h2>
       <InkRule className="life-timeline__rule" />
       <ol className="life-timeline__entries">
