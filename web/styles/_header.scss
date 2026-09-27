@@ -22,12 +22,15 @@
   margin: 0;
 }
 
-// Below this width the four links no longer fit on one line. Measured with the
-// real fonts: the list needs 349px, plus the container's 32px of padding. Rather
-// than wrap the items onto a second row, the list folds behind the menu toggle.
+// From this width on, the wordmark and the four links share one row. Measured
+// with the real fonts: the wordmark needs 230px and the list 397px, about 645px
+// with the gap, and Pico's container only grows past 510px at its 768px step.
+// Below it, rather than wrap the list onto a second row under the wordmark, the
+// list folds behind the menu toggle. On the home page the wordmark is hidden
+// but keeps its line box, so a wrapped list left a blank band above itself.
 // An em query reads the browser default, not Pico's stepped root size, so the
 // breakpoint sits at the same pixel width whatever Pico does to the root font.
-$menu-breakpoint: 24em;
+$menu-breakpoint: 48em;
 
 // Holds the toggle and the list, and is what the open panel hangs from: the
 // panel is positioned against this box, so its right edge lands exactly under
@@ -35,7 +38,7 @@ $menu-breakpoint: 24em;
 .site-header__menu {
   position: relative;
 
-  @media (max-width: $menu-breakpoint) {
+  @media (width < $menu-breakpoint) {
     align-self: center;
   }
 }
@@ -74,7 +77,7 @@ $menu-breakpoint: 24em;
     outline-offset: 2px;
   }
 
-  @media (max-width: $menu-breakpoint) {
+  @media (width < $menu-breakpoint) {
     // `flex`, not `inline-flex`: an inline box would leave a line-box gap
     // beneath it in the wrapper, and the sheet hangs from the wrapper's bottom.
     display: flex;
@@ -96,7 +99,7 @@ $menu-breakpoint: 24em;
 // pushing the rule and the content beneath it down. It only exists on a phone;
 // wider than that the list inside it sits in the header row as usual.
 .site-header__sheet {
-  @media (max-width: $menu-breakpoint) {
+  @media (width < $menu-breakpoint) {
     display: none;
     position: absolute;
     top: 100%;
@@ -167,7 +170,7 @@ $menu-breakpoint: 24em;
     }
   }
 
-  @media (max-width: $menu-breakpoint) {
+  @media (width < $menu-breakpoint) {
     flex-direction: column;
     gap: 0;
     width: 11rem;
