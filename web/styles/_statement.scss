@@ -3,7 +3,18 @@
 // the contact section on the home page; the top padding is the band that
 // separates it from the button above.
 .statement {
+  position: relative;
+  isolation: isolate;
   padding-top: var(--space-band);
+}
+
+// The one wash bloom left on the site. Burnt sienna, bleeding off the left
+// edge; the document clips it (see _materials.scss).
+.statement__bloom {
+  top: -10%;
+  left: -12%;
+  width: 55%;
+  height: 120%;
 }
 
 .statement__rule {

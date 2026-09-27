@@ -13,8 +13,9 @@ const firstArtworkPath = () => {
   return slugs.length > 0 ? [`/artwork/${slugs[0]}/`] : []
 }
 
-// Cards are rotated, which is exactly what produces an accidental horizontal
-// scrollbar, and it is not visible in a jsdom unit test.
+// The statement's bloom deliberately bleeds past its container and cards are
+// rotated. Both are exactly what produces an accidental horizontal scrollbar,
+// and neither is visible in a jsdom unit test.
 const PAGES = ['/', '/gallery/', '/about/', ...firstArtworkPath()]
 
 const VIEWPORTS = [

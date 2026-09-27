@@ -1,3 +1,10 @@
+.paper-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
 // The paper tooth. A tiled turbulence map as a data URI: no network request,
 // one composited layer, and the single change that stops the page reading as #fff.
 body::before {
@@ -21,9 +28,29 @@ body::before {
   background-repeat: repeat;
 }
 
+// The statement's wash bloom bleeds past its container onto the page margin by
+// design. The document, not the container, is where that bleed has to end:
+// clipping at the container cuts the wash in a hard vertical line wherever the
+// viewport is wider than the container. `body` is the right clip box because it
+// is always exactly the viewport wide, scrollbar excluded, and `clip` (never
+// `hidden`) because it clips paint without making body a scroll container.
+//
+// The catch is propagation: overflow set on <html> is handed to the viewport,
+// and so is <body>'s whenever <html>'s is `visible` on both axes. Handed to the
+// viewport, `clip` degrades to `hidden` — the scrollbar disappears but the
+// overhang still counts as scrollable width. Declaring the root's own vertical
+// overflow, which is what the viewport does by default anyway, ends the
+// hand-off so the body rule stays on the body.
+html {
+  overflow-y: auto;
+}
+
 body {
+  overflow-x: clip;
   background-color: var(--paper-cold-press);
-  // Gives `body::before` its own local stacking context. Without it, `body`'s own background is an ordinary in-flow box painted
+  // Gives `body::before` its own local stacking context, exactly like
+  // `.statement` does for its WashBloom child. Without it, `body`'s own
+  // background is an ordinary in-flow box painted
   // *above* a negative z-index descendant in the root stacking context —
   // confirmed by rendering the page and forcing the grain layer opaque: it
   // stayed fully hidden behind flat paper until this was added. `isolation`
@@ -42,6 +69,26 @@ body {
   mask-image: var(--deckle-edge);
   mask-size: 100% 100%;
   mask-repeat: no-repeat;
+}
+
+.wash-bloom {
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.14;
+  color: var(--medium-other);
+
+  &[data-pigment='watercolour'] {
+    color: var(--medium-watercolour);
+  }
+
+  &[data-pigment='drawing'] {
+    color: var(--medium-drawing);
+  }
+
+  &[data-pigment='photography'] {
+    color: var(--medium-photography);
+  }
 }
 
 .ink-rule {
@@ -91,6 +138,10 @@ body {
 // Texture is the first thing to go when someone has asked for more contrast.
 @media (prefers-contrast: more) {
   body::before {
+    display: none;
+  }
+
+  .wash-bloom {
     display: none;
   }
 }

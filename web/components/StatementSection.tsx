@@ -1,6 +1,7 @@
 import { PortableText } from 'next-sanity'
 import InkRule from '@/components/InkRule'
 import SanityImage from '@/components/SanityImage'
+import WashBloom from '@/components/WashBloom'
 import type { SiteSettings } from '@/lib/sanity/types'
 
 type StatementSectionProps = {
@@ -30,6 +31,7 @@ export default function StatementSection({
       aria-labelledby={heading ? 'statement-heading' : undefined}
       aria-label={heading ? undefined : 'Statement'}
     >
+      <WashBloom pigment="photography" className="statement__bloom" />
       {heading && (
         <>
           <h2 id="statement-heading" className="lowercase-chrome">

@@ -22,6 +22,15 @@ describe('StatementSection', () => {
     expect(container).toBeEmptyDOMElement()
   })
 
+  it('washes the section with a burnt sienna bloom, the one bloom left on the site', () => {
+    const { container } = render(
+      <StatementSection artistName="Z" statement={paragraphs('Text.')} />,
+    )
+    const bloom = container.querySelector('.wash-bloom')
+    expect(bloom).toHaveAttribute('data-pigment', 'photography')
+    expect(bloom).toHaveClass('statement__bloom')
+  })
+
   it('sets the statement paragraphs as the section body', () => {
     render(
       <StatementSection
