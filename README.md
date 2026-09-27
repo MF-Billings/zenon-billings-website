@@ -149,7 +149,6 @@ into the `development` dataset.
 First create a write token at [sanity.io/manage](https://www.sanity.io/manage) → project
 `nlwxmhc1` → API → Tokens → **Editor**, and put it in `web/.env.local` as
 `SANITY_WRITE_TOKEN`.
-That is the only secret in the project; never commit it.
 
 | Command                      | What it does                                              |
 | ---------------------------- | --------------------------------------------------------- |
@@ -313,6 +312,7 @@ npm run backfill:display-width                # write it
 Only artworks with an empty `displayMaxWidth` are touched, so re-running never undoes a
 value set in the Studio. Works whose asset has no pixel metadata are listed and skipped.
 The script needs `SANITY_WRITE_TOKEN` in `web/.env.local`, like the seeder.
+
 ## Gallery order, prev/next, and the artwork lightbox
 
 The gallery's display order is decided in exactly one place: the `ARTWORK_ORDER` clause in
@@ -337,8 +337,8 @@ carries that query onto the artwork page. There, both the arrow buttons and the 
 walk only the artwork that matches those tags, in gallery order, and the buttons forward
 the query on each hop. If the visitor closes the lightbox on a different painting,
 the page follows them there with the same query, so the placard always describes the
-painting on screen and Back returns to where they started. Without the query the lightbox
-both walk the full collection. The search box is deliberately not mirrored into the URL.
+painting on screen and Back returns to where they started. Without the query, the buttons
+and the lightbox both walk the full collection. The search box is deliberately not mirrored into the URL.
 
 Without JavaScript the painting is a plain link to its full-size image and the buttons are
 plain links to the neighbouring pages. Reading the URL bails a component out of
@@ -421,6 +421,7 @@ Run these from `web/`, or from the repository root via the delegating scripts in
 | `npm run lint`          | ESLint                                                          |
 | `npm run format`        | Prettier, writing changes                                       |
 | `npm run format:check`  | Prettier, check only                                            |
+| `npm run seed -- --limit 25` | Seed the `development` dataset from the Met Museum — see above |
 | `npm run import:artwork` | Import real artwork from YAML — see above                      |
 | `npm run seed:life-events` | Write the fictional sample life events into the `development` dataset — see above |
 | `npm run backfill:display-width` | Seed empty `displayMaxWidth` fields from native pixel width — see above |
@@ -624,100 +625,6 @@ ls -d node_modules        # at the repository root: must NOT exist
 
 Never fix this by adding a version `overrides` entry at the root — that reintroduces the
 shared tree this layout exists to avoid.
-
-### Studio: "Failed to fetch dynamically imported module"
-
-```text
-Failed to fetch dynamically imported module:
-http://localhost:3333/node_modules/.sanity/vite/deps/refractor-<hash>.js?v=<id>
-```
-
-The Studio runs on Vite, which pre-bundles dependencies into
-`studio/node_modules/.sanity/vite/deps/` under content-hashed filenames. This error means
-something is serving HTML that references a chunk hash no longer on disk. It is **not** a
-missing dependency.
-
-Two causes, in order of likelihood:
-
-**1. More than one dev server is running.** All dev servers share that one cache
-directory. Starting a second one re-optimizes the cache and rewrites the hashes out from
-under the first, which then serves dead references. Reloading the browser cannot fix
-this — the stale mapping is server-side. Check first:
-
-```bash
-ss -ltnp | grep -E ':333[0-9]'          # what is listening
-ps -eo pid,etime,cmd | grep '[s]anity dev'
-```
-
-Kill every stray server, then verify the port is actually free — killing an `npx` wrapper
-does **not** stop the underlying node process:
-
-```bash
-kill -TERM <pid> && sleep 2 && ss -ltn | grep -E ':333[0-9]' || echo "port free"
-```
-
-**2. A browser tab predates a config change.** Editing `sanity.config.ts` makes Vite
-re-optimize and issue new hashes; a tab loaded before that still requests the old ones.
-Lazily-imported chunks such as `refractor` (used by Vision for syntax highlighting) fail
-only when something finally requests them, so the error can appear well after the change.
-Hard-reload the tab (`Ctrl+Shift+R`).
-
-If neither clears it, stop every server, rebuild the cache, and start exactly one:
-
-```bash
-cd studio && rm -rf node_modules/.sanity && npm run dev
-```
-
-To confirm the cache is healthy rather than guessing:
-
-```bash
-ls studio/node_modules/.sanity/vite/deps/ | wc -l     # expect several hundred
-find studio/node_modules/.sanity/vite/deps -size 0    # expect no output
-```
-
-### Studio: "Duplicate instances of context ... incompatible versions"
-
-```text
-Duplicate instances of context "sanity/_singletons/context/active-workspace-matcher"
-with incompatible versions detected: Expected 6.10.1 but got 6.11.0
-```
-
-Two different versions of the `sanity` package exist in the repo and the Studio loaded
-both, so React sees two copies of the same context singleton.
-
-**Why it happens here.** `sanity` is a _peer dependency_ of `next-sanity`
-(`^5.29.0 || ^6.0.0`), which npm installs automatically — so a copy lands in the **root**
-`node_modules` for the site, while `studio/` installs its own. Because `studio/` sits
-inside the app's directory tree, Node resolution walks up and can reach the root copy.
-When the two versions differ, this error appears.
-
-**The fix in place:** the root `package.json` has an `overrides` entry pinning `sanity` to
-the version the Studio uses, so both trees resolve identically.
-
-```json
-"overrides": { "sanity": "6.11.0" }
-```
-
-**This must stay in lockstep.** When you upgrade `sanity` in `studio/package.json`, update
-the root override to match, then:
-
-```bash
-npm install
-rm -rf studio/node_modules/.sanity
-```
-
-Verify both trees agree:
-
-```bash
-npm ls sanity            # root tree
-cd studio && npm ls sanity
-```
-
-The underlying cause is structural: Sanity's recommended monorepo puts the Studio and the
-web app as _siblings_ under a root with no `node_modules`, which removes the walk-up
-entirely. This project has the app at the repository root instead, because the Next.js app
-existed first. The override handles it; the sibling layout would prevent it. See
-`docs/sanity_setup_deviations.md`.
 
 ## Notes on tooling choices
 

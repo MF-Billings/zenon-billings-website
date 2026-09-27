@@ -59,7 +59,14 @@ Both shapes are explicitly supported. `project-structure.md` in the skill docume
 side-by-side monorepo as the recommended pattern with a frontend, and the folder names
 are not load-bearing.
 
-## Actual layout
+## Layout at the time of setup
+
+> [!NOTE]
+> **Superseded on 2026-08-27.** The site was moved into `web/` as a sibling of `studio/`
+> (commit `406ad76`), so the repository now has the layout the vendor prompt assumed. The
+> reason for the move — keeping the root free of `node_modules` so the Studio can never
+> resolve the site's copy of `sanity` — is in `AGENTS.md` §2. The rest of this section
+> records the layout as it was when the prompt was fact-checked.
 
 ```text
 zenon-billings/            <- repo root, and the Next.js app

@@ -34,7 +34,7 @@ describe('LifeTimeline', () => {
 
   it('introduces the section with a lowercase chrome heading', () => {
     render(<LifeTimeline events={[event({ _id: 'a' })]} />)
-    const heading = screen.getByRole('heading', { level: 2, name: /key dates/i })
+    const heading = screen.getByRole('heading', { level: 2, name: 'CV (up to 2012)' })
     expect(heading).toHaveClass('lowercase-chrome')
   })
 

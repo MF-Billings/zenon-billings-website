@@ -50,11 +50,11 @@ structurally avoided by having no origin server at all).
 - **Postgres/SQLite, Gunicorn, Nginx, Cloudflare Tunnel** — all replaced by
   "no server," per above.
 
-## Testing Guidelines (carried over from AGENTS.md)
+## Testing Guidelines
 
-- TDD: red/green/refactor, same as the Django project.
-- Test files mirror source structure.
-- Coverage target: same >=80% bar as the original plan.
+TDD and test layout follow `AGENTS.md` §1 and §4, unchanged from the Django project. The
+coverage target is the same >=80% bar as the original plan; `README.md`, "What the coverage
+floor measures", lists what the gate excludes.
 
 ## Open Decisions (resolve before/while building)
 
