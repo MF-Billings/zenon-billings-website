@@ -36,6 +36,9 @@ as the work — paper, water, pigment. The full rationale and the rejected alter
    background plane — paper, drawn rules. No handwriting faces. No rotated text.
 2. **One wash bloom on the whole site.** It sits behind the home page statement. The hero
    and artwork pages had their own and lost them; they accumulated faster than they should.
+   The home hero's tree and water are not blooms but the artist's own painted brushstrokes,
+   the work itself; they sit under the grain, in the opening band, and never where they pull
+   text below the contrast floor (the home e2e measures it; see `docs/hero-brushstrokes.md`).
 
 The failure mode is scrapbook, and it arrives by accumulation. If the design starts drifting,
 check these two rules first.
@@ -47,17 +50,35 @@ check these two rules first.
 | A colour, spacing value, or the mat ratio[^1]   | `web/styles/_tokens.scss`     |
 | How big a gallery card can grow[^2]             | `web/styles/_tokens.scss`     |
 | Type scale, the studio label, or the name badge | `web/styles/_typography.scss` |
-| Paper texture, the bloom, ink rules, deckle edge | `web/styles/_materials.scss` |
+| Paper texture, the bloom, ink rules, deckle edge, brushstroke layers | `web/styles/_materials.scss` |
+| Where the home brushstrokes sit, how big and strong[^3] | `web/styles/_home.scss` |
+| Swap a brushstroke's file[^4]                   | `web/public/brushstrokes/`    |
 | Anything specific to one page                   | `web/styles/_<area>.scss`     |
 
-[^1]: Also update `CARD_ASPECT_RATIO` in `web/lib/artwork/cardAspectRatio.ts`; the CDN crops
+[^1]:
+    Also update `CARD_ASPECT_RATIO` in `web/lib/artwork/cardAspectRatio.ts`; the CDN crops
     thumbnails to it. A unit test fails if it no longer matches the token.
 
-[^2]: `--card-width-min` is the narrowest grid track (so it decides how many columns fit)
+[^2]:
+    `--card-width-min` is the narrowest grid track (so it decides how many columns fit)
     and `--card-width-max` caps the card inside it, so a wide viewport shows more cards
     rather than bigger ones. Also update `CARD_MAX_WIDTH_REM` in
     `web/lib/artwork/cardMaxWidth.ts`; it feeds the thumbnail's `sizes` attribute. A unit
     test fails if it no longer matches the token.
+
+[^3]:
+    The knob block on `.hero`; `docs/hero-brushstrokes.md` is the working guide (what each
+    knob drags along, the build-and-test loop, how to read a failure, how to measure).
+    `$brushstroke-wide-breakpoint` (where the phone tree gives
+    way to the pines and the water) and `$brushstroke-narrow-breakpoint` (below which there
+    is no room for a tree beside the name at all) are mirrored in
+    `web/lib/brushstroke/brushstrokeWideBreakpoint.ts`, which the `<picture>` and the home
+    e2e use. A unit test fails if they differ. The wordmark and tagline derive their line
+    length from the same knobs, so they wrap short of the tree instead of running under it.
+
+[^4]:
+    Also update the `width`/`height` beside that file's path in
+    `web/components/HomeHero.tsx`; the home e2e fails if they no longer match the file.
 
 ### Palette
 
@@ -68,20 +89,55 @@ medium string to one of the medium keys below (`'watercolour' | 'drawing' | 'pho
 look up the pigment via `data-pigment`.
 
 | Medium      | Pigment      | Hex       | Contrast (measured on the rendered ground) |
-| ----------- | ------------ | --------- | ------------------------------------------- |
-| watercolour | indigo       | `#2e3a5c` | 9.60:1                                       |
-| drawing     | payne's grey | `#3d4f5c` | 7.28:1                                       |
-| photography | burnt sienna | `#9c5433` | 4.83:1                                       |
-| other       | raw umber    | `#6b5b45` | 5.61:1                                       |
+| ----------- | ------------ | --------- | ------------------------------------------ |
+| watercolour | indigo       | `#2e3a5c` | 9.60:1                                     |
+| drawing     | payne's grey | `#3d4f5c` | 7.28:1                                     |
+| photography | burnt sienna | `#9c5433` | 4.83:1                                     |
+| other       | raw umber    | `#6b5b45` | 5.61:1                                     |
 
 Body text is `--ink-primary` (`#2a3138`, 11.29:1); studio labels are `--ink-muted`
 (`#6e6a63`, 4.61:1). These figures are measured against the page's actual rendered
 background — `body::before`'s tiled grain layer, at 50% opacity in `multiply` blend, darkens
 flat `--paper-cold-press` (`#f7f3ec`) to a measured composite around `rgb(241, 237, 230)`, and
-that composite is what text outside a `.paper-sheet` sits on, not the flat token. **Any new
-text colour must clear 4.5:1 against the rendered ground, not just the `--paper-cold-press`
-token** (3:1 for display sizes at 24px or larger) — see the spec's Contrast section for how to
+that composite is what text outside a `.paper-sheet` sits on, not the flat token (except over
+a brushstroke on the home page, where the e2e suite measures the ink against the pigment
+beneath it). **Any new text colour must clear 4.5:1 against the rendered ground, not just the
+`--paper-cold-press` token** (3:1 for display sizes at 24px or larger) — see the spec's
+Contrast section for how to
 measure it. The palette bends to the contrast requirement, never the reverse.
+
+### Brushstroke assets
+
+The home page's tree and water are the artist's own watercolour marks, exported with
+transparency. The lossless masters and their upgrade notes live outside the repository
+(`/mnt/d/files/pictures/art_by_dad/assets/`); the site ships lossy copies made from them with
+`sharp`, which Next.js already installs:
+
+```bash
+cd web && node -e '
+const sharp = require("sharp")
+const dir = "/mnt/d/files/pictures/art_by_dad/assets/"
+for (const name of ["brushstroke_trees_desktop", "brushstroke_water"]) {
+  sharp(dir + name + ".webp")
+    .webp({ quality: 80, alphaQuality: 100, effort: 6 })
+    .toFile(dir + name + "_q80.webp")
+}'
+```
+
+Then copy the `_q80` results in under the names the site uses:
+
+```bash
+cp /mnt/d/files/pictures/art_by_dad/assets/brushstroke_trees_desktop_q80.webp web/public/brushstrokes/trees.webp
+cp /mnt/d/files/pictures/art_by_dad/assets/brushstroke_water_q80.webp web/public/brushstrokes/water.webp
+```
+
+The phone tree, `tree.webp`, is the owner's own 386 x 348 export of 2026-09-27, dropped in
+as exported with no lossy pass. Update the pixel sizes in `web/components/HomeHero.tsx` if
+they changed. The
+alpha channel stays lossless; only the colour is compressed. Text over a brushstroke is measured
+against the contrast floor by `web/tests/e2e/home.spec.ts`, so a heavier export can fail a test
+rather than a reader. The design and its measurements are in
+`docs/superpowers/specs/2026-09-24-hero-brushstroke-design.md`.
 
 ### Typography
 
@@ -169,10 +225,10 @@ with every shape it handles: all three date precisions, overlapping multi-year r
 years with several events, and events sharing one date. The events are invented and live in
 `web/scripts/lifeEventSeed.ts`; they are not the artist's biography.
 
-| Command                                | What it does                                                  |
-| -------------------------------------- | ------------------------------------------------------------- |
-| `npm run seed:life-events`             | Create or update the sample events, matched by title          |
-| `npm run seed:life-events -- --clear`  | Delete every `lifeEvent` document first, then seed            |
+| Command                               | What it does                                         |
+| ------------------------------------- | ---------------------------------------------------- |
+| `npm run seed:life-events`            | Create or update the sample events, matched by title |
+| `npm run seed:life-events -- --clear` | Delete every `lifeEvent` document first, then seed   |
 
 Events flagged for a picture borrow an image asset the gallery seed already uploaded, so
 run `npm run seed` first if you want the illustrated sheets. The same production guard
@@ -198,9 +254,10 @@ The file is a list, one entry per work, whose keys mirror `studio/schemaTypes/ar
 ```yaml
 - title: Beaver Pond
   slug: beaver-pond
-  medium: acrylic          # watercolour | acrylic | oil | pastel | drawing
-                           # photography | mixed-media | other
-  image: beaver-pond.jpg   # filename, resolved against --images
+  medium:
+    acrylic # watercolour | acrylic | oil | pastel | drawing
+    # photography | mixed-media | other
+  image: beaver-pond.jpg # filename, resolved against --images
   alt_text: A still pond ringed by black spruce
   description:
   artist_note: >-
@@ -208,7 +265,7 @@ The file is a list, one entry per work, whose keys mirror `studio/schemaTypes/ar
   dimensions:
     width: 183
     height: 126
-    unit: cm               # cm or in — record what was measured, never convert
+    unit: cm # cm or in — record what was measured, never convert
   year_created:
   price:
   is_featured: false
@@ -296,7 +353,7 @@ pixels, so the cap is the largest a work is ever shown anywhere on the site. Whe
 is empty or equals the native width, the lightbox shows the scan at full size on a desktop,
 which is where a weak scan is most visible; lower the cap for those works in the Studio.
 
-The cap is in CSS pixels, so it limits the *physical* size a work is shown at, and a phone
+The cap is in CSS pixels, so it limits the _physical_ size a work is shown at, and a phone
 never reaches it: the lightbox fits the image to a 390 to 430 pixel screen whatever the cap
 says. The cap only reaches a phone if it drops below the phone's device pixels, about 1300
 (screen width times a 3x pixel ratio), because then the phone is sent fewer image pixels
@@ -322,7 +379,7 @@ The gallery's display order is decided in exactly one place: the `ARTWORK_ORDER`
 changing the sort changes the grid and the lightbox together.
 
 An artwork page offers two ways through the collection, both in gallery order. Arrow
-buttons flank the sheet at mid-height and step to the neighbouring artwork *pages*, so the
+buttons flank the sheet at mid-height and step to the neighbouring artwork _pages_, so the
 visitor gets each work's title, placard and artist note along the way; the first work has
 no previous button and the last no next. Clicking the painting itself opens it in
 [PhotoSwipe](https://photoswipe.com), a fullscreen lightbox with its own arrows, swipe,
@@ -383,15 +440,15 @@ The about page ends with a timeline of the artist's life, read from `lifeEvent` 
 (Studio → **Life events**). The section is omitted entirely when there are none, so a fresh
 dataset renders the page exactly as before.
 
-| Field            | What it does                                                                                             |
-| ---------------- | -------------------------------------------------------------------------------------------------------- |
-| `title`          | The event, e.g. "First solo exhibition"                                                                  |
-| `date`           | Always a full calendar date; pick any day when only the month or year is known                           |
-| `datePrecision`  | How much of the date is shown: `day` → "August 18, 1970", `month` → "August 1970", `year` → "1970"       |
-| `endDate`        | Optional. Turns the event into a range at the same precision: "1997–2001", "March–August 2015"           |
-| `summary`        | Optional short rich text under the title. Select words in the Studio to hyperlink them                   |
-| `image`, `altText` | Optional picture, shown small beside the text. Alt text is required whenever an image is set           |
-| `sortOrder`      | Optional. Only orders events that fall on the same date; lower comes first                               |
+| Field              | What it does                                                                                       |
+| ------------------ | -------------------------------------------------------------------------------------------------- |
+| `title`            | The event, e.g. "First solo exhibition"                                                            |
+| `date`             | Always a full calendar date; pick any day when only the month or year is known                     |
+| `datePrecision`    | How much of the date is shown: `day` → "August 18, 1970", `month` → "August 1970", `year` → "1970" |
+| `endDate`          | Optional. Turns the event into a range at the same precision: "1997–2001", "March–August 2015"     |
+| `summary`          | Optional short rich text under the title. Select words in the Studio to hyperlink them             |
+| `image`, `altText` | Optional picture, shown small beside the text. Alt text is required whenever an image is set       |
+| `sortOrder`        | Optional. Only orders events that fall on the same date; lower comes first                         |
 
 Events are ordered by `date`, then `sortOrder`, then creation time. Events that share a date
 (and end date) share one date cell on the page and stack their sheets beneath it.
@@ -437,16 +494,16 @@ The suite runs against whichever dataset the build used. Tests that need a parti
 
 ### Studio commands (run from `studio/`)
 
-| Command                                                     | What it does                                                                 |
-| ----------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| `npm test`                                                  | Vitest schema tests                                                          |
-| `npm run dev`                                               | Sanity Studio at http://localhost:3333                                       |
-| `npx sanity documents query '<groq>' --dataset development` | Query content from the terminal                                              |
-| `npm run typegen`                                           | Regenerate `web/lib/sanity/sanity.types.ts` from the schema and GROQ queries |
-| `npx sanity deploy`                                         | Deploy the Studio to its hosted `*.sanity.studio` URL                        |
-| `npx sanity dataset list`                                   | List datasets                                                                |
-| `npx sanity migration list`                                 | List content migrations in `studio/migrations/`                              |
-| `npx sanity migration run <id> --project <id> --dataset <ds>` | Dry-run a migration; add `--no-dry-run` to apply it                        |
+| Command                                                       | What it does                                                                 |
+| ------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `npm test`                                                    | Vitest schema tests                                                          |
+| `npm run dev`                                                 | Sanity Studio at http://localhost:3333                                       |
+| `npx sanity documents query '<groq>' --dataset development`   | Query content from the terminal                                              |
+| `npm run typegen`                                             | Regenerate `web/lib/sanity/sanity.types.ts` from the schema and GROQ queries |
+| `npx sanity deploy`                                           | Deploy the Studio to its hosted `*.sanity.studio` URL                        |
+| `npx sanity dataset list`                                     | List datasets                                                                |
+| `npx sanity migration list`                                   | List content migrations in `studio/migrations/`                              |
+| `npx sanity migration run <id> --project <id> --dataset <ds>` | Dry-run a migration; add `--no-dry-run` to apply it                          |
 
 ### Viewing your content
 
@@ -586,8 +643,8 @@ createClient({
   apiVersion,
   useCdn: false,
   token: process.env.SANITY_WRITE_TOKEN,
-  perspective: "raw", // without this, drafts are invisible
-});
+  perspective: 'raw', // without this, drafts are invisible
+})
 ```
 
 Then patch the stale documents in place rather than deleting them — a draft can hold

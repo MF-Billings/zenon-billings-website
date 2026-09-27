@@ -161,7 +161,11 @@ $menu-breakpoint: 48em;
     font-weight: 500;
     letter-spacing: 0.08em;
     text-decoration: none;
-    color: var(--ink-muted);
+    // Primary ink, not the muted studio-label ink: on the home page the pines'
+    // crown sits behind this row at --brushstroke-tree-crown strength, and
+    // muted ink only clears 4.5:1 on bare paper. The palette bends to the
+    // contrast requirement.
+    color: var(--ink-primary);
 
     // Neither rule inherits a verified focus ring from Pico, so state it explicitly.
     &:hover,

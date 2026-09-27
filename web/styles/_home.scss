@@ -1,9 +1,170 @@
+// Below this width the phone tree hangs in the corner; from it, the two pines
+// and the water. 48em is Pico's md step (768px), where the container becomes
+// 700px wide. An em query reads the browser default, not Pico's stepped root
+// size, like $menu-breakpoint. Mirrored as BRUSHSTROKE_WIDE_BREAKPOINT_EM in
+// lib/brushstroke; a unit test fails if the two differ.
+$brushstroke-wide-breakpoint: 48em;
+
+// Below this width there is no room beside the artist's name for a tree at
+// all (a phone zoomed to 150%, or a large default font), so the tree gives way
+// and the text takes its full line length. In em, so it follows both zoom and
+// the reader's default font size. Mirrored as BRUSHSTROKE_NARROW_BREAKPOINT_EM
+// for the e2e; a unit test fails if the two differ.
+$brushstroke-narrow-breakpoint: 18.75em;
+
 .hero {
+  // Owner knobs. Where the brushstrokes sit and how big and strong they are is
+  // set here and nowhere else; every value hot-reloads. Lengths are relative
+  // to the viewport (vw) rather than the container so the text rules below can
+  // reuse them. Every length keeps a unit, even zero: a bare 0 inside calc()
+  // invalidates the text rules below. The mockup measurements are in the
+  // 2026-09-24 spec.
+  --brushstroke-opacity: 1;
+  // The phone file at its own pixel size (the owner judged it at `width: auto`
+  // on 2026-09-27): a pine at the right with soft haze running left, wider
+  // than a phone, so the layer clips its left edge and the pine stays put.
+  --brushstroke-tree-width: 386px;
+  // Negative rises above the header rule.
+  --brushstroke-tree-top: -1rem;
+  // How far past the content column the tree may run, and never past the
+  // screen edge. The tree hugs the screen edge until the gutter beside the
+  // column exceeds this, then follows the column as the screen grows. On a
+  // phone the column is the screen, and 100vw here means "as far as the
+  // screen edge" whatever the column does between 576 and 767px.
+  --brushstroke-tree-bleed: 100vw;
+  // Derived, not a knob: the tree's right offset from the column, past it by
+  // the bleed or at the screen edge, whichever is nearer (100% is the column,
+  // so half the difference to the screen is the gutter).
+  --brushstroke-tree-right: max(calc(-1 * var(--brushstroke-tree-bleed)), calc((100% - 100vw) / 2));
+  // Share of the tree's width the wordmark may run into: the faint haze along
+  // both files' left edge. 0.2 keeps the name on one line at the 1878 mockup
+  // width. Tuned to the shipped size and placement: change the tree's width,
+  // top or right and re-measure this (docs/hero-brushstrokes.md).
+  --brushstroke-tree-haze: 0.2;
+  // Share of the pines' pigment kept above the header rule, where the crown
+  // sits behind the nav links. 1 is the raw painting. At the shipped
+  // placement the links fall below 4.5:1 above 0.55 (measured ceiling 0.551,
+  // bound by "contact" between 1088 and 1200px); the home e2e fails first.
+  --brushstroke-tree-crown: 0.5;
+  // On a phone the tree spans the whole screen and the text sits over it, so
+  // the tree fades out under the text column: nothing painted from the
+  // screen's left edge up to the first length, full pigment that much
+  // further right. In rem, so a larger default font widens the clear band
+  // with the text. The pines on wide screens use a fixed feather instead.
+  --brushstroke-tree-text-clear: 8rem;
+  --brushstroke-tree-text-fade: 5rem;
+  // Of the content column (the layer's column), so the water stays with the
+  // content as the screen grows; 116% and -3.7% are the 1878 mockup's.
+  --brushstroke-water-width: 116%;
+  --brushstroke-water-left: -3.7%;
+  // Below the tagline.
+  --brushstroke-water-top: 1rem;
+
+  // Derived, not a knob: the room for text beside the tree, from the text's
+  // own left edge to the tree's. `100%` is the width of the box using this
+  // value, which for the wordmark and the tagline is the hero's content width;
+  // the tree's right edge is that far past the column, or at the screen edge
+  // when the gutter is smaller than the bleed. On a phone it comes out
+  // negative, and the text rules clamp it to nothing.
+  --brushstroke-text-room: calc(
+    100% + min(var(--brushstroke-tree-bleed), (100vw - 100%) / 2) - var(--brushstroke-tree-width)
+  );
+
+  @media (min-width: $brushstroke-wide-breakpoint) {
+    // Grows to the file's native width and stops. The floor is what makes
+    // the name wrap at laptop widths: with a smaller tree the one-line name
+    // ran under the file's foot at 1280 and 1536 and measured 1.5:1.
+    --brushstroke-tree-width: clamp(24rem, 30vw, 565px);
+    // The pines hang from the top of the screen, behind the nav row, with
+    // their flat-cut top just above the viewport edge so the cut never shows,
+    // and their right side running off the screen edge, as in the mockup.
+    --brushstroke-tree-top: -5.5rem;
+    // 186px is the 1878 mockup: the pines end 28px inside a 214px gutter. On
+    // a 3440px screen they stay 186px past the column instead of 800px away.
+    --brushstroke-tree-bleed: 186px;
+  }
+
   // Pulled up by Pico's <main> block padding so the band starts at the header
-  // rule instead of leaving a strip of bare paper; the top padding below is
-  // increased by the same amount so the wordmark doesn't shift on screen.
+  // rule instead of leaving a strip of bare paper. The top padding that keeps
+  // the wordmark where it was sits on the heading group instead, so the hero's
+  // content box starts exactly at the rule and the first brushstroke layer
+  // hangs from it. The bottom padding takes over the heading group's Pico
+  // margin, zeroed below so the second layer hangs from the tagline itself.
   margin-top: calc(var(--pico-block-spacing-vertical) * -1);
-  padding-block: calc(clamp(2rem, 7vw, 5rem) + var(--pico-block-spacing-vertical)) var(--space-band);
+  padding-block: 0 calc(var(--space-band) + var(--pico-typography-spacing-vertical));
+}
+
+.hero > hgroup {
+  padding-top: calc(clamp(2rem, 7vw, 5rem) + var(--pico-block-spacing-vertical));
+  margin-bottom: 0;
+}
+
+.hero__tree {
+  display: none;
+  top: var(--brushstroke-tree-top);
+  right: var(--brushstroke-tree-right);
+  width: var(--brushstroke-tree-width);
+  // The left fade the legibility model reads back (see _materials.scss),
+  // as lengths from the tree's own left edge: the screen-relative knobs
+  // minus where that edge sits (the tree is right-anchored). A mask on the
+  // image itself is fine: it isolates only the image.
+  // On a phone the tree is flush with the screen's right edge (the bleed is
+  // the whole screen), so its left edge is the screen width minus its own.
+  --brushstroke-fade-left-clear: calc(
+    var(--brushstroke-tree-text-clear) - (100vw - var(--brushstroke-tree-width))
+  );
+  --brushstroke-fade-left: calc(
+    var(--brushstroke-fade-left-clear) + var(--brushstroke-tree-text-fade)
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent var(--brushstroke-fade-left-clear),
+    #000 var(--brushstroke-fade-left)
+  );
+
+  @media (min-width: $brushstroke-narrow-breakpoint) {
+    display: block;
+  }
+
+  @media (min-width: $brushstroke-wide-breakpoint) {
+    // Above the rule (the band the pines rise through, which is minus the top
+    // knob) the crown is held at --brushstroke-tree-crown so the nav links
+    // stay legible over it, ramping to full pigment over the last 1rem. The
+    // pines file is cropped straight through its haze along the left and the
+    // bottom: the left fade is its 8% feather there, and a third layer
+    // feathers the bottom.
+    --brushstroke-fade-top: calc(-1 * var(--brushstroke-tree-top));
+    --brushstroke-fade-to: var(--brushstroke-tree-crown);
+    --brushstroke-fade-left-clear: 0px;
+    --brushstroke-fade-left: 8%;
+    mask-image:
+      linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, var(--brushstroke-fade-to)) 0,
+        rgba(0, 0, 0, var(--brushstroke-fade-to)) calc(var(--brushstroke-fade-top) - 1rem),
+        #000 var(--brushstroke-fade-top)
+      ),
+      linear-gradient(
+        to right,
+        transparent var(--brushstroke-fade-left-clear),
+        #000 var(--brushstroke-fade-left)
+      ),
+      linear-gradient(to top, transparent, #000 8%);
+    mask-composite: intersect;
+  }
+}
+
+.hero__water {
+  display: none;
+  top: var(--brushstroke-water-top);
+  left: var(--brushstroke-water-left);
+  width: var(--brushstroke-water-width);
+  // Same cut along the file's top edge.
+  mask-image: linear-gradient(to bottom, transparent, #000 12%);
+
+  @media (min-width: $brushstroke-wide-breakpoint) {
+    display: block;
+  }
 }
 
 .hero__wordmark {
@@ -13,14 +174,44 @@
   // Matches the badge's right padding so every letter gap in the name is even.
   letter-spacing: 0.15em;
   margin: 0;
+  // Never narrower than its longest word, so a tight cap wraps between words,
+  // not through one (Pico's overflow-wrap would otherwise split "billings").
+  min-width: min-content;
   max-width: 14ch;
+
+  @media (min-width: $brushstroke-narrow-breakpoint) {
+    // Wraps rather than running under the tree: the name may reach into the
+    // file's faint left edge by the haze share. Where even its longest word
+    // needs more room than that, min-content wins and the home e2e measures
+    // whether the ink still clears 3:1 over the pigment. On a phone the tree
+    // spans the screen, the room is nothing, and the name sits at its
+    // longest word's width over the tree's cleared left band.
+    max-width: min(
+      14ch,
+      max(
+        0px,
+        calc(
+          var(--brushstroke-text-room) + var(--brushstroke-tree-width) *
+            var(--brushstroke-tree-haze)
+        )
+      )
+    );
+  }
 }
 
 .hero__tagline {
   margin-top: 1.25rem;
   font-size: clamp(1rem, 2vw, 1.25rem);
   color: var(--ink-muted);
+  min-width: min-content;
   max-width: 40ch;
+
+  @media (min-width: $brushstroke-narrow-breakpoint) {
+    // Wraps short of the tree: muted ink cannot stay legible over pigment.
+    // On a phone the room is nothing and the tagline sits at its longest
+    // word's width over the tree's cleared left band.
+    max-width: min(40ch, max(0px, var(--brushstroke-text-room)));
+  }
 }
 
 // No top padding: the hero's bottom band already provides the gap, and adding

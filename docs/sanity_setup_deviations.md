@@ -1,3 +1,9 @@
+> [!NOTE]
+> Historical record of the 2026-08-24 setup. The layout it describes is no longer
+> current: on 2026-08-27 (`406ad76`) the Next.js app moved from the repository root
+> into `web/`, beside `studio/`, which is the layout `AGENTS.md` documents. The rest of
+> this record stands.
+
 # Sanity Setup — Deviations from the Vendor-Supplied Agent Prompt
 
 **Date:** 2026-08-24

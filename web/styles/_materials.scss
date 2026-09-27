@@ -71,6 +71,84 @@ body {
   mask-repeat: no-repeat;
 }
 
+// The artist's painted brushstrokes. A layer is a zero-height, viewport-wide
+// band that clips its own horizontal overflow, so a brushstroke can hang off
+// the screen's edge without a horizontal scrollbar and without any overflow
+// rule on html or body. `top: auto` is the layer's static position: it hangs
+// from whatever precedes it in flow. `clip` is the one overflow value that
+// pairs with `visible` on the other axis and creates no scroll container and
+// no stacking context. `inset-inline: 0` resolves against the initial
+// containing block, the viewport minus any scrollbar, only while no ancestor
+// is positioned, transformed, filtered or contained; the home e2e walks the
+// ancestors to keep it that way.
+.brushstroke-layer {
+  position: absolute;
+  inset-inline: 0;
+  height: 0;
+  overflow-x: clip;
+  overflow-y: visible;
+  pointer-events: none;
+}
+
+// The column inside the layer carries Pico's .container geometry (width,
+// max-width per step, centring, phone padding) and is the brushstrokes'
+// containing block, so a brushstroke's offsets and percentages are of the
+// content column, not the screen. On a phone the column's padding box is the
+// screen; on a wide screen it is the centred 1450px box, and a brushstroke
+// follows it as the screen grows. The layer still clips at the screen edge.
+.brushstroke-layer__column {
+  position: relative;
+}
+
+// A brushstroke may fade its top band: the pigment above --brushstroke-fade-top
+// is kept at --brushstroke-fade-to of its strength, ramping to full over the
+// last 1rem. The brushstroke's own mask paints it; the home e2e's legibility
+// model reads the same two properties, which is why they are registered: a
+// registered property computes to a plain px or number, calc() and all, so
+// the test and the browser see one value.
+@property --brushstroke-fade-top {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --brushstroke-fade-to {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 1;
+}
+
+// The same idea along the left edge, for a brushstroke that runs under a
+// text column: nothing is painted up to --brushstroke-fade-left-clear, then
+// the pigment ramps to full at --brushstroke-fade-left. Percentages are of
+// the brushstroke's own width. 0px on both means no left fade.
+@property --brushstroke-fade-left-clear {
+  syntax: '<length-percentage>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --brushstroke-fade-left {
+  syntax: '<length-percentage>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+// Under body::before (the grain, at -1) and above the paper, so the pigment
+// reads as in the paper, and it can never cover text. Pico caps every img at
+// 100% of its container; a brushstroke's width is its own business.
+.brushstroke {
+  position: absolute;
+  display: block;
+  max-width: none;
+  height: auto;
+  z-index: -2;
+  opacity: var(--brushstroke-opacity, 1);
+  // No long-press "save image" on a phone, no drag ghost on a desktop.
+  pointer-events: none;
+  user-select: none;
+}
+
 .wash-bloom {
   position: absolute;
   z-index: -1;
@@ -136,8 +214,11 @@ body {
 }
 
 // Texture is the first thing to go when someone has asked for more contrast.
+// The layers are hidden rather than the brushstrokes so no page-level
+// `display` rule on a brushstroke can win back its place.
 @media (prefers-contrast: more) {
-  body::before {
+  body::before,
+  .brushstroke-layer {
     display: none;
   }
 

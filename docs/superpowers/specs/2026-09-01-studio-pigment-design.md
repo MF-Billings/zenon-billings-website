@@ -156,7 +156,9 @@ computing the ratio against that instead of the token's flat value. `--ink-muted
 4.5:1 floor against the real ground, but narrowly enough that it is worth re-checking after any
 future change to the grain's opacity, blend mode, or the paper token itself. **The palette
 bends to the contrast requirement, never the reverse.** Text never sits directly on a bloom
-without a solid backing.
+without a solid backing. (Superseded for the artist's painted brushstrokes by
+`2026-09-24-hero-brushstroke-design.md`, where a measured contrast check stands in for the
+backing.)
 
 ---
 
