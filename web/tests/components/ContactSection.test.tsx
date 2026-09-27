@@ -18,15 +18,7 @@ describe('ContactSection', () => {
     expect(screen.getByRole('button', { name: /send/i })).toBeInTheDocument()
   })
 
-  it('publishes the alias when one is configured', () => {
-    render(<ContactSection alias="hello@example.com" />)
-    expect(screen.getByRole('link', { name: 'hello@example.com' })).toHaveAttribute(
-      'href',
-      'mailto:hello@example.com',
-    )
-  })
-
-  it('publishes no address when no alias is configured', () => {
+  it('publishes no email address, so scrapers find nothing to harvest', () => {
     const { container } = render(<ContactSection />)
     expect(container.querySelector('a[href^="mailto:"]')).toBeNull()
   })

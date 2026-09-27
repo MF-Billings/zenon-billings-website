@@ -176,7 +176,5 @@ property while staying inside the rule, so the exception was not worth arguing f
 - [ ] **Deploy the Studio** — `cd studio && npx sanity deploy` (requires choosing a
       hostname interactively). Record the resulting URL in `README.md`.
 - [ ] **Populate Site Settings** in the `development` dataset (`artistName`, `tagline`,
-      `bio`, `publicContactAlias`). The Home and About pages render these and have
-      nothing to show until they exist. `publicContactAlias` is published in plain sight
-      on the contact page — it takes a forwarding alias, never a personal inbox. See
-      "The published contact address" in `README.md`.
+      `bio`, and optionally `statement` with its heading, image and attribution). The
+      Home and About pages render these and have nothing to show until they exist.

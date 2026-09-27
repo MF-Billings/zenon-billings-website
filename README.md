@@ -346,31 +346,33 @@ prerendering, so the page wraps `UrlSyncedArtworkLightbox` and `UrlSyncedArtwork
 `Suspense` with `ArtworkLightbox` and `ArtworkNav` over the full collection as fallbacks;
 PhotoSwipe itself is fetched on the first click, never before.
 
-## The published contact address
+## The contact address is never published
 
 The site has no origin server, so there is nowhere to hide an email address at request
 time: whatever the contact section of the home page renders is baked into `out/index.html`
-and served to every scraper that asks. The address is therefore treated as public by design.
+and served to every scraper that asks. So no address is rendered at all. The contact form
+carries only a Web3Forms access key (`NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY`); Web3Forms resolves
+the key to the destination inbox server-side, and the visitor never sees it. A unit test on
+the Site Settings schema and an e2e test on the built page both fail if a `mailto:` link or
+an email field ever comes back.
 
-Two separate channels reach the artist, and neither one publishes a personal inbox:
+## The statement on the home page
 
-| Channel          | What the page contains                                      | What the visitor never sees                                            |
-| ---------------- | ----------------------------------------------------------- | ---------------------------------------------------------------------- |
-| The contact form | A Web3Forms access key (`NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY`) | The destination address — Web3Forms resolves the key to it server-side |
-| The mailto link  | `siteSettings.publicContactAlias`                           | The inbox the alias forwards to                                        |
+Between the "View the full gallery" button and the contact section, the home page sets a
+short statement about the work and what the site is for. It is read from Site Settings
+(Studio → **Site Settings**) and omitted entirely until a statement has been written, so a
+fresh dataset renders the page exactly as before.
 
-`publicContactAlias` must hold a **forwarding alias, never a personal address**. The site
-is already on Cloudflare, so the cheapest source of one is Cloudflare Email Routing:
+| Field                  | What it does                                                                                        |
+| ---------------------- | --------------------------------------------------------------------------------------------------- |
+| `statement`            | Three to six sentences of plain paragraphs, set large in the display face. Emphasis is the only mark |
+| `statementHeading`     | Optional. Shown above the statement as a lowercase section heading with an ink rule; blank for none  |
+| `statementImage`       | Optional second photo of the artist, shown signature-sized on a paper sheet beside the words         |
+| `statementAttribution` | Optional. Who the statement is by, signed beneath it. Blank publishes the statement unattributed     |
 
-1. Cloudflare dashboard → the site's domain → **Email** → **Email Routing**
-2. Add a destination address (the artist's real inbox) and verify it
-3. Create a custom address — `hello@<domain>` — forwarding to that destination
-4. Put the _alias_ into Site Settings → Public contact alias in the Studio
-
-The point of the alias is that it is disposable. If it starts attracting spam, delete the
-routing rule, create a new alias, update the field, and redeploy; the real inbox is never
-exposed and never has to change. That property is lost the moment a personal address goes
-into the field, which is why the field is named for what it is rather than "contact email".
+The section is `web/components/StatementSection.tsx`; its layout lives in
+`web/styles/_statement.scss`. The layout treats the words as the subject and the portrait as
+an aside, so the portrait never grows past 12rem.
 
 ## Key dates on the about page
 
@@ -429,8 +431,6 @@ Run these from `web/`, or from the repository root via the delegating scripts in
 The Playwright e2e suite requires `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY` to be set to a non-empty value in `web/.env.local` **before** running `npm run build`, because the static export bakes the value in at build time. Any placeholder works locally — the tests intercept Web3Forms requests and do not send them.
 
 The suite runs against whichever dataset the build used. Tests that need a particular artwork or search term read it from the built `out/` directory or from the page itself rather than hardcoding a slug, so neither dataset is required.
-
-One test cannot read its expectation from the page: whether a contact address is published depends on `siteSettings.publicContactAlias` in the dataset. If the build's dataset has an alias set, run `PUBLIC_CONTACT_ALIAS=<alias> npm run test:e2e`; unset, the test asserts that no `mailto:` link is published at all.
 
 ### Studio commands (run from `studio/`)
 

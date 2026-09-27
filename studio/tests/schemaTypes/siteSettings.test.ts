@@ -12,26 +12,37 @@ const fieldNamed = (name: string) => fields.find((field) => field.name === name)
 describe('siteSettings schema', () => {
   it('holds the editable site-wide copy', () => {
     expect(fields.map((field) => field.name)).toEqual(
+      expect.arrayContaining(['artistName', 'tagline', 'bio', 'profileImage', 'priceCurrency']),
+    )
+  })
+
+  it('holds a statement with an optional heading, portrait and attribution', () => {
+    expect(fields.map((field) => field.name)).toEqual(
       expect.arrayContaining([
-        'artistName',
-        'tagline',
-        'bio',
-        'profileImage',
-        'publicContactAlias',
-        'priceCurrency',
+        'statementHeading',
+        'statement',
+        'statementImage',
+        'statementAttribution',
       ]),
     )
   })
 
-  it('offers no field that invites a personal inbox into published pages', () => {
-    expect(fields.map((field) => field.name)).not.toContain('contactEmail')
+  it('keeps the statement to plain paragraphs', () => {
+    const statement = fieldNamed('statement') as unknown as {
+      of: Array<{styles?: Array<{value: string}>; lists?: unknown[]}>
+    }
+    const block = statement.of[0]
+
+    expect(block.styles?.map((style) => style.value)).toEqual(['normal'])
+    expect(block.lists).toEqual([])
   })
 
-  it('warns the editor that the alias is published and must be disposable', () => {
-    const alias = fieldNamed('publicContactAlias')
+  it('tells the editor the attribution is optional and what leaving it blank does', () => {
+    expect(fieldNamed('statementAttribution')?.description).toMatch(/unattributed/i)
+  })
 
-    expect(alias?.description).toMatch(/published/i)
-    expect(alias?.description).toMatch(/forwarding alias/i)
-    expect(alias?.description).toMatch(/never a personal/i)
+  it('offers no field that would put an email address on a published page', () => {
+    expect(fields.map((field) => field.name)).not.toContain('contactEmail')
+    expect(fields.map((field) => field.name)).not.toContain('publicContactAlias')
   })
 })

@@ -43,17 +43,9 @@ test.describe('contact form', () => {
     await expect(page.locator('form [role="alert"]')).toContainText('Invalid access key')
   })
 
-  test('exposes no address unless a public alias is configured', async ({ page }) => {
-    // ContactAliasLink is unit-tested in both states. What matters end to end is that
-    // an unset alias publishes no address at all, rather than falling back to one.
+  test('publishes no email address anywhere on the page', async ({ page }) => {
     await page.goto('/#contact')
-
-    const alias = process.env.PUBLIC_CONTACT_ALIAS
-    if (alias) {
-      await expect(page.locator(`a[href="mailto:${alias}"]`)).toBeVisible()
-    } else {
-      await expect(page.locator('a[href^="mailto:"]')).toHaveCount(0)
-    }
+    await expect(page.locator('a[href^="mailto:"]')).toHaveCount(0)
   })
 })
 

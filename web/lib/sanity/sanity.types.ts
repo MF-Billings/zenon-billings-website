@@ -55,7 +55,29 @@ export type SiteSettings = {
     crop?: SanityImageCrop
     _type: 'image'
   }
-  publicContactAlias?: string
+  statementHeading?: string
+  statement?: Array<{
+    children?: Array<{
+      marks?: Array<string>
+      text?: string
+      _type: 'span'
+      _key: string
+    }>
+    style?: 'normal'
+    listItem?: never
+    markDefs?: null
+    level?: number
+    _type: 'block'
+    _key: string
+  }>
+  statementImage?: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+  }
+  statementAttribution?: string
   priceCurrency?: string
 }
 
@@ -464,15 +486,18 @@ export type ARTWORK_SLUGS_QUERY_RESULT = Array<{
 
 // Source: ../web/lib/sanity/queries.ts
 // Variable: SITE_SETTINGS_QUERY
-// Query: *[_id == "siteSettings"][0] {    artistName, tagline, bio, profileImage, publicContactAlias, priceCurrency  }
+// Query: *[_id == "siteSettings"][0] {    artistName, tagline, bio, profileImage, priceCurrency,    statementHeading, statement, statementImage, statementAttribution  }
 export type SITE_SETTINGS_QUERY_RESULT =
   | {
       artistName: null
       tagline: null
       bio: null
       profileImage: null
-      publicContactAlias: null
       priceCurrency: null
+      statementHeading: null
+      statement: null
+      statementImage: null
+      statementAttribution: null
     }
   | {
       artistName: string | null
@@ -502,8 +527,30 @@ export type SITE_SETTINGS_QUERY_RESULT =
         crop?: SanityImageCrop
         _type: 'image'
       } | null
-      publicContactAlias: string | null
       priceCurrency: string | null
+      statementHeading: string | null
+      statement: Array<{
+        children?: Array<{
+          marks?: Array<string>
+          text?: string
+          _type: 'span'
+          _key: string
+        }>
+        style?: 'normal'
+        listItem?: never
+        markDefs?: null
+        level?: number
+        _type: 'block'
+        _key: string
+      }> | null
+      statementImage: {
+        asset?: SanityImageAssetReference
+        media?: unknown
+        hotspot?: SanityImageHotspot
+        crop?: SanityImageCrop
+        _type: 'image'
+      } | null
+      statementAttribution: string | null
     }
   | null
 
@@ -545,15 +592,18 @@ export type LIFE_EVENTS_QUERY_RESULT = Array<{
 }>
 
 // Query TypeMap
-import '@sanity/client'
-declare module '@sanity/client' {
+declare global {
   interface SanityQueries {
     '\n  *[_type == "artwork" && defined(slug.current)]\n    | order(lower(title) asc) {\n  _id,\n  title,\n  "slug": slug.current,\n  description,\n  artistNote,\n  medium,\n  image,\n  "imageWidth": image.asset->metadata.dimensions.width,\n  displayMaxWidth,\n  altText,\n  dimensions { width, height, unit },\n  yearCreated,\n  isFeatured,\n  price,\n  "tags": tags[]->{ _id, name, "slug": slug.current, category }\n}\n': ALL_ARTWORKS_QUERY_RESULT
     '\n  *[_type == "artwork" && isFeatured == true && defined(slug.current)]\n    | order(coalesce(yearCreated, 0) desc, _createdAt desc)[0...6] {\n  _id,\n  title,\n  "slug": slug.current,\n  description,\n  artistNote,\n  medium,\n  image,\n  "imageWidth": image.asset->metadata.dimensions.width,\n  displayMaxWidth,\n  altText,\n  dimensions { width, height, unit },\n  yearCreated,\n  isFeatured,\n  price,\n  "tags": tags[]->{ _id, name, "slug": slug.current, category }\n}\n': FEATURED_ARTWORKS_QUERY_RESULT
     '\n  *[_type == "artwork" && defined(slug.current)]\n    | order(lower(title) asc) {\n      title,\n      "slug": slug.current,\n      image,\n      "imageWidth": image.asset->metadata.dimensions.width,\n      "imageHeight": image.asset->metadata.dimensions.height,\n      altText,\n      displayMaxWidth,\n      "tags": tags[]->{ name, "slug": slug.current }\n    }\n': ARTWORK_NAVIGATION_QUERY_RESULT
     '\n  *[_type == "artwork" && slug.current == $slug][0] {\n  _id,\n  title,\n  "slug": slug.current,\n  description,\n  artistNote,\n  medium,\n  image,\n  "imageWidth": image.asset->metadata.dimensions.width,\n  displayMaxWidth,\n  altText,\n  dimensions { width, height, unit },\n  yearCreated,\n  isFeatured,\n  price,\n  "tags": tags[]->{ _id, name, "slug": slug.current, category }\n}\n': ARTWORK_BY_SLUG_QUERY_RESULT
     '\n  *[_type == "artwork" && defined(slug.current)]{ "slug": slug.current }\n': ARTWORK_SLUGS_QUERY_RESULT
-    '\n  *[_id == "siteSettings"][0] {\n    artistName, tagline, bio, profileImage, publicContactAlias, priceCurrency\n  }\n': SITE_SETTINGS_QUERY_RESULT
+    '\n  *[_id == "siteSettings"][0] {\n    artistName, tagline, bio, profileImage, priceCurrency,\n    statementHeading, statement, statementImage, statementAttribution\n  }\n': SITE_SETTINGS_QUERY_RESULT
     '\n  *[_type == "lifeEvent" && defined(date)]\n    | order(date asc, coalesce(sortOrder, 0) asc, _createdAt asc) {\n    _id, title, date, datePrecision, endDate, summary, image, altText\n  }\n': LIFE_EVENTS_QUERY_RESULT
   }
+}
+// Lets @sanity/client releases that predate the global registry read it too
+declare module '@sanity/client' {
+  interface SanityQueries extends globalThis.SanityQueries {}
 }

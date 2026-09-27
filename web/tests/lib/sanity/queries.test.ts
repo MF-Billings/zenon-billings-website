@@ -77,9 +77,8 @@ describe('GROQ queries', () => {
     expect(SITE_SETTINGS_QUERY).toContain('_id == "siteSettings"')
   })
 
-  it('publishes only the disposable contact alias, never a personal inbox field', () => {
-    expect(SITE_SETTINGS_QUERY).toContain('publicContactAlias')
-    expect(SITE_SETTINGS_QUERY).not.toContain('contactEmail')
+  it('reads no email address field, so none can reach the published page', () => {
+    expect(SITE_SETTINGS_QUERY).not.toMatch(/contactEmail|publicContactAlias/)
   })
 
   it('selects dated life events in chronological order, then by editor sort order', () => {

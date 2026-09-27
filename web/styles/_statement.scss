@@ -1,0 +1,82 @@
+// A short statement about the work, set large in the display face, with a
+// signature-sized portrait beside it. It sits between the gallery button and
+// the contact section on the home page; the top padding is the band that
+// separates it from the button above.
+.statement {
+  padding-top: var(--space-band);
+}
+
+.statement__rule {
+  margin: 0.5rem 0 var(--space-sheet);
+}
+
+.statement__spread {
+  display: grid;
+  gap: var(--space-sheet);
+  align-items: end;
+}
+
+// The words column hugs its own width (the paragraphs cap at 34ch) so the
+// portrait sits one band after the last line rather than at the far edge of
+// the container, where it read as unrelated to the text.
+@media (min-width: 800px) {
+  .statement__spread {
+    grid-template-columns: minmax(0, max-content) auto;
+    justify-content: start;
+    column-gap: var(--space-band);
+  }
+}
+
+// The words are the subject here, so they take the display face at a size
+// between body copy and the section headings.
+.statement__words {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-variation-settings: 'wdth' 110;
+  font-size: clamp(1.35rem, 2.4vw, 1.7rem);
+  font-weight: 500;
+  line-height: 1.35;
+
+  p {
+    max-width: 34ch;
+  }
+
+  p + p {
+    margin-top: 0.9rem;
+  }
+}
+
+// Set like a studio label, with the badge's blue square standing in for a
+// pen stroke before the name.
+.statement__signature {
+  margin-top: 1.5rem;
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-variation-settings: normal;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  line-height: 1.5;
+  color: var(--ink-muted);
+
+  &::before {
+    content: '';
+    display: inline-block;
+    width: 0.7em;
+    height: 0.7em;
+    margin-right: 0.5em;
+    vertical-align: -0.05em;
+    background: var(--badge-blue);
+  }
+}
+
+.statement__portrait {
+  margin: 0;
+  width: clamp(8rem, 20vw, 12rem);
+  padding: 0.6rem;
+  transform: rotate(var(--edge-tilt));
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+}

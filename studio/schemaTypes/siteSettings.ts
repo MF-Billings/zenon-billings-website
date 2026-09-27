@@ -1,4 +1,4 @@
-import {defineField, defineType} from 'sanity'
+import {defineArrayMember, defineField, defineType} from 'sanity'
 
 export default defineType({
   name: 'siteSettings',
@@ -10,13 +10,43 @@ export default defineType({
     defineField({name: 'bio', type: 'array', of: [{type: 'block'}]}),
     defineField({name: 'profileImage', type: 'image', options: {hotspot: true}}),
     defineField({
-      name: 'publicContactAlias',
-      title: 'Public contact alias',
+      name: 'statementHeading',
+      title: 'Statement heading',
+      type: 'string',
+      description: 'Shown above the statement as a section heading. Leave blank for no heading.',
+    }),
+    defineField({
+      name: 'statement',
+      type: 'array',
+      description:
+        'A few sentences about the work and what this site is for, shown on the home page. ' +
+        'Three to six sentences reads best.',
+      of: [
+        defineArrayMember({
+          type: 'block',
+          // The statement is set large as a single voice; headings and lists would break it.
+          styles: [{title: 'Normal', value: 'normal'}],
+          lists: [],
+          marks: {
+            decorators: [{title: 'Emphasis', value: 'em'}],
+            annotations: [],
+          },
+        }),
+      ],
+    }),
+    defineField({
+      name: 'statementImage',
+      title: 'Statement image',
+      type: 'image',
+      description: 'A second photo of the artist, shown small beside the statement.',
+      options: {hotspot: true},
+    }),
+    defineField({
+      name: 'statementAttribution',
+      title: 'Statement attribution',
       type: 'string',
       description:
-        'Published on the contact page in plain sight, so scrapers will find it. Use a ' +
-        'forwarding alias you can delete and replace — never a personal inbox.',
-      validation: (rule) => rule.email(),
+        'Who the statement is by, signed beneath it. Leave blank to publish it unattributed.',
     }),
     defineField({
       name: 'priceCurrency',
